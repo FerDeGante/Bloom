@@ -1,0 +1,33 @@
+/* [project]/src/styles/Landing.module.css [app-client] (css) */
+.Landing-module__QrMDlq__hero {
+  text-align: center;
+  color: #fff;
+  background: url("/images/hero-bloom.jpg") center / cover no-repeat;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 65vh;
+  padding: 2rem;
+  display: flex;
+}
+
+.Landing-module__QrMDlq__servicios {
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 2rem;
+  max-width: 1100px;
+  margin: 4rem auto;
+  display: grid;
+}
+
+.Landing-module__QrMDlq__card {
+  background: #fff;
+  border-radius: .6rem;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 1.5rem;
+  display: flex;
+  box-shadow: 0 2px 6px #0001;
+}
+
+
+/*# sourceMappingURL=src_styles_Landing_module_5efc3d85.css.map*/
