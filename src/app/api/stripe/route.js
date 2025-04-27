@@ -1,17 +1,19 @@
 import Stripe from "stripe";
-const stripe = new Stripe(process.env.STRIPE_SECRET, { apiVersion: "2023-10-16" });
+
+// Lanzamos un error claro si falta la variable
+if (!process.env.STRIPE_SECRET) {
+  throw new Error("Stripe secret key (STRIPE_SECRET) is not defined");
+}
+
+// Inicializamos STRIPE con la clave secreta
+const stripe = new Stripe(process.env.STRIPE_SECRET, {
+  apiVersion: "2023-10-16",
+});
 
 export async function POST(req) {
-  const { priceId } = await req.json();  // lo mandas desde el cliente
-  try {
-    const session = await stripe.checkout.sessions.create({
-      mode: "payment",
-      line_items: [{ price: priceId, quantity: 1 }],
-      success_url: `${process.env.NEXT_PUBLIC_URL}/confirmacion?ok=1`,
-      cancel_url: `${process.env.NEXT_PUBLIC_URL}/citas?cancel=1`,
-    });
-    return Response.json({ url: session.url });
-  } catch (err) {
-    return Response.json({ error: err.message }, { status: 500 });
-  }
+  const { priceId } = await req.json();
+  // …tu lógica de creación de session
 }
+
+// Si usas Edge Runtime o necesitas autenticar, podrías exponer también:
+// export const config = { runtime: 'edge' };

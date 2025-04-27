@@ -1,0 +1,14 @@
+[build]
+  # Comando para instalar dependencias
+  install = "npm install"
+
+  # Comando para compilar tu Next.js
+  command = "npm run build"
+
+  # Directorio que Netlify publicará
+  publish = ".next"
+
+[context.production.environment]
+  # Aquí defines variables de entorno si quieres
+  STRIPE_SECRET = "sk_live_xxx"
+  EA_KEY        = "tu_api_key_easy_appointments"
