@@ -1,51 +1,50 @@
+// src/pages/reservas.tsx
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
-import {
-  Container,
-  Form,
-  Button,
-  Alert,
-} from "react-bootstrap";
-import Calendar from "react-calendar";
+import { Container, Form, Button } from "react-bootstrap";
+import Calendar, { CalendarProps } from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 
-const servicios = [
-  { id: "agua", name: "Estimulación en agua" },
-  { id: "piso", name: "Estimulación en piso" },
-  { id: "quiropractica", name: "Quiropráctica" },
-  // … los demás servicios
-];
-
-const terapeutas = [
-  { id: "t1", name: "Terapeuta A" },
-  { id: "t2", name: "Terapeuta B" },
-  // … luego los cargas dinámicamente desde tu API
-];
+// Tipos locales
+interface Servicio { id: string; name: string }
+interface Terapeuta { id: string; name: string }
 
 export default function ReservasPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
 
-  const [servicio, setServicio] = useState("");
-  const [terapeuta, setTerapeuta] = useState("");
+  // Tus datos
+  const servicios: Servicio[] = [
+    { id: "agua", name: "Estimulación en agua" },
+    /* … resto de servicios … */
+  ];
+  const terapeutas: Terapeuta[] = [
+    { id: "jesus-ramirez", name: "Jesús Ramírez" },
+    /* … resto de terapeutas … */
+  ];
+
+  const [servicio, setServicio] = useState<string>("");
+  const [terapeuta, setTerapeuta] = useState<string>("");
   const [fecha, setFecha] = useState<Date | null>(null);
 
-  // Redirige si no está autenticado
+  // Si no estás logueado, redirige
   useEffect(() => {
     if (status === "unauthenticated") {
       router.replace("/login");
     }
   }, [status, router]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  // Firma EXACTA que espera react-calendar
+  const handleCalendarChange: CalendarProps["onChange"] = (value, _event) => {
+    const day = Array.isArray(value) ? value[0] : value;
+    setFecha(day);
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Aquí llamas a tu API para crear la cita y rediriges al checkout de Stripe
-    // Ejemplo:
-    // const res = await fetch('/api/appointments', { method: 'POST', body: JSON.stringify({ servicio, terapeuta, fecha }) });
-    // const { sessionId } = await res.json();
-    // router.push(`/checkout?session_id=${sessionId}`);
     console.log({ servicio, terapeuta, fecha });
+    // Aquí tu lógica de API + Stripe
   };
 
   if (status === "loading" || !session) {
@@ -61,11 +60,11 @@ export default function ReservasPage() {
           <Form.Label>Servicio</Form.Label>
           <Form.Select
             value={servicio}
-            onChange={(e) => setServicio(e.target.value)}
+            onChange={e => setServicio(e.target.value)}
             required
           >
             <option value="">Selecciona un servicio</option>
-            {servicios.map((s) => (
+            {servicios.map(s => (
               <option key={s.id} value={s.id}>
                 {s.name}
               </option>
@@ -78,11 +77,11 @@ export default function ReservasPage() {
           <Form.Label>Terapeuta</Form.Label>
           <Form.Select
             value={terapeuta}
-            onChange={(e) => setTerapeuta(e.target.value)}
+            onChange={e => setTerapeuta(e.target.value)}
             required
           >
             <option value="">Selecciona un terapeuta</option>
-            {terapeutas.map((t) => (
+            {terapeutas.map(t => (
               <option key={t.id} value={t.id}>
                 {t.name}
               </option>
@@ -90,31 +89,17 @@ export default function ReservasPage() {
           </Form.Select>
         </Form.Group>
 
-        {/* Calendario y hora */}
+        {/* Calendario */}
         <Form.Group className="mb-4">
-          <Form.Label>Fecha y hora</Form.Label>
+          <Form.Label>Fecha</Form.Label>
           <Calendar
-            onChange={(value: Date | Date[]) => {
-              // si devuelven un rango, tomamos el primer día
-              if (value instanceof Date) {
-                setFecha(value);
-              } else {
-                setFecha(value[0] ?? null);
-              }
-            }}
-            value={fecha}
+            onChange={handleCalendarChange}
+            value={fecha ?? new Date()}
             minDate={new Date()}
           />
-          {fecha && (
-            <Alert variant="info" className="mt-2">
-              Has seleccionado:{" "}
-              {fecha.toLocaleDateString()}{" "}
-              {fecha.toLocaleTimeString()}
-            </Alert>
-          )}
         </Form.Group>
 
-        <Button type="submit" className="w-100">
+        <Button type="submit" className="w-100 btn-orange">
           Confirmar y pagar
         </Button>
       </Form>

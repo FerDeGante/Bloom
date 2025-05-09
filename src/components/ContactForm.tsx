@@ -1,8 +1,7 @@
-// src/components/ContactForm.tsx
-"use client";
+'use client';
 
-import { useState, ChangeEvent, FormEvent } from "react";
-import { Form, Button, Alert } from "react-bootstrap";
+import { useState, ChangeEvent, FormEvent } from 'react';
+import { Form, Button, Alert } from 'react-bootstrap';
 
 interface ContactFormData {
   name: string;
@@ -12,33 +11,33 @@ interface ContactFormData {
 
 export default function ContactForm() {
   const [form, setForm] = useState<ContactFormData>({
-    name: "",
-    email: "",
-    message: "",
+    name: '',
+    email: '',
+    message: '',
   });
-  const [status, setStatus] = useState<null | "sending" | "ok" | "error">(null);
+  const [status, setStatus] = useState<null | 'sending' | 'ok' | 'error'>(null);
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
+    setForm(prev => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setStatus("sending");
+    setStatus('sending');
     try {
-      const res = await fetch("/api/contact", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form),
       });
-      if (!res.ok) throw new Error("Error al enviar");
-      setStatus("ok");
-      setForm({ name: "", email: "", message: "" });
+      if (!res.ok) throw new Error('Error al enviar');
+      setStatus('ok');
+      setForm({ name: '', email: '', message: '' });
     } catch {
-      setStatus("error");
+      setStatus('error');
     }
   };
 
@@ -54,7 +53,6 @@ export default function ContactForm() {
           required
         />
       </Form.Group>
-
       <Form.Group className="mb-3">
         <Form.Control
           type="email"
@@ -65,7 +63,6 @@ export default function ContactForm() {
           required
         />
       </Form.Group>
-
       <Form.Group className="mb-3">
         <Form.Control
           as="textarea"
@@ -77,17 +74,19 @@ export default function ContactForm() {
           required
         />
       </Form.Group>
-
-      <Button type="submit" disabled={status === "sending"} className="btn-orange w-100">
-        {status === "sending" ? "Enviando..." : "Enviar"}
+      <Button
+        type="submit"
+        disabled={status === 'sending'}
+        className="btn-orange w-100"
+      >
+        {status === 'sending' ? 'Enviando...' : 'Enviar'}
       </Button>
-
-      {status === "ok" && (
+      {status === 'ok' && (
         <Alert variant="success" className="mt-3">
           ¡Mensaje enviado con éxito!
         </Alert>
       )}
-      {status === "error" && (
+      {status === 'error' && (
         <Alert variant="danger" className="mt-3">
           Ocurrió un error al enviar. Intenta de nuevo.
         </Alert>

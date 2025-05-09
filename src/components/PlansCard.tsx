@@ -1,6 +1,14 @@
+// src/components/PlansCard.tsx
 import Link from "next/link";
+import React from "react";
 
-export default function ServiceCard({ id, nombre, precio }) {
+interface PlansCardProps {
+  id: string;
+  nombre: string;
+  precio: number;
+}
+
+export default function PlansCard({ id, nombre, precio }: PlansCardProps) {
   return (
     <div className="col-md-4 mb-4">
       <div className="card servicio-card h-100">
@@ -10,7 +18,9 @@ export default function ServiceCard({ id, nombre, precio }) {
             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris porta facilisis urna.
           </p>
           <p className="fw-bold">Desde ${precio} MXN</p>
-          <Link href={`/citas?servicio=${id}`} className="btn btn-primary mt-2">Reservar</Link>
+          <Link href={`/citas?servicio=${id}`} className="btn btn-primary mt-2">
+            Reservar
+          </Link>
         </div>
       </div>
     </div>

@@ -1,23 +1,32 @@
 // src/components/PackageCard.tsx
-import React from "react";
+import React from 'react';
 
-interface Props {
+export interface Package {
+  id: string;
   title: string;
-  description: string;
+  sessions: number;
   price: number;
-  onBuy: ()=>void;
+  inscription: number;
 }
 
-export default function PackageCard({ title, description, price, onBuy }: Props) {
+interface PackageCardProps {
+  pkg: Package;
+  onBuy?: () => void;
+}
+
+export default function PackageCard({ pkg, onBuy }: PackageCardProps) {
   return (
     <div className="card servicio-card text-center h-100">
       <div className="card-body d-flex flex-column">
-        <h5 className="card-title">{title}</h5>
-        <p className="card-text">{description}</p>
-        <p className="h4 mt-auto">${price}</p>
-        <button onClick={onBuy} className="btn btn-orange mt-3">
-          Comprar
-        </button>
+        <h5 className="card-title">{pkg.title}</h5>
+        <p>{pkg.sessions} sesiones/mes</p>
+        <p>Inscripción: ${pkg.inscription}</p>
+        <p className="h4 mt-auto">${pkg.price}</p>
+        {onBuy && (
+          <button onClick={onBuy} className="btn btn-orange mt-3">
+            Comprar
+          </button>
+        )}
       </div>
     </div>
   );

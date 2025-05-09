@@ -1231,12 +1231,55 @@ if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelper
     __turbopack_context__.k.registerExports(module, globalThis.$RefreshHelpers$);
 }
 }}),
+"[project]/src/components/PackagesGrid.tsx [client] (ecmascript)": ((__turbopack_context__) => {
+"use strict";
+
+var { g: global, __dirname, k: __turbopack_refresh__, m: module } = __turbopack_context__;
+{
+// src/components/PackagesGrid.tsx
+__turbopack_context__.s({
+    "default": (()=>PackagesGrid)
+});
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/react/jsx-dev-runtime.js [client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$PackageCard$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/src/components/PackageCard.tsx [client] (ecmascript)");
+;
+;
+function PackagesGrid({ paquetes, onBuy }) {
+    return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+        className: "row g-4",
+        children: paquetes.map((p)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                className: "col-12 col-md-4",
+                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$PackageCard$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["default"], {
+                    pkg: p,
+                    onBuy: ()=>onBuy(p.id)
+                }, void 0, false, {
+                    fileName: "[project]/src/components/PackagesGrid.tsx",
+                    lineNumber: 15,
+                    columnNumber: 11
+                }, this)
+            }, p.id, false, {
+                fileName: "[project]/src/components/PackagesGrid.tsx",
+                lineNumber: 14,
+                columnNumber: 9
+            }, this))
+    }, void 0, false, {
+        fileName: "[project]/src/components/PackagesGrid.tsx",
+        lineNumber: 12,
+        columnNumber: 5
+    }, this);
+}
+_c = PackagesGrid;
+var _c;
+__turbopack_context__.k.register(_c, "PackagesGrid");
+if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelpers !== null) {
+    __turbopack_context__.k.registerExports(module, globalThis.$RefreshHelpers$);
+}
+}}),
 "[project]/src/components/dashboard/PackagesSection.tsx [client] (ecmascript)": ((__turbopack_context__) => {
 "use strict";
 
 var { g: global, __dirname, k: __turbopack_refresh__, m: module } = __turbopack_context__;
 {
-// src/components/dashboard/PackagesSection.jsx
 __turbopack_context__.s({
     "default": (()=>PackagesSection)
 });
@@ -1246,11 +1289,11 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2d$auth
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/react/index.js [client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$stripe$2f$stripe$2d$js$2f$lib$2f$index$2e$mjs__$5b$client$5d$__$28$ecmascript$29$__$3c$module__evaluation$3e$__ = __turbopack_context__.i("[project]/node_modules/@stripe/stripe-js/lib/index.mjs [client] (ecmascript) <module evaluation>");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$stripe$2f$stripe$2d$js$2f$dist$2f$index$2e$mjs__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/@stripe/stripe-js/dist/index.mjs [client] (ecmascript)");
-var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$PackageCard$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/src/components/PackageCard.tsx [client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$PackagesGrid$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/src/components/PackagesGrid.tsx [client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$image$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/image.js [client] (ecmascript)");
 ;
 var _s = __turbopack_context__.k.signature();
-"use client";
+'use client';
 ;
 ;
 ;
@@ -1265,11 +1308,11 @@ function PackagesSection() {
     const [loading, setLoading] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(true);
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useEffect"])({
         "PackagesSection.useEffect": ()=>{
-            fetch("/api/user/packages").then({
+            fetch('/api/user/packages').then({
                 "PackagesSection.useEffect": (r)=>r.json()
             }["PackagesSection.useEffect"]).then({
                 "PackagesSection.useEffect": (data)=>{
-                    setPkgs(data.packages || []); // Asegúrate de que sea un array
+                    setPkgs(data.packages ?? []);
                     setLoading(false);
                 }
             }["PackagesSection.useEffect"]).catch({
@@ -1284,7 +1327,7 @@ function PackagesSection() {
         children: "Cargando paquetes…"
     }, void 0, false, {
         fileName: "[project]/src/components/dashboard/PackagesSection.tsx",
-        lineNumber: 28,
+        lineNumber: 35,
         columnNumber: 23
     }, this);
     if (pkgs.length === 0) {
@@ -1298,61 +1341,38 @@ function PackagesSection() {
                     height: 200
                 }, void 0, false, {
                     fileName: "[project]/src/components/dashboard/PackagesSection.tsx",
-                    lineNumber: 33,
+                    lineNumber: 40,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                     children: "No tienes paquetes vigentes."
                 }, void 0, false, {
                     fileName: "[project]/src/components/dashboard/PackagesSection.tsx",
-                    lineNumber: 39,
+                    lineNumber: 46,
                     columnNumber: 9
                 }, this),
-                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("a", {
-                    href: "/comprar-paquete",
+                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                    onClick: ()=>window.history.pushState({}, '', '/dashboard?tab=mis-paquetes'),
                     className: "btn btn-orange",
                     children: "Comprar paquete"
                 }, void 0, false, {
                     fileName: "[project]/src/components/dashboard/PackagesSection.tsx",
-                    lineNumber: 40,
+                    lineNumber: 47,
                     columnNumber: 9
                 }, this)
             ]
         }, void 0, true, {
             fileName: "[project]/src/components/dashboard/PackagesSection.tsx",
-            lineNumber: 32,
+            lineNumber: 39,
             columnNumber: 7
         }, this);
     }
-    return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-        className: "row g-4",
-        children: pkgs.map((p)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                className: "col-md-4",
-                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$PackageCard$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["default"], {
-                    pkg: p,
-                    onBuy: ()=>handleBuy(p.id)
-                }, void 0, false, {
-                    fileName: "[project]/src/components/dashboard/PackagesSection.tsx",
-                    lineNumber: 54,
-                    columnNumber: 11
-                }, this)
-            }, p.id, false, {
-                fileName: "[project]/src/components/dashboard/PackagesSection.tsx",
-                lineNumber: 53,
-                columnNumber: 9
-            }, this))
-    }, void 0, false, {
-        fileName: "[project]/src/components/dashboard/PackagesSection.tsx",
-        lineNumber: 51,
-        columnNumber: 5
-    }, this);
-    "TURBOPACK unreachable";
-    async function handleBuy(packageId) {
+    const handleBuy = async (packageId)=>{
         const stripe = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$stripe$2f$stripe$2d$js$2f$dist$2f$index$2e$mjs__$5b$client$5d$__$28$ecmascript$29$__["loadStripe"])(("TURBOPACK compile-time value", "pk_test_51RGO86FV5ZpZiouC9XFmHRhzP2YgU5u0QaUAJLOIZKY4DVnquGnWVcpSMKpQPFvml1gJnWjwVh6JNWwrwF0mZPeV00Jlsbblzq"));
-        const res = await fetch("/api/stripe/checkout", {
-            method: "POST",
+        const res = await fetch('/api/stripe/checkout', {
+            method: 'POST',
             headers: {
-                "Content-Type": "application/json"
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify({
                 packageId
@@ -1362,7 +1382,15 @@ function PackagesSection() {
         stripe?.redirectToCheckout({
             sessionId
         });
-    }
+    };
+    return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$PackagesGrid$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["default"], {
+        paquetes: pkgs,
+        onBuy: handleBuy
+    }, void 0, false, {
+        fileName: "[project]/src/components/dashboard/PackagesSection.tsx",
+        lineNumber: 68,
+        columnNumber: 10
+    }, this);
 }
 _s(PackagesSection, "olCfwopHRKdhurQOiXfHY79jG7w=", false, function() {
     return [
@@ -1442,7 +1470,6 @@ if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelper
 
 var { g: global, __dirname, k: __turbopack_refresh__, m: module } = __turbopack_context__;
 {
-// src/components/ReservasForm.tsx
 __turbopack_context__.s({
     "default": (()=>ReservasForm)
 });
@@ -1462,7 +1489,7 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$stripe$2f$
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$stripe$2f$stripe$2d$js$2f$dist$2f$index$2e$mjs__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/@stripe/stripe-js/dist/index.mjs [client] (ecmascript)");
 ;
 var _s = __turbopack_context__.k.signature();
-"use client";
+'use client';
 ;
 ;
 ;
@@ -1470,100 +1497,52 @@ var _s = __turbopack_context__.k.signature();
 ;
 ;
 ;
-// Todos los servicios con su priceId
 const servicios = [
     {
-        slug: "agua",
-        label: "Estimulación en agua",
-        priceId: "price_1RJd0OFV5ZpZiouCasDGf28F"
-    },
-    {
-        slug: "piso",
-        label: "Estimulación en piso",
-        priceId: "price_1RJd1jFV5ZpZiouC1xXvllVc"
-    },
-    {
-        slug: "quiropractica",
-        label: "Quiropráctica",
-        priceId: "price_1RJd2fFV5ZpZiouCsaJNkUTO"
-    },
-    {
-        slug: "fisioterapia",
-        label: "Fisioterapia",
-        priceId: "price_1RJd3WFV5ZpZiouC9PDzHjKU"
-    },
-    {
-        slug: "masajes",
-        label: "Masajes",
-        priceId: "price_1RJd4JFV5ZpZiouCPjcpX3Xn"
-    },
-    {
-        slug: "cosmetologia",
-        label: "Cosmetología",
-        priceId: "price_1RJd57FV5ZpZiouCpcrKNvJV"
-    },
-    {
-        slug: "prevencion-lesiones",
-        label: "Prevención de lesiones",
-        priceId: "price_1RJd57FV5ZpZiouCpcrKNvJV"
-    },
-    {
-        slug: "preparacion-fisica",
-        label: "Preparación física",
-        priceId: "price_1RJd6EFV5ZpZiouCYwD4J3I8"
-    },
-    {
-        slug: "nutricion",
-        label: "Nutrición",
-        priceId: "price_1RJd7qFV5ZpZiouCbj6HrFJF"
-    },
-    {
-        slug: "medicina-rehabilitacion",
-        label: "Medicina en rehabilitación",
-        priceId: "price_1RJd9HFV5ZpZiouClVlCujAm"
+        slug: 'agua',
+        label: 'Estimulación en agua',
+        priceId: 'price_1RJd0OFV5ZpZiouCasDGf28F'
     }
 ];
-// Terapeutas disponibles
 const terapeutas = [
-    "Jesús Ramírez",
-    "Miguel Ramírez",
-    "Alitzel Pacheco",
-    "Francia",
-    "Gisela"
+    'Jesús Ramírez',
+    'Miguel Ramírez',
+    'Alitzel Pacheco',
+    'Francia',
+    'Gisela'
 ];
 function ReservasForm() {
     _s();
     const { data: session, status } = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2d$auth$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useSession"])();
     const router = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$navigation$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useRouter"])();
-    const [servicio, setServicio] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])("");
-    const [terapeuta, setTerapeuta] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])("");
+    const [servicio, setServicio] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])('');
+    const [terapeuta, setTerapeuta] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])('');
     const [fecha, setFecha] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(null);
     const [horario, setHorario] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(null);
-    const [error, setError] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])("");
-    // Redirigir si no está autenticado
+    const [error, setError] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])('');
+    // redirige si no autenticado
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useEffect"])({
         "ReservasForm.useEffect": ()=>{
-            if (status === "unauthenticated") {
-                router.replace("/login");
-            }
+            if (status === 'unauthenticated') router.replace('/login');
         }
     }["ReservasForm.useEffect"], [
         status,
         router
     ]);
-    // Manejar envío del formulario
     const handleSubmit = async (e)=>{
         e.preventDefault();
         if (!servicio || !terapeuta || !fecha || horario === null) {
-            setError("Completa todos los campos");
+            setError('Completa todos los campos');
             return;
         }
         const svc = servicios.find((s)=>s.slug === servicio);
-        if (!svc) {
-            setError("Servicio inválido");
+        // filtro de horas pasadas si hoy
+        const now = new Date();
+        if (fecha.toDateString() === now.toDateString() && horario <= now.getHours()) {
+            setError('Selecciona una hora futura');
             return;
         }
-        // Preparamos el body para Stripe
+        // Checkout Stripe
         const stripeBody = {
             userId: session?.user?.id,
             lineItems: [
@@ -1579,38 +1558,33 @@ function ReservasForm() {
                 hour: `${horario}:00`
             }
         };
-        // Llamada a nuestra API de checkout
-        const response = await fetch("/api/stripe/checkout", {
-            method: "POST",
+        const response = await fetch('/api/stripe/checkout', {
+            method: 'POST',
             headers: {
-                "Content-Type": "application/json"
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify(stripeBody)
         });
         const { sessionId } = await response.json();
-        // Redirigir al checkout de Stripe
         const stripe = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$stripe$2f$stripe$2d$js$2f$dist$2f$index$2e$mjs__$5b$client$5d$__$28$ecmascript$29$__["loadStripe"])(("TURBOPACK compile-time value", "pk_test_51RGO86FV5ZpZiouC9XFmHRhzP2YgU5u0QaUAJLOIZKY4DVnquGnWVcpSMKpQPFvml1gJnWjwVh6JNWwrwF0mZPeV00Jlsbblzq"));
-        await stripe?.redirectToCheckout({
+        stripe?.redirectToCheckout({
             sessionId
         });
     };
-    // Horarios: lunes–viernes 10–18 (9 slots), sábados 9–14 (6 slots)
     const horasSemana = Array.from({
         length: 9
     }, (_, i)=>10 + i);
     const horasSabado = Array.from({
         length: 6
     }, (_, i)=>9 + i);
-    if (status === "loading" || !session) {
-        return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$bootstrap$2f$esm$2f$Container$2e$js__$5b$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Container$3e$__["Container"], {
-            className: "py-5 text-center",
-            children: "Cargando…"
-        }, void 0, false, {
-            fileName: "[project]/src/components/ReservasForm.tsx",
-            lineNumber: 97,
-            columnNumber: 12
-        }, this);
-    }
+    if (status === 'loading' || !session) return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$bootstrap$2f$esm$2f$Container$2e$js__$5b$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Container$3e$__["Container"], {
+        className: "py-5 text-center",
+        children: "Cargando…"
+    }, void 0, false, {
+        fileName: "[project]/src/components/ReservasForm.tsx",
+        lineNumber: 74,
+        columnNumber: 12
+    }, this);
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$bootstrap$2f$esm$2f$Container$2e$js__$5b$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Container$3e$__["Container"], {
         className: "py-5 dashboard-container",
         children: [
@@ -1619,7 +1593,7 @@ function ReservasForm() {
                 children: "Reservar cita"
             }, void 0, false, {
                 fileName: "[project]/src/components/ReservasForm.tsx",
-                lineNumber: 102,
+                lineNumber: 78,
                 columnNumber: 7
             }, this),
             error && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$bootstrap$2f$esm$2f$Alert$2e$js__$5b$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Alert$3e$__["Alert"], {
@@ -1627,14 +1601,14 @@ function ReservasForm() {
                 children: error
             }, void 0, false, {
                 fileName: "[project]/src/components/ReservasForm.tsx",
-                lineNumber: 103,
+                lineNumber: 79,
                 columnNumber: 17
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$bootstrap$2f$esm$2f$Form$2e$js__$5b$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Form$3e$__["Form"], {
                 onSubmit: handleSubmit,
                 style: {
                     maxWidth: 600,
-                    margin: "0 auto"
+                    margin: '0 auto'
                 },
                 children: [
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$bootstrap$2f$esm$2f$Form$2e$js__$5b$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Form$3e$__["Form"].Group, {
@@ -1644,7 +1618,7 @@ function ReservasForm() {
                                 children: "Servicio"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/ReservasForm.tsx",
-                                lineNumber: 108,
+                                lineNumber: 83,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$bootstrap$2f$esm$2f$Form$2e$js__$5b$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Form$3e$__["Form"].Select, {
@@ -1661,7 +1635,7 @@ function ReservasForm() {
                                         children: "Selecciona un servicio"
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/ReservasForm.tsx",
-                                        lineNumber: 118,
+                                        lineNumber: 93,
                                         columnNumber: 13
                                     }, this),
                                     servicios.map((s)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -1669,19 +1643,19 @@ function ReservasForm() {
                                             children: s.label
                                         }, s.slug, false, {
                                             fileName: "[project]/src/components/ReservasForm.tsx",
-                                            lineNumber: 120,
+                                            lineNumber: 95,
                                             columnNumber: 15
                                         }, this))
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/ReservasForm.tsx",
-                                lineNumber: 109,
+                                lineNumber: 84,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/ReservasForm.tsx",
-                        lineNumber: 107,
+                        lineNumber: 82,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$bootstrap$2f$esm$2f$Form$2e$js__$5b$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Form$3e$__["Form"].Group, {
@@ -1691,7 +1665,7 @@ function ReservasForm() {
                                 children: "Terapeuta"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/ReservasForm.tsx",
-                                lineNumber: 129,
+                                lineNumber: 103,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$bootstrap$2f$esm$2f$Form$2e$js__$5b$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Form$3e$__["Form"].Select, {
@@ -1708,7 +1682,7 @@ function ReservasForm() {
                                         children: "Selecciona un terapeuta"
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/ReservasForm.tsx",
-                                        lineNumber: 139,
+                                        lineNumber: 113,
                                         columnNumber: 13
                                     }, this),
                                     terapeutas.map((t)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -1716,19 +1690,19 @@ function ReservasForm() {
                                             children: t
                                         }, t, false, {
                                             fileName: "[project]/src/components/ReservasForm.tsx",
-                                            lineNumber: 141,
+                                            lineNumber: 115,
                                             columnNumber: 15
                                         }, this))
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/ReservasForm.tsx",
-                                lineNumber: 130,
+                                lineNumber: 104,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/ReservasForm.tsx",
-                        lineNumber: 128,
+                        lineNumber: 102,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$bootstrap$2f$esm$2f$Form$2e$js__$5b$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Form$3e$__["Form"].Group, {
@@ -1738,7 +1712,7 @@ function ReservasForm() {
                                 children: "Fecha"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/ReservasForm.tsx",
-                                lineNumber: 150,
+                                lineNumber: 123,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$calendar$2f$dist$2f$esm$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__$3c$locals$3e$__["default"], {
@@ -1749,13 +1723,13 @@ function ReservasForm() {
                                 className: "mb-3"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/ReservasForm.tsx",
-                                lineNumber: 151,
+                                lineNumber: 124,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/ReservasForm.tsx",
-                        lineNumber: 149,
+                        lineNumber: 122,
                         columnNumber: 9
                     }, this),
                     fecha && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$bootstrap$2f$esm$2f$Form$2e$js__$5b$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Form$3e$__["Form"].Group, {
@@ -1765,7 +1739,7 @@ function ReservasForm() {
                                 children: "Hora"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/ReservasForm.tsx",
-                                lineNumber: 163,
+                                lineNumber: 135,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$bootstrap$2f$esm$2f$Row$2e$js__$5b$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Row$3e$__["Row"], {
@@ -1774,7 +1748,7 @@ function ReservasForm() {
                                         md: 3,
                                         children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$bootstrap$2f$esm$2f$Button$2e$js__$5b$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Button$3e$__["Button"], {
                                             variant: "outline-primary",
-                                            className: `w-100 slot-btn ${horario === h ? "selected" : ""}`,
+                                            className: `w-100 slot-btn ${horario === h ? 'selected' : ''}`,
                                             onClick: ()=>setHorario(h),
                                             type: "button",
                                             children: [
@@ -1783,23 +1757,23 @@ function ReservasForm() {
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/components/ReservasForm.tsx",
-                                            lineNumber: 167,
+                                            lineNumber: 141,
                                             columnNumber: 19
                                         }, this)
                                     }, h, false, {
                                         fileName: "[project]/src/components/ReservasForm.tsx",
-                                        lineNumber: 166,
+                                        lineNumber: 140,
                                         columnNumber: 17
                                     }, this))
                             }, void 0, false, {
                                 fileName: "[project]/src/components/ReservasForm.tsx",
-                                lineNumber: 164,
+                                lineNumber: 136,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/ReservasForm.tsx",
-                        lineNumber: 162,
+                        lineNumber: 134,
                         columnNumber: 11
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$bootstrap$2f$esm$2f$Button$2e$js__$5b$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Button$3e$__["Button"], {
@@ -1808,23 +1782,23 @@ function ReservasForm() {
                         children: "Confirmar y pagar"
                     }, void 0, false, {
                         fileName: "[project]/src/components/ReservasForm.tsx",
-                        lineNumber: 181,
+                        lineNumber: 156,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/components/ReservasForm.tsx",
-                lineNumber: 105,
+                lineNumber: 80,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/src/components/ReservasForm.tsx",
-        lineNumber: 101,
+        lineNumber: 77,
         columnNumber: 5
     }, this);
 }
-_s(ReservasForm, "E0ca7wVaVdQxDeU/5o3Q16b6/UM=", false, function() {
+_s(ReservasForm, "1VxKPmH0Z1ybE3J5z7yK6gDGEy4=", false, function() {
     return [
         __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2d$auth$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useSession"],
         __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$navigation$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useRouter"]
@@ -2109,4 +2083,4 @@ __turbopack_context__.r("[next]/entry/page-loader.ts { PAGE => \"[project]/src/p
 }}),
 }]);
 
-//# sourceMappingURL=%5Broot-of-the-server%5D__7bb4dcfe._.js.map
+//# sourceMappingURL=%5Broot-of-the-server%5D__2bde1d6b._.js.map
