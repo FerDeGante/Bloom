@@ -1,11 +1,22 @@
 // src/components/BookingForm.jsx
 "use client";
+
 import { useState, useEffect } from "react";
 import { loadStripe } from "@stripe/stripe-js";
 
-const stripePromise = loadStripe(
-  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
-);
+let stripePromise = null;
+function getStripe() {
+  if (!stripePromise) {
+    const pk = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
+    if (!pk) {
+      throw new Error(
+        "Falta la variable de entorno NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY"
+      );
+    }
+    stripePromise = loadStripe(pk);
+  }
+  return stripePromise;
+}
 
 export default function BookingForm({ serviceId }) {
   const [date, setDate] = useState("");
@@ -15,36 +26,56 @@ export default function BookingForm({ serviceId }) {
     email: "",
     phone: "",
   });
+  const [loading, setLoading] = useState(false);
 
+  // Carga los slots al cambiar la fecha
   useEffect(() => {
-    if (!date) return;
+    if (!date) {
+      setSlots([]);
+      return;
+    }
     fetch(`/api/easy?service_id=${serviceId}&date=${date}`)
       .then((r) => r.json())
-      .then(setSlots);
+      .then(setSlots)
+      .catch((err) => {
+        console.error("Error al cargar slots:", err);
+        setSlots([]);
+      });
   }, [date, serviceId]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const slot_id = e.target.slot.value;
-    const stripe = await stripePromise;
-    const res = await fetch("/api/stripe/checkout", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        service_id: serviceId,
-        slot_id,
-        date,
-        customer,
-      }),
-    });
-    const { sessionId } = await res.json();
-    const { error } = await stripe.redirectToCheckout({ sessionId });
-    if (error) alert(error.message);
+    setLoading(true);
+    try {
+      const slot_id = e.target.slot.value;
+      const stripe = await getStripe();
+
+      const res = await fetch("/api/stripe/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          service_id: serviceId,
+          slot_id,
+          date,
+          customer,
+        }),
+      });
+      if (!res.ok) throw new Error("Error creando sesión de pago");
+      const { sessionId } = await res.json();
+
+      const { error } = await stripe.redirectToCheckout({ sessionId });
+      if (error) throw error;
+    } catch (err) {
+      console.error(err);
+      alert(err.message || "Error al redirigir al pago");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <form onSubmit={handleSubmit} className="card p-4">
-      <label>Fecha</label>
+      <label className="form-label">Fecha</label>
       <input
         type="date"
         className="form-control mb-3"
@@ -55,6 +86,7 @@ export default function BookingForm({ serviceId }) {
 
       {slots.length > 0 && (
         <select name="slot" className="form-select mb-3" required>
+          <option value="">Selecciona un horario</option>
           {slots.map((s) => (
             <option key={s.id} value={s.id}>
               {s.start_time} – {s.end_time}
@@ -63,11 +95,11 @@ export default function BookingForm({ serviceId }) {
         </select>
       )}
 
-      <h5>Datos personales</h5>
+      <h5 className="mt-4">Datos personales</h5>
       <input
         type="text"
         className="form-control mb-2"
-        placeholder="Nombre"
+        placeholder="Nombre completo"
         value={customer.name}
         onChange={(e) =>
           setCustomer({ ...customer, name: e.target.value })
@@ -77,7 +109,7 @@ export default function BookingForm({ serviceId }) {
       <input
         type="email"
         className="form-control mb-2"
-        placeholder="Email"
+        placeholder="Correo electrónico"
         value={customer.email}
         onChange={(e) =>
           setCustomer({ ...customer, email: e.target.value })
@@ -86,7 +118,7 @@ export default function BookingForm({ serviceId }) {
       />
       <input
         type="tel"
-        className="form-control mb-2"
+        className="form-control mb-3"
         placeholder="Teléfono"
         value={customer.phone}
         onChange={(e) =>
@@ -95,8 +127,12 @@ export default function BookingForm({ serviceId }) {
         required
       />
 
-      <button type="submit" className="btn btn-warning mt-3">
-        Pagar y Agendar
+      <button
+        type="submit"
+        className="btn btn-warning mt-3"
+        disabled={loading}
+      >
+        {loading ? "Procesando…" : "Pagar y Agendar"}
       </button>
     </form>
   );
