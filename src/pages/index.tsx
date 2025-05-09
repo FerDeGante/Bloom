@@ -33,22 +33,20 @@ const Home: NextPage = () => {
       <Navbar />
 
       {/* Hero */}
-      <header className="hero">
-       
+      <header className="hero d-flex align-items-center justify-content-center">
+        {/* Puedes colocar aquí un overlay o texto adicional */}
       </header>
 
       {/* Sub-hero con copy */}
       <section id="subhero" className="subhero text-center py-5">
-        <h2 className="fw-bold">Aumenta la calidad de vida en tu familia</h2>
-        <p className="lead">
+        <h2 className="fw-bold mb-3">Aumenta la calidad de vida en tu familia</h2>
+        <p className="lead mb-4">
           Reserva tu sesión de fisioterapia de forma fácil y segura.
-        <div className="mt-4">
-          <a href="#subhero" className="btn-hero" onClick={handleHero}>
-            <span>Agendar tu cita</span>
-            <span className="underline" />
-          </a>
-        </div>
         </p>
+        <button onClick={handleHero} className="btn-hero">
+          Agendar tu cita
+          <span className="underline" />
+        </button>
       </section>
 
       <NuestrosServicios />
