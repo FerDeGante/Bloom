@@ -1,7 +1,7 @@
 // prisma/schema.prisma
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -10,19 +10,19 @@ generator client {
 }
 
 model User {
- id        String        @id @default(cuid())
-  email     String        @unique
-  name      String?
-  password  String
-  role      String        @default("CLIENTE")
+  id           String        @id @default(cuid())
+  email        String        @unique
+  name         String?
+  password     String
+  role         String        @default("CLIENTE")
 
-  // Tus relaciones de negocio
+  // relaciones de tu app
   reservations Reservation[]
   packages     UserPackage[]
 
-  // Relaciones que NextAuth / Prisma Adapter necesita
-  accounts Account[]
-  sessions Session[]
+  // NextAuth
+  accounts     Account[]
+  sessions     Session[]
 }
 
 model Service {
@@ -38,38 +38,37 @@ model Therapist {
 }
 
 model Reservation {
-  id          String   @id @default(cuid())
+  id          String    @id @default(cuid())
   userId      String
   serviceId   String
   therapistId String
   date        DateTime
 
-  user      User      @relation(fields: [userId], references: [id])
-  service   Service   @relation(fields: [serviceId], references: [id])
-  therapist Therapist @relation(fields: [therapistId], references: [id])
+  user        User      @relation(fields: [userId], references: [id])
+  service     Service   @relation(fields: [serviceId], references: [id])
+  therapist   Therapist @relation(fields: [therapistId], references: [id])
 }
 
 model Package {
-  id          String @id @default(cuid())
-  name        String
-  sessions    Int
-  price       Int
-  inscription Int
+  id           String        @id @default(cuid())
+  name         String
+  sessions     Int
+  price        Int
+  inscription  Int
 
   userPackages UserPackage[]
 }
 
 model UserPackage {
-  id     String @id @default(cuid())
+  id     String  @id @default(cuid())
   userId String
   pkgId  String
 
-  user User    @relation(fields: [userId], references: [id])
-  pkg  Package @relation(fields: [pkgId], references: [id])
+  user    User    @relation(fields: [userId], references: [id])
+  pkg     Package @relation(fields: [pkgId], references: [id])
 }
 
-/// Modelos requeridos por NextAuth (Prisma Adapter)
-
+/// NextAuth
 model Account {
   id                String  @id @default(cuid())
   userId            String
