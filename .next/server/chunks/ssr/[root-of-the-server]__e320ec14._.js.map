@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 23, "column": 0}, "map": {"version":3,"sources":["file:///Users/ferdegante/Documents/Proyectos/Bloom/src/pages/_app.tsx"],"sourcesContent":["import '../styles/globals.css';\nimport 'bootstrap/dist/css/bootstrap.min.css';\nimport type { AppProps } from 'next/app';\nimport { SessionProvider } from 'next-auth/react';\n\nexport default function MyApp({\n  Component,\n  pageProps: { session, ...pageProps },\n}: AppProps) {\n  return (\n    <SessionProvider session={session}>\n      <Component {...pageProps} />\n    </SessionProvider>\n  );\n}\n"],"names":[],"mappings":";;;;AAGA;;;;;AAEe,SAAS,MAAM,EAC5B,SAAS,EACT,WAAW,EAAE,OAAO,EAAE,GAAG,WAAW,EAC3B;IACT,qBACE,qKAAC,mIAAA,CAAA,kBAAe;QAAC,SAAS;kBACxB,cAAA,qKAAC;YAAW,GAAG,SAAS;;;;;;;;;;;AAG9B","debugId":null}}]
+}

@@ -1,22 +1,39 @@
 globalThis.__BUILD_MANIFEST = {
   "pages": {
-    "/_app": []
+    "/_app": [
+      "static/chunks/node_modules_next_dist_f1d2d383._.js",
+      "static/chunks/node_modules_react-dom_82bb97c6._.js",
+      "static/chunks/node_modules_8764e743._.js",
+      "static/chunks/[root-of-the-server]__659f318b._.js",
+      "static/chunks/_089efdbb._.css",
+      "static/chunks/src_pages__app_5771e187._.js",
+      "static/chunks/src_pages__app_2cd1f8d8._.js"
+    ],
+    "/dashboard": [
+      "static/chunks/[root-of-the-server]__7bb4dcfe._.js",
+      "static/chunks/node_modules_next_dist_compiled_20fcc6eb._.js",
+      "static/chunks/node_modules_next_dist_shared_lib_5dcd69ab._.js",
+      "static/chunks/node_modules_next_dist_client_f131196d._.js",
+      "static/chunks/node_modules_next_dist_55f53007._.js",
+      "static/chunks/node_modules_next_81c3cf81._.js",
+      "static/chunks/node_modules_react-dom_82bb97c6._.js",
+      "static/chunks/node_modules_@restart_ui_esm_129b8ff6._.js",
+      "static/chunks/node_modules_react-bootstrap_esm_6d43e161._.js",
+      "static/chunks/node_modules_@popperjs_core_lib_156e6239._.js",
+      "static/chunks/node_modules_react-icons_fa_index_mjs_bad01e3f._.js",
+      "static/chunks/node_modules_react-icons_lib_75a63dfe._.js",
+      "static/chunks/node_modules_react-calendar_dist_esm_3513275e._.js",
+      "static/chunks/node_modules_42e3275a._.js",
+      "static/chunks/node_modules_react-calendar_dist_Calendar_4b142295.css",
+      "static/chunks/src_pages_dashboard_index_tsx_5771e187._.js",
+      "static/chunks/src_pages_dashboard_index_tsx_4130455b._.js"
+    ]
   },
   "devFiles": [],
   "ampDevFiles": [],
-  "polyfillFiles": [
-    "static/chunks/node_modules_next_dist_build_polyfills_polyfill-nomodule.js"
-  ],
+  "polyfillFiles": [],
   "lowPriorityFiles": [],
-  "rootMainFiles": [
-    "static/chunks/[turbopack]_browser_dev_hmr-client_hmr-client_ts_fd44f5a4._.js",
-    "static/chunks/node_modules_next_dist_compiled_2ce9398a._.js",
-    "static/chunks/node_modules_next_dist_client_8f19e6fb._.js",
-    "static/chunks/node_modules_next_dist_2ecbf5fa._.js",
-    "static/chunks/node_modules_@swc_helpers_cjs_00636ac3._.js",
-    "static/chunks/_e69f0d32._.js",
-    "static/chunks/_93808211._.js"
-  ],
+  "rootMainFiles": [],
   "ampFirstPages": []
 };
 globalThis.__BUILD_MANIFEST.lowPriorityFiles = [
