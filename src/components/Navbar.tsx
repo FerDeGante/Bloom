@@ -1,3 +1,4 @@
+// src/components/Navbar.tsx
 "use client";
 
 import { useEffect, useState } from "react";
@@ -6,13 +7,7 @@ import Image from "next/image";
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Navbar as BSNavbar, Nav, Container, NavDropdown } from "react-bootstrap";
-import {
-  FaInfoCircle,
-  FaCalendarAlt,
-  FaServicestack,
-  FaSignInAlt,
-  FaUser,
-} from "react-icons/fa";
+import { FaInfoCircle, FaCalendarAlt, FaSignInAlt, FaUser } from "react-icons/fa";
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -25,10 +20,14 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const go = (path, tab) => {
+  // path siempre string, tab opcionalmente string
+  const go = (path: string, tab?: string): void => {
     if (session) {
-      if (tab) router.push(`/dashboard?tab=${tab}`);
-      else router.push(path);
+      if (tab) {
+        router.push(`/dashboard?tab=${encodeURIComponent(tab)}`);
+      } else {
+        router.push(path);
+      }
     } else {
       router.push("/login");
     }
@@ -38,15 +37,15 @@ export default function Navbar() {
     <BSNavbar
       sticky="top"
       expand="lg"
-      className={`navbar-base py-2 ${scrolled ? "navbar-scrolled" : ""}`}
+      className={scrolled ? "navbar-scrolled" : "navbar-base"}
     >
       <Container>
-        <Link href="/" className="navbar-brand d-flex align-items-center">
+        <Link href="/" className="navbar-brand d-flex align-items-center gap-2">
           <Image
             src="/images/logo_bloom_white.png"
             alt="Bloom Fisio"
             width={150}
-            height={40}
+            height={150}
             className="logo-img"
             priority
           />
@@ -54,62 +53,46 @@ export default function Navbar() {
 
         <BSNavbar.Toggle aria-controls="navbar-nav" />
         <BSNavbar.Collapse id="navbar-nav">
-          <Nav className="ms-auto align-items-center">
-            <Link href="/nosotros" className="nav-link">
+          <Nav className="ms-auto gap-3 align-items-center">
+            <button
+              type="button"
+              className="nav-link btn btn-link d-flex align-items-center"
+              onClick={() => go("/", "reservar")}
+            >
+              <FaCalendarAlt className="me-1" /> Agendar
+            </button>
+
+            <Link href="/nosotros" className="nav-link d-flex align-items-center">
               <FaInfoCircle className="me-1" /> Nosotros
             </Link>
 
-            <a
-              className="nav-link"
-              style={{ cursor: "pointer" }}
-              onClick={() => go("/dashboard", "reservar")}
-            >
-              <FaCalendarAlt className="me-1" /> Agendar
-            </a>
-
-            <NavDropdown
-              title={<span><FaServicestack className="me-1" /> Servicios</span>}
-              id="servicios-dd"
-              align="end"
-              menuVariant="dark"
-            >
-              {[
-                ["agua", "Estimulación en agua"],
-                ["piso", "Estimulación en piso"],
-                ["quiropráctica", "Quiropráctica"],
-                ["fisioterapia", "Fisioterapia"],
-                ["masajes", "Masajes"],
-                ["cosmetología", "Cosmetología"],
-                ["prevencion-lesiones", "Prevención de lesiones"],
-                ["preparacion-fisica", "Preparación física"],
-                ["nutricion", "Nutrición"],
-                ["medicina-rehabilitacion", "Medicina en rehabilitación"],
-              ].map(([key, label]) => (
-                <a
-                  key={key}
-                  className="dropdown-item"
-                  onClick={() => go("/dashboard", "reservar")}
-                >
-                  {label}
-                </a>
-              ))}
-            </NavDropdown>
-
-            {!session ? (
-              <Link href="/login" className="nav-link">
+            {!session && (
+              <Link href="/login" className="nav-link d-flex align-items-center">
                 <FaSignInAlt className="me-1" /> Iniciar sesión
               </Link>
-            ) : (
+            )}
+
+            {session && (
               <NavDropdown
-                title={<span><FaUser className="me-1" /> {session.user.name}</span>}
+                title={
+                  <span className="d-flex align-items-center">
+                    <FaUser className="me-1" /> {session.user?.name}
+                  </span>
+                }
                 id="user-dd"
                 align="end"
-                menuVariant="dark"
+                menuVariant="light"
+                className="nav-link"
               >
-                <a className="dropdown-item" onClick={() => go("/dashboard")}>
-                  Mi dashboard
-                </a>
                 <button
+                  type="button"
+                  className="dropdown-item"
+                  onClick={() => go("/dashboard")}
+                >
+                  Mi Dashboard
+                </button>
+                <button
+                  type="button"
                   className="dropdown-item"
                   onClick={() => signOut({ callbackUrl: "/" })}
                 >
