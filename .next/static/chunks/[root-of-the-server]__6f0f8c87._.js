@@ -561,14 +561,14 @@ function Navbar() {
                                         className: "me-1"
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/Navbar.tsx",
-                                        lineNumber: 56,
+                                        lineNumber: 57,
                                         columnNumber: 15
                                     }, this),
                                     "Agendar"
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/Navbar.tsx",
-                                lineNumber: 51,
+                                lineNumber: 52,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$link$2e$js__$5b$client$5d$__$28$ecmascript$29$__["default"], {
@@ -579,14 +579,14 @@ function Navbar() {
                                         className: "me-1"
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/Navbar.tsx",
-                                        lineNumber: 61,
+                                        lineNumber: 63,
                                         columnNumber: 15
                                     }, this),
                                     "Nosotros"
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/Navbar.tsx",
-                                lineNumber: 60,
+                                lineNumber: 62,
                                 columnNumber: 13
                             }, this),
                             !session && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$link$2e$js__$5b$client$5d$__$28$ecmascript$29$__["default"], {
@@ -597,14 +597,14 @@ function Navbar() {
                                         className: "me-1"
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/Navbar.tsx",
-                                        lineNumber: 67,
+                                        lineNumber: 70,
                                         columnNumber: 17
                                     }, this),
                                     "Iniciar sesión"
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/Navbar.tsx",
-                                lineNumber: 66,
+                                lineNumber: 69,
                                 columnNumber: 15
                             }, this),
                             session && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$bootstrap$2f$esm$2f$NavDropdown$2e$js__$5b$client$5d$__$28$ecmascript$29$__$3c$export__default__as__NavDropdown$3e$__["NavDropdown"], {
@@ -615,14 +615,14 @@ function Navbar() {
                                             className: "me-1"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/Navbar.tsx",
-                                            lineNumber: 76,
+                                            lineNumber: 80,
                                             columnNumber: 21
                                         }, void 0),
                                         session.user?.name
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/Navbar.tsx",
-                                    lineNumber: 75,
+                                    lineNumber: 79,
                                     columnNumber: 19
                                 }, void 0),
                                 id: "user-dd",
@@ -637,7 +637,7 @@ function Navbar() {
                                         children: "Mi Dashboard"
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/Navbar.tsx",
-                                        lineNumber: 85,
+                                        lineNumber: 89,
                                         columnNumber: 17
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -649,13 +649,13 @@ function Navbar() {
                                         children: "Cerrar sesión"
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/Navbar.tsx",
-                                        lineNumber: 92,
+                                        lineNumber: 96,
                                         columnNumber: 17
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/Navbar.tsx",
-                                lineNumber: 73,
+                                lineNumber: 77,
                                 columnNumber: 15
                             }, this)
                         ]

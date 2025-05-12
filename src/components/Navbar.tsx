@@ -48,6 +48,7 @@ export default function Navbar() {
         <BSNavbar.Toggle aria-controls="navbar-nav" />
         <BSNavbar.Collapse id="navbar-nav">
           <Nav className="ms-auto gap-3 align-items-center">
+            {/* Botón Agendar */}
             <button
               type="button"
               className="nav-link btn btn-link d-flex align-items-center"
@@ -57,11 +58,13 @@ export default function Navbar() {
               Agendar
             </button>
 
+            {/* Enlace Nosotros */}
             <Link href="/nosotros" className="nav-link d-flex align-items-center">
               <FaInfoCircle className="me-1" />
               Nosotros
             </Link>
 
+            {/* Enlace Iniciar sesión */}
             {!session && (
               <Link href="/login" className="nav-link d-flex align-items-center">
                 <FaSignInAlt className="me-1" />
@@ -69,6 +72,7 @@ export default function Navbar() {
               </Link>
             )}
 
+            {/* Dropdown para usuarios autenticados */}
             {session && (
               <NavDropdown
                 title={

@@ -1,17 +1,30 @@
+# netlify.toml
+
 [build]
-  # Comando para instalar dependencias
-  install = "npm install"
-
-  # Comando para compilar tu Next.js
+  # comando para instalar deps (opcional, Netlify ya corre `npm install` por defecto)
+  install = "npm ci"
+  # tu build script de Next.js
   command = "npm run build"
-
-  # Directorio que Netlify publicará
+  # carpeta que publica el plugin-nextjs
   publish = ".next"
 
 [context.production.environment]
-  # Aquí defines variables de entorno si quieres
-  STRIPE_SECRET = "sk_live_xxx"
-  EA_KEY        = "tu_api_key_easy_appointments"
+  # Prisma / Neon
+  DATABASE_URL                         = "postgresql://neondb_owner:npg_DBUat0C7vnfz@ep-little-moon-a460redc-pooler.us-east-1.aws.neon.tech/neondb?pgbouncer=true&sslmode=require"
 
-  [[plugins]]
+  # NextAuth
+  NEXTAUTH_URL                         = "https://bloom-fisio.netlify.app"
+  NEXTAUTH_SECRET                      = "tu_secreto_de_32_caracteres"
+
+  # Stripe
+  NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY   = "pk_test_51RGO86FV5ZpZiouC9XFmHRhzP2YgU5u0QaUAJLOIZKY4DVnquGnWVcpSMKpQPFvml1gJnWjwVh6JNWwrwF0mZPeV00Jlsbblzq"
+  STRIPE_SECRET                        = "sk_test_51RGO86FV5ZpZiouCyuhrfVmzxRr5DlgTYTNOzMysSy33FAuPpPEyTaUjEZGj96xD0e9xSroSI1wudMqlhSSCoS2p00jpmZgS3a"
+
+  # Tu URL pública (si la usas en algún helper)
+  NEXT_PUBLIC_APP_BASE                 = "https://bloom-fisio.netlify.app"
+
+
+
+# ¡OJO! Este bloque va **al nivel raíz**, no dentro de [context.production.environment]
+[[plugins]]
   package = "@netlify/plugin-nextjs"
