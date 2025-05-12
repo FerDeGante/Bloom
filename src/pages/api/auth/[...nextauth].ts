@@ -1,65 +1,55 @@
-// src/pages/api/auth/[...nextauth].ts
 import NextAuth, { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import prisma from "@/lib/prisma";
 import { compare } from "bcrypt";
 
-// Configuración de NextAuth
 export const authOptions: NextAuthOptions = {
-  adapter: PrismaAdapter(prisma), // Conexión con Prisma
-  secret: process.env.NEXTAUTH_SECRET, // Llave secreta para JWT
+  adapter: PrismaAdapter(prisma),
+  secret: process.env.NEXTAUTH_SECRET,
   session: {
-    strategy: "jwt", // Usar JWT para las sesiones
-    maxAge: 60 * 60 * 24, // 1 día de duración de la sesión
-  },
-  pages: {
-    signIn: "/login", // Página personalizada de inicio de sesión
-    error: "/login", // Página de error
+    strategy: "jwt",
+    maxAge: 60 * 60 * 24,   // 1 día
+    updateAge: 60 * 60,     // refrescar cada hora
   },
   providers: [
     CredentialsProvider({
-      name: "Email",
+      name: "Credenciales",
       credentials: {
         email: { label: "Correo", type: "email" },
         password: { label: "Contraseña", type: "password" },
       },
-      async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) {
-          return null; // Si faltan credenciales, no autorizar
+      async authorize(credentials, req) {
+        const email = credentials?.email;
+        const password = credentials?.password;
+        if (!email || !password) {
+          throw new Error("Correo y contraseña son obligatorios");
         }
 
-        // Buscar usuario en la base de datos
         const user = await prisma.user.findUnique({
-          where: { email: credentials.email },
+          where: { email },
         });
-
-        // Verificar contraseña
-        if (user && (await compare(credentials.password, user.password))) {
-          return user; // Usuario autorizado
+        if (!user) {
+          throw new Error("Usuario no encontrado");
         }
 
-        return null; // Credenciales inválidas
+        const isValid = await compare(password, user.password);
+        if (!isValid) {
+          throw new Error("Contraseña incorrecta");
+        }
+
+        // Devuelve sólo los campos que quieres exponer en session.user
+        return { id: user.id, name: user.name, email: user.email };
       },
     }),
   ],
   callbacks: {
-    // Callback para manejar el token JWT
     async jwt({ token, user }) {
-      if (user) {
-        token.id = user.id; // Agregar ID del usuario al token
-        token.email = user.email; // Agregar email al token
-        token.name = user.name; // Agregar nombre al token
-      }
+      if (user) token.id = (user as any).id;
       return token;
     },
-    // Callback para manejar la sesión
     async session({ session, token }) {
-      if (session.user) {
-        session.user.id = token.id as string; // Agregar ID del usuario a la sesión
-        session.user.email = token.email as string; // Agregar email a la sesión
-        session.user.name = token.name as string; // Agregar nombre a la sesión
-      }
+      if (session.user) session.user.id = token.id as string;
       return session;
     },
   },

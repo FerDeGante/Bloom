@@ -50,10 +50,36 @@ body {
 
 /* Hero + Subhero */
 .hero {
-  min-height: 90vh;
-  background: url('/images/hero_animado.png') center/cover no-repeat;
+  /* Ocupa todo el alto de la ventana */
+  height: 100vh;
+
+  /* La imagen de fondo */
+  background-image: url('/images/hero_animado.png');
+  background-position: center center;
+  background-size: cover;
+  background-repeat: no-repeat;
+
+  /* Para que el contenido (subhero) no quede oculto tras el navbar */
+  padding-top: 80px;    /* ajusta este valor al alto de tu navbar */
+  box-sizing: border-box;
+
+  /* Si quisieras un overlay semi-transparente, podrías usar un ::before */
   position: relative;
+  z-index: 0;
 }
+.hero-content {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* si quisieras texto directo aquí, podrías colorearlo:
+  color: var(--light);
+  text-shadow: 0 2px 6px rgba(0,0,0,.6);
+  */
+}
+
 .subhero {
   background: var(--gray);
 }

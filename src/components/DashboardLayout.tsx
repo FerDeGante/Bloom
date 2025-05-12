@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react";
 import ProtectedRoute from "./ProtectedRoute";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
+
 import AccountSection from "./dashboard/AccountSection";
 import PackagesSection from "./dashboard/PackagesSection";
 import HistorySection from "./dashboard/HistorySection";
@@ -25,15 +26,19 @@ export default function DashboardLayout({ children }: { children?: ReactNode }) 
 
   return (
     <ProtectedRoute>
+      {/* Este Navbar sólo se renderiza una vez en Dashboard */}
       <Navbar />
+
       <div className="dashboard-container py-4">
-        <div className="dashboard-header">
+        <div className="dashboard-header text-center mb-4">
           <h2>Hola, {session?.user?.name || "Usuario"}</h2>
         </div>
-        <ul className="nav nav-tabs mb-4 justify-content-center">
+
+        <ul className="nav nav-tabs justify-content-center mb-4">
           {tabs.map(([key, label]) => (
             <li className="nav-item" key={key}>
               <button
+                type="button"
                 className={`nav-link ${tab === key ? "active" : ""}`}
                 onClick={() => setTab(key)}
               >
@@ -42,17 +47,17 @@ export default function DashboardLayout({ children }: { children?: ReactNode }) 
             </li>
           ))}
         </ul>
-        <div>
-          {tab === "mi-cuenta" && <AccountSection />}
-          {tab === "mis-paquetes" && <PackagesSection />}
-          {tab === "historial" && <HistorySection />}
-          {tab === "reservar" && <ReservarSection />}
-        </div>
+
+        {tab === "mi-cuenta" && <AccountSection />}
+        {tab === "mis-paquetes" && <PackagesSection />}
+        {tab === "historial" && <HistorySection />}
+        {tab === "reservar" && <ReservarSection />}
+
         {children}
-        <div style={{ marginTop: "2rem" }}>
-          <Footer />
-        </div>
       </div>
+
+      {/* Este Footer sólo se renderiza una vez en Dashboard */}
+      <Footer />
     </ProtectedRoute>
   );
 }

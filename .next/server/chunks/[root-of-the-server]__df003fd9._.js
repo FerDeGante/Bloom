@@ -63,6 +63,7 @@ async function handler(req, res) {
             error: "Faltan campos"
         });
     }
+    // Validar que no exista
     const exists = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$api$5d$__$28$ecmascript$29$__["default"].user.findUnique({
         where: {
             email
@@ -73,6 +74,7 @@ async function handler(req, res) {
             error: "Email ya registrado"
         });
     }
+    // Crear usuario
     const hashed = await (0, __TURBOPACK__imported__module__$5b$externals$5d2f$bcrypt__$5b$external$5d$__$28$bcrypt$2c$__cjs$29$__["hash"])(password, 10);
     await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$api$5d$__$28$ecmascript$29$__["default"].user.create({
         data: {

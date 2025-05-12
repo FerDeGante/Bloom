@@ -2,7 +2,7 @@ __turbopack_load_page_chunks__("/dashboard", [
   "static/chunks/[root-of-the-server]__2bde1d6b._.js",
   "static/chunks/node_modules_next_dist_compiled_20fcc6eb._.js",
   "static/chunks/node_modules_next_dist_shared_lib_5dcd69ab._.js",
-  "static/chunks/node_modules_next_dist_client_f131196d._.js",
+  "static/chunks/node_modules_next_dist_client_7c50c76b._.js",
   "static/chunks/node_modules_next_dist_55f53007._.js",
   "static/chunks/node_modules_next_81c3cf81._.js",
   "static/chunks/node_modules_react-dom_82bb97c6._.js",
@@ -15,5 +15,5 @@ __turbopack_load_page_chunks__("/dashboard", [
   "static/chunks/node_modules_42e3275a._.js",
   "static/chunks/node_modules_react-calendar_dist_Calendar_4b142295.css",
   "static/chunks/src_pages_dashboard_index_tsx_5771e187._.js",
-  "static/chunks/src_pages_dashboard_index_tsx_3c5f1fd7._.js"
+  "static/chunks/src_pages_dashboard_index_tsx_af656bab._.js"
 ])

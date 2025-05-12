@@ -27,7 +27,7 @@ export default function Footer() {
               target="_blank"
               className="footer-link"
             >
-              Plaza San Juan piso 1 local 1, Cuernavaca, Morelos
+              Plaza San Juan piso 1 local B, Cuernavaca, Morelos
             </Link>
           </div>
           <div className="d-flex align-items-center justify-content-center gap-2 mb-2">

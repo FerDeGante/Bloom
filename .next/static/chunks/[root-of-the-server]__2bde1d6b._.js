@@ -484,7 +484,6 @@ function ProtectedRoute({ children }) {
     _s();
     const { status } = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2d$auth$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useSession"])();
     const router = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$router$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useRouter"])();
-    // Si no está autorizado, redirige a login
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useEffect"])({
         "ProtectedRoute.useEffect": ()=>{
             if (status === "unauthenticated") {
@@ -495,11 +494,18 @@ function ProtectedRoute({ children }) {
         status,
         router
     ]);
-    // Mientras carga o hace redirect, no renderices nada
-    if (status === "loading" || status === "unauthenticated") {
+    if (status === "loading") {
+        return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+            children: "Cargando..."
+        }, void 0, false, {
+            fileName: "[project]/src/components/ProtectedRoute.tsx",
+            lineNumber: 22,
+            columnNumber: 12
+        }, this);
+    }
+    if (status === "unauthenticated") {
         return null;
     }
-    // Ya autenticado, renderiza hijos
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["Fragment"], {
         children: children
     }, void 0, false);
@@ -820,7 +826,7 @@ function Footer() {
                                     href: "https://maps.app.goo.gl/vfEZmEJJ3XpMsPHW7",
                                     target: "_blank",
                                     className: "footer-link",
-                                    children: "Plaza San Juan piso 1 local 1, Cuernavaca, Morelos"
+                                    children: "Plaza San Juan piso 1 local B, Cuernavaca, Morelos"
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/Footer.tsx",
                                     lineNumber: 25,
@@ -1470,6 +1476,7 @@ if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelper
 
 var { g: global, __dirname, k: __turbopack_refresh__, m: module } = __turbopack_context__;
 {
+// src/components/ReservasForm.tsx
 __turbopack_context__.s({
     "default": (()=>ReservasForm)
 });
@@ -1489,7 +1496,7 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$stripe$2f$
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$stripe$2f$stripe$2d$js$2f$dist$2f$index$2e$mjs__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/@stripe/stripe-js/dist/index.mjs [client] (ecmascript)");
 ;
 var _s = __turbopack_context__.k.signature();
-'use client';
+"use client";
 ;
 ;
 ;
@@ -1497,33 +1504,81 @@ var _s = __turbopack_context__.k.signature();
 ;
 ;
 ;
+// Lista completa de servicios y su Price ID en Stripe
 const servicios = [
     {
-        slug: 'agua',
-        label: 'Estimulación en agua',
-        priceId: 'price_1RJd0OFV5ZpZiouCasDGf28F'
+        slug: "agua",
+        label: "Estimulación en agua",
+        priceId: "price_1RJd0OFV5ZpZiouCasDGf28F"
+    },
+    {
+        slug: "piso",
+        label: "Estimulación en piso",
+        priceId: "price_1RJd1jFV5ZpZiouC1xXvllVc"
+    },
+    {
+        slug: "quiropractica",
+        label: "Quiropráctica",
+        priceId: "price_1RJd2fFV5ZpZiouCsaJNkUTO"
+    },
+    {
+        slug: "fisioterapia",
+        label: "Fisioterapia",
+        priceId: "price_1RJd3WFV5ZpZiouC9PDzHjKU"
+    },
+    {
+        slug: "masajes",
+        label: "Masajes",
+        priceId: "price_1RJd4JFV5ZpZiouCPjcpX3Xn"
+    },
+    {
+        slug: "cosmetologia",
+        label: "Cosmetología",
+        priceId: "price_1RJd57FV5ZpZiouCpcrKNvJV"
+    },
+    {
+        slug: "prevencion-lesiones",
+        label: "Prevención de lesiones",
+        priceId: "price_1RJd57FV5ZpZiouCpcrKNvJV"
+    },
+    {
+        slug: "preparacion-fisica",
+        label: "Preparación física",
+        priceId: "price_1RJd6EFV5ZpZiouCYwD4J3I8"
+    },
+    {
+        slug: "nutricion",
+        label: "Nutrición",
+        priceId: "price_1RJd7qFV5ZpZiouCbj6HrFJF"
+    },
+    {
+        slug: "medicina-rehabilitacion",
+        label: "Medicina en rehabilitación",
+        priceId: "price_1RJd9HFV5ZpZiouClVlCujAm"
     }
 ];
 const terapeutas = [
-    'Jesús Ramírez',
-    'Miguel Ramírez',
-    'Alitzel Pacheco',
-    'Francia',
-    'Gisela'
+    "Jesús Ramírez",
+    "Miguel Ramírez",
+    "Alitzel Pacheco",
+    "Francia",
+    "Gisela"
 ];
 function ReservasForm() {
     _s();
     const { data: session, status } = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2d$auth$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useSession"])();
     const router = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$navigation$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useRouter"])();
-    const [servicio, setServicio] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])('');
-    const [terapeuta, setTerapeuta] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])('');
+    const [servicio, setServicio] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])("");
+    const [terapeuta, setTerapeuta] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])("");
     const [fecha, setFecha] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(null);
     const [horario, setHorario] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(null);
-    const [error, setError] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])('');
-    // redirige si no autenticado
+    const [error, setError] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])("");
+    // Redirige a login si no está autenticado
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useEffect"])({
         "ReservasForm.useEffect": ()=>{
-            if (status === 'unauthenticated') router.replace('/login');
+            if (status === "unauthenticated") {
+                router.replace("/login");
+            }
         }
     }["ReservasForm.useEffect"], [
         status,
@@ -1532,17 +1587,18 @@ function ReservasForm() {
     const handleSubmit = async (e)=>{
         e.preventDefault();
         if (!servicio || !terapeuta || !fecha || horario === null) {
-            setError('Completa todos los campos');
+            setError("Completa todos los campos");
             return;
         }
         const svc = servicios.find((s)=>s.slug === servicio);
-        // filtro de horas pasadas si hoy
-        const now = new Date();
-        if (fecha.toDateString() === now.toDateString() && horario <= now.getHours()) {
-            setError('Selecciona una hora futura');
+        // Si la fecha es hoy, evitar horas pasadas
+        const ahora = new Date();
+        if (fecha.toDateString() === ahora.toDateString() && horario <= ahora.getHours()) {
+            setError("Selecciona una hora futura");
             return;
         }
-        // Checkout Stripe
+        setError("");
+        // Preparar el body para Stripe
         const stripeBody = {
             userId: session?.user?.id,
             lineItems: [
@@ -1558,33 +1614,38 @@ function ReservasForm() {
                 hour: `${horario}:00`
             }
         };
-        const response = await fetch('/api/stripe/checkout', {
-            method: 'POST',
+        // Llamar a la API de checkout
+        const res = await fetch("/api/stripe/checkout", {
+            method: "POST",
             headers: {
-                'Content-Type': 'application/json'
+                "Content-Type": "application/json"
             },
             body: JSON.stringify(stripeBody)
         });
-        const { sessionId } = await response.json();
+        const { sessionId } = await res.json();
+        // Redirigir a Stripe Checkout
         const stripe = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$stripe$2f$stripe$2d$js$2f$dist$2f$index$2e$mjs__$5b$client$5d$__$28$ecmascript$29$__["loadStripe"])(("TURBOPACK compile-time value", "pk_test_51RGO86FV5ZpZiouC9XFmHRhzP2YgU5u0QaUAJLOIZKY4DVnquGnWVcpSMKpQPFvml1gJnWjwVh6JNWwrwF0mZPeV00Jlsbblzq"));
         stripe?.redirectToCheckout({
             sessionId
         });
     };
+    // Horarios disponibles
     const horasSemana = Array.from({
         length: 9
-    }, (_, i)=>10 + i);
+    }, (_, i)=>10 + i); // 10–18
     const horasSabado = Array.from({
         length: 6
-    }, (_, i)=>9 + i);
-    if (status === 'loading' || !session) return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$bootstrap$2f$esm$2f$Container$2e$js__$5b$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Container$3e$__["Container"], {
-        className: "py-5 text-center",
-        children: "Cargando…"
-    }, void 0, false, {
-        fileName: "[project]/src/components/ReservasForm.tsx",
-        lineNumber: 74,
-        columnNumber: 12
-    }, this);
+    }, (_, i)=>9 + i); // 9–14
+    if (status === "loading" || !session) {
+        return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$bootstrap$2f$esm$2f$Container$2e$js__$5b$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Container$3e$__["Container"], {
+            className: "py-5 text-center",
+            children: "Cargando…"
+        }, void 0, false, {
+            fileName: "[project]/src/components/ReservasForm.tsx",
+            lineNumber: 100,
+            columnNumber: 12
+        }, this);
+    }
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$bootstrap$2f$esm$2f$Container$2e$js__$5b$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Container$3e$__["Container"], {
         className: "py-5 dashboard-container",
         children: [
@@ -1593,7 +1654,7 @@ function ReservasForm() {
                 children: "Reservar cita"
             }, void 0, false, {
                 fileName: "[project]/src/components/ReservasForm.tsx",
-                lineNumber: 78,
+                lineNumber: 105,
                 columnNumber: 7
             }, this),
             error && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$bootstrap$2f$esm$2f$Alert$2e$js__$5b$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Alert$3e$__["Alert"], {
@@ -1601,14 +1662,14 @@ function ReservasForm() {
                 children: error
             }, void 0, false, {
                 fileName: "[project]/src/components/ReservasForm.tsx",
-                lineNumber: 79,
+                lineNumber: 106,
                 columnNumber: 17
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$bootstrap$2f$esm$2f$Form$2e$js__$5b$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Form$3e$__["Form"], {
                 onSubmit: handleSubmit,
                 style: {
                     maxWidth: 600,
-                    margin: '0 auto'
+                    margin: "0 auto"
                 },
                 children: [
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$bootstrap$2f$esm$2f$Form$2e$js__$5b$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Form$3e$__["Form"].Group, {
@@ -1618,7 +1679,7 @@ function ReservasForm() {
                                 children: "Servicio"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/ReservasForm.tsx",
-                                lineNumber: 83,
+                                lineNumber: 111,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$bootstrap$2f$esm$2f$Form$2e$js__$5b$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Form$3e$__["Form"].Select, {
@@ -1635,7 +1696,7 @@ function ReservasForm() {
                                         children: "Selecciona un servicio"
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/ReservasForm.tsx",
-                                        lineNumber: 93,
+                                        lineNumber: 121,
                                         columnNumber: 13
                                     }, this),
                                     servicios.map((s)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -1643,19 +1704,19 @@ function ReservasForm() {
                                             children: s.label
                                         }, s.slug, false, {
                                             fileName: "[project]/src/components/ReservasForm.tsx",
-                                            lineNumber: 95,
+                                            lineNumber: 123,
                                             columnNumber: 15
                                         }, this))
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/ReservasForm.tsx",
-                                lineNumber: 84,
+                                lineNumber: 112,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/ReservasForm.tsx",
-                        lineNumber: 82,
+                        lineNumber: 110,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$bootstrap$2f$esm$2f$Form$2e$js__$5b$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Form$3e$__["Form"].Group, {
@@ -1665,7 +1726,7 @@ function ReservasForm() {
                                 children: "Terapeuta"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/ReservasForm.tsx",
-                                lineNumber: 103,
+                                lineNumber: 132,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$bootstrap$2f$esm$2f$Form$2e$js__$5b$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Form$3e$__["Form"].Select, {
@@ -1682,7 +1743,7 @@ function ReservasForm() {
                                         children: "Selecciona un terapeuta"
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/ReservasForm.tsx",
-                                        lineNumber: 113,
+                                        lineNumber: 142,
                                         columnNumber: 13
                                     }, this),
                                     terapeutas.map((t)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -1690,19 +1751,19 @@ function ReservasForm() {
                                             children: t
                                         }, t, false, {
                                             fileName: "[project]/src/components/ReservasForm.tsx",
-                                            lineNumber: 115,
+                                            lineNumber: 144,
                                             columnNumber: 15
                                         }, this))
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/ReservasForm.tsx",
-                                lineNumber: 104,
+                                lineNumber: 133,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/ReservasForm.tsx",
-                        lineNumber: 102,
+                        lineNumber: 131,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$bootstrap$2f$esm$2f$Form$2e$js__$5b$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Form$3e$__["Form"].Group, {
@@ -1712,7 +1773,7 @@ function ReservasForm() {
                                 children: "Fecha"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/ReservasForm.tsx",
-                                lineNumber: 123,
+                                lineNumber: 153,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$calendar$2f$dist$2f$esm$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__$3c$locals$3e$__["default"], {
@@ -1723,13 +1784,13 @@ function ReservasForm() {
                                 className: "mb-3"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/ReservasForm.tsx",
-                                lineNumber: 124,
+                                lineNumber: 154,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/ReservasForm.tsx",
-                        lineNumber: 122,
+                        lineNumber: 152,
                         columnNumber: 9
                     }, this),
                     fecha && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$bootstrap$2f$esm$2f$Form$2e$js__$5b$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Form$3e$__["Form"].Group, {
@@ -1739,7 +1800,7 @@ function ReservasForm() {
                                 children: "Hora"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/ReservasForm.tsx",
-                                lineNumber: 135,
+                                lineNumber: 166,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$bootstrap$2f$esm$2f$Row$2e$js__$5b$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Row$3e$__["Row"], {
@@ -1748,32 +1809,32 @@ function ReservasForm() {
                                         md: 3,
                                         children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$bootstrap$2f$esm$2f$Button$2e$js__$5b$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Button$3e$__["Button"], {
                                             variant: "outline-primary",
-                                            className: `w-100 slot-btn ${horario === h ? 'selected' : ''}`,
-                                            onClick: ()=>setHorario(h),
+                                            className: `w-100 slot-btn ${horario === h ? "selected" : ""}`,
                                             type: "button",
+                                            onClick: ()=>setHorario(h),
                                             children: [
                                                 h,
                                                 ":00"
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/components/ReservasForm.tsx",
-                                            lineNumber: 141,
+                                            lineNumber: 170,
                                             columnNumber: 19
                                         }, this)
                                     }, h, false, {
                                         fileName: "[project]/src/components/ReservasForm.tsx",
-                                        lineNumber: 140,
+                                        lineNumber: 169,
                                         columnNumber: 17
                                     }, this))
                             }, void 0, false, {
                                 fileName: "[project]/src/components/ReservasForm.tsx",
-                                lineNumber: 136,
+                                lineNumber: 167,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/ReservasForm.tsx",
-                        lineNumber: 134,
+                        lineNumber: 165,
                         columnNumber: 11
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$bootstrap$2f$esm$2f$Button$2e$js__$5b$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Button$3e$__["Button"], {
@@ -1782,23 +1843,23 @@ function ReservasForm() {
                         children: "Confirmar y pagar"
                     }, void 0, false, {
                         fileName: "[project]/src/components/ReservasForm.tsx",
-                        lineNumber: 156,
+                        lineNumber: 184,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/components/ReservasForm.tsx",
-                lineNumber: 80,
+                lineNumber: 108,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/src/components/ReservasForm.tsx",
-        lineNumber: 77,
+        lineNumber: 104,
         columnNumber: 5
     }, this);
 }
-_s(ReservasForm, "1VxKPmH0Z1ybE3J5z7yK6gDGEy4=", false, function() {
+_s(ReservasForm, "E0ca7wVaVdQxDeU/5o3Q16b6/UM=", false, function() {
     return [
         __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2d$auth$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useSession"],
         __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$navigation$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useRouter"]
@@ -1894,14 +1955,14 @@ function DashboardLayout({ children }) {
         children: [
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$Navbar$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["default"], {}, void 0, false, {
                 fileName: "[project]/src/components/DashboardLayout.tsx",
-                lineNumber: 28,
+                lineNumber: 30,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                 className: "dashboard-container py-4",
                 children: [
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                        className: "dashboard-header",
+                        className: "dashboard-header text-center mb-4",
                         children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h2", {
                             children: [
                                 "Hola, ",
@@ -1909,90 +1970,74 @@ function DashboardLayout({ children }) {
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/components/DashboardLayout.tsx",
-                            lineNumber: 31,
+                            lineNumber: 34,
                             columnNumber: 11
                         }, this)
-                    }, void 0, false, {
-                        fileName: "[project]/src/components/DashboardLayout.tsx",
-                        lineNumber: 30,
-                        columnNumber: 9
-                    }, this),
-                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("ul", {
-                        className: "nav nav-tabs mb-4 justify-content-center",
-                        children: tabs.map(([key, label])=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("li", {
-                                className: "nav-item",
-                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                    className: `nav-link ${tab === key ? "active" : ""}`,
-                                    onClick: ()=>setTab(key),
-                                    children: label
-                                }, void 0, false, {
-                                    fileName: "[project]/src/components/DashboardLayout.tsx",
-                                    lineNumber: 36,
-                                    columnNumber: 15
-                                }, this)
-                            }, key, false, {
-                                fileName: "[project]/src/components/DashboardLayout.tsx",
-                                lineNumber: 35,
-                                columnNumber: 13
-                            }, this))
                     }, void 0, false, {
                         fileName: "[project]/src/components/DashboardLayout.tsx",
                         lineNumber: 33,
                         columnNumber: 9
                     }, this),
-                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                        children: [
-                            tab === "mi-cuenta" && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$dashboard$2f$AccountSection$2e$jsx__$5b$client$5d$__$28$ecmascript$29$__["default"], {}, void 0, false, {
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("ul", {
+                        className: "nav nav-tabs justify-content-center mb-4",
+                        children: tabs.map(([key, label])=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("li", {
+                                className: "nav-item",
+                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                    type: "button",
+                                    className: `nav-link ${tab === key ? "active" : ""}`,
+                                    onClick: ()=>setTab(key),
+                                    children: label
+                                }, void 0, false, {
+                                    fileName: "[project]/src/components/DashboardLayout.tsx",
+                                    lineNumber: 40,
+                                    columnNumber: 15
+                                }, this)
+                            }, key, false, {
                                 fileName: "[project]/src/components/DashboardLayout.tsx",
-                                lineNumber: 46,
-                                columnNumber: 35
-                            }, this),
-                            tab === "mis-paquetes" && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$dashboard$2f$PackagesSection$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["default"], {}, void 0, false, {
-                                fileName: "[project]/src/components/DashboardLayout.tsx",
-                                lineNumber: 47,
-                                columnNumber: 38
-                            }, this),
-                            tab === "historial" && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$dashboard$2f$HistorySection$2e$jsx__$5b$client$5d$__$28$ecmascript$29$__["default"], {}, void 0, false, {
-                                fileName: "[project]/src/components/DashboardLayout.tsx",
-                                lineNumber: 48,
-                                columnNumber: 35
-                            }, this),
-                            tab === "reservar" && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$dashboard$2f$ReservarSection$2e$jsx__$5b$client$5d$__$28$ecmascript$29$__["default"], {}, void 0, false, {
-                                fileName: "[project]/src/components/DashboardLayout.tsx",
-                                lineNumber: 49,
-                                columnNumber: 34
-                            }, this)
-                        ]
-                    }, void 0, true, {
-                        fileName: "[project]/src/components/DashboardLayout.tsx",
-                        lineNumber: 45,
-                        columnNumber: 9
-                    }, this),
-                    children,
-                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                        style: {
-                            marginTop: "2rem"
-                        },
-                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$Footer$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["default"], {}, void 0, false, {
-                            fileName: "[project]/src/components/DashboardLayout.tsx",
-                            lineNumber: 53,
-                            columnNumber: 11
-                        }, this)
+                                lineNumber: 39,
+                                columnNumber: 13
+                            }, this))
                     }, void 0, false, {
                         fileName: "[project]/src/components/DashboardLayout.tsx",
-                        lineNumber: 52,
+                        lineNumber: 37,
                         columnNumber: 9
-                    }, this)
+                    }, this),
+                    tab === "mi-cuenta" && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$dashboard$2f$AccountSection$2e$jsx__$5b$client$5d$__$28$ecmascript$29$__["default"], {}, void 0, false, {
+                        fileName: "[project]/src/components/DashboardLayout.tsx",
+                        lineNumber: 51,
+                        columnNumber: 33
+                    }, this),
+                    tab === "mis-paquetes" && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$dashboard$2f$PackagesSection$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["default"], {}, void 0, false, {
+                        fileName: "[project]/src/components/DashboardLayout.tsx",
+                        lineNumber: 52,
+                        columnNumber: 36
+                    }, this),
+                    tab === "historial" && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$dashboard$2f$HistorySection$2e$jsx__$5b$client$5d$__$28$ecmascript$29$__["default"], {}, void 0, false, {
+                        fileName: "[project]/src/components/DashboardLayout.tsx",
+                        lineNumber: 53,
+                        columnNumber: 33
+                    }, this),
+                    tab === "reservar" && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$dashboard$2f$ReservarSection$2e$jsx__$5b$client$5d$__$28$ecmascript$29$__["default"], {}, void 0, false, {
+                        fileName: "[project]/src/components/DashboardLayout.tsx",
+                        lineNumber: 54,
+                        columnNumber: 32
+                    }, this),
+                    children
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/components/DashboardLayout.tsx",
-                lineNumber: 29,
+                lineNumber: 32,
+                columnNumber: 7
+            }, this),
+            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$Footer$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["default"], {}, void 0, false, {
+                fileName: "[project]/src/components/DashboardLayout.tsx",
+                lineNumber: 60,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/src/components/DashboardLayout.tsx",
-        lineNumber: 27,
+        lineNumber: 28,
         columnNumber: 5
     }, this);
 }
@@ -2013,6 +2058,7 @@ if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelper
 
 var { g: global, __dirname, k: __turbopack_refresh__, m: module } = __turbopack_context__;
 {
+// src/pages/dashboard/index.tsx
 __turbopack_context__.s({
     "default": (()=>DashboardPage)
 });
@@ -2030,17 +2076,17 @@ function DashboardPage() {
                     children: "Dashboard • Bloom Fisio"
                 }, void 0, false, {
                     fileName: "[project]/src/pages/dashboard/index.tsx",
-                    lineNumber: 7,
-                    columnNumber: 13
+                    lineNumber: 9,
+                    columnNumber: 9
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/src/pages/dashboard/index.tsx",
-                lineNumber: 7,
+                lineNumber: 8,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$DashboardLayout$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["default"], {}, void 0, false, {
                 fileName: "[project]/src/pages/dashboard/index.tsx",
-                lineNumber: 8,
+                lineNumber: 12,
                 columnNumber: 7
             }, this)
         ]

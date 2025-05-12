@@ -1,4 +1,3 @@
-// src/pages/login.tsx
 import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/router";
@@ -27,10 +26,11 @@ export default function LoginPage() {
     setLoading(false);
 
     if (res?.error) {
+      // El mensaje que arroje authorize(...) arriba
       setError(res.error);
     } else {
-      // Redirige al dashboard después de un inicio de sesión exitoso
-      router.replace("/dashboard");
+      // Login exitoso
+      router.replace("/dashboard?tab=reservar");
     }
   };
 
@@ -41,7 +41,6 @@ export default function LoginPage() {
         <link rel="icon" href="/images/logo_bloom_clean.png" />
       </Head>
       <div className="vh-100 d-flex flex-column justify-content-center align-items-center">
-        {/* Logo arriba a la izquierda */}
         <div className="position-absolute top-0 start-0 p-3">
           <Link href="/">
             <Image
@@ -53,7 +52,6 @@ export default function LoginPage() {
           </Link>
         </div>
 
-        {/* Formulario */}
         <form
           onSubmit={handleSubmit}
           className="contact-card p-4"
@@ -90,7 +88,11 @@ export default function LoginPage() {
             <label htmlFor="password">Contraseña</label>
           </div>
 
-          <button type="submit" className="btn btn-orange w-100 py-2">
+          <button
+            type="submit"
+            className="btn btn-orange w-100 py-2"
+            disabled={loading}
+          >
             {loading ? "Cargando..." : "Entrar"}
           </button>
 

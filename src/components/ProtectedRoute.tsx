@@ -12,18 +12,19 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
   const { status } = useSession();
   const router = useRouter();
 
-  // Si no está autorizado, redirige a login
   useEffect(() => {
     if (status === "unauthenticated") {
       router.replace("/login");
     }
   }, [status, router]);
 
-  // Mientras carga o hace redirect, no renderices nada
-  if (status === "loading" || status === "unauthenticated") {
+  if (status === "loading") {
+    return <p>Cargando...</p>;
+  }
+
+  if (status === "unauthenticated") {
     return null;
   }
 
-  // Ya autenticado, renderiza hijos
   return <>{children}</>;
 }

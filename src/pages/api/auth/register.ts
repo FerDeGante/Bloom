@@ -1,5 +1,4 @@
 // src/pages/api/auth/register.ts
-
 import type { NextApiRequest, NextApiResponse } from "next";
 import prisma from "@/lib/prisma";
 import { hash } from "bcrypt";
@@ -13,31 +12,25 @@ export default async function handler(
   }
 
   const { name, email, password } = req.body as {
-    name: string;
-    email: string;
-    password: string;
+    name?: string;
+    email?: string;
+    password?: string;
   };
 
   if (!name || !email || !password) {
     return res.status(400).json({ error: "Faltan campos" });
   }
 
-  const exists = await prisma.user.findUnique({
-    where: { email },
-  });
+  // Validar que no exista
+  const exists = await prisma.user.findUnique({ where: { email } });
   if (exists) {
     return res.status(400).json({ error: "Email ya registrado" });
   }
 
+  // Crear usuario
   const hashed = await hash(password, 10);
-
   await prisma.user.create({
-    data: {
-      name,
-      email,
-      password: hashed,
-      role: "CLIENTE",
-    },
+    data: { name, email, password: hashed, role: "CLIENTE" },
   });
 
   return res.status(201).json({ message: "Usuario creado" });

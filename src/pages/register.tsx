@@ -1,38 +1,42 @@
-// src/pages/register.tsx
-import { useState } from 'react'
-import { useRouter } from 'next/router'
-import Head from 'next/head'
-import Image from 'next/image'
-import Link from 'next/link'
+import { useState } from 'react';
+import { useRouter } from 'next/router';
+import Head from 'next/head';
+import Image from 'next/image';
+import Link from 'next/link';
 
 export default function RegisterPage() {
-  const router = useRouter()
-  const [form, setForm] = useState({ name: '', email: '', password: '' })
-  const [error, setError] = useState<string | null>(null)
+  const router = useRouter();
+  const [form, setForm] = useState({
+    name: '',
+    email: '',
+    password: '',
+  });
+  const [error, setError] = useState<string | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setForm({ ...form, [e.target.name]: e.target.value })
-  }
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError(null)
+    e.preventDefault();
+    setError(null);
+
     try {
       const res = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form),
-      })
+      });
       if (res.ok) {
-        router.push('/login')
+        router.push('/login');
       } else {
-        const data = await res.json()
-        setError(data.error || 'Ocurrió un error inesperado')
+        const data = await res.json();
+        setError(data.error || 'Ocurrió un error inesperado');
       }
-    } catch (err) {
-      setError('Error de red, inténtalo de nuevo')
+    } catch {
+      setError('Error de red, inténtalo de nuevo');
     }
-  }
+  };
 
   return (
     <>
@@ -41,7 +45,6 @@ export default function RegisterPage() {
         <link rel="icon" href="/images/logo_bloom_clean.png" />
       </Head>
       <div className="vh-100 d-flex flex-column justify-content-center align-items-center">
-        {/* Logo arriba a la izquierda */}
         <div className="position-absolute top-0 start-0 p-3">
           <Link href="/">
             <Image
@@ -53,7 +56,6 @@ export default function RegisterPage() {
           </Link>
         </div>
 
-        {/* Formulario */}
         <form
           onSubmit={handleSubmit}
           className="contact-card p-4"
@@ -114,5 +116,5 @@ export default function RegisterPage() {
         </form>
       </div>
     </>
-  )
+  );
 }

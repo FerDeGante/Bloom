@@ -67,7 +67,6 @@ module.exports = mod;
 
 var { g: global, __dirname } = __turbopack_context__;
 {
-// src/pages/api/auth/[...nextauth].ts
 __turbopack_context__.s({
     "authOptions": (()=>authOptions),
     "default": (()=>__TURBOPACK__default__export__)
@@ -87,15 +86,12 @@ const authOptions = {
     secret: process.env.NEXTAUTH_SECRET,
     session: {
         strategy: "jwt",
-        maxAge: 60 * 60 * 24
-    },
-    pages: {
-        signIn: "/login",
-        error: "/login"
+        maxAge: 60 * 60 * 24,
+        updateAge: 60 * 60
     },
     providers: [
         (0, __TURBOPACK__imported__module__$5b$externals$5d2f$next$2d$auth$2f$providers$2f$credentials__$5b$external$5d$__$28$next$2d$auth$2f$providers$2f$credentials$2c$__cjs$29$__["default"])({
-            name: "Email",
+            name: "Credenciales",
             credentials: {
                 email: {
                     label: "Correo",
@@ -106,41 +102,40 @@ const authOptions = {
                     type: "password"
                 }
             },
-            async authorize (credentials) {
-                if (!credentials?.email || !credentials?.password) {
-                    return null; // Si faltan credenciales, no autorizar
+            async authorize (credentials, req) {
+                const email = credentials?.email;
+                const password = credentials?.password;
+                if (!email || !password) {
+                    throw new Error("Correo y contraseña son obligatorios");
                 }
-                // Buscar usuario en la base de datos
                 const user = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$api$5d$__$28$ecmascript$29$__["default"].user.findUnique({
                     where: {
-                        email: credentials.email
+                        email
                     }
                 });
-                // Verificar contraseña
-                if (user && await (0, __TURBOPACK__imported__module__$5b$externals$5d2f$bcrypt__$5b$external$5d$__$28$bcrypt$2c$__cjs$29$__["compare"])(credentials.password, user.password)) {
-                    return user; // Usuario autorizado
+                if (!user) {
+                    throw new Error("Usuario no encontrado");
                 }
-                return null; // Credenciales inválidas
+                const isValid = await (0, __TURBOPACK__imported__module__$5b$externals$5d2f$bcrypt__$5b$external$5d$__$28$bcrypt$2c$__cjs$29$__["compare"])(password, user.password);
+                if (!isValid) {
+                    throw new Error("Contraseña incorrecta");
+                }
+                // Devuelve sólo los campos que quieres exponer en session.user
+                return {
+                    id: user.id,
+                    name: user.name,
+                    email: user.email
+                };
             }
         })
     ],
     callbacks: {
-        // Callback para manejar el token JWT
         async jwt ({ token, user }) {
-            if (user) {
-                token.id = user.id; // Agregar ID del usuario al token
-                token.email = user.email; // Agregar email al token
-                token.name = user.name; // Agregar nombre al token
-            }
+            if (user) token.id = user.id;
             return token;
         },
-        // Callback para manejar la sesión
         async session ({ session, token }) {
-            if (session.user) {
-                session.user.id = token.id; // Agregar ID del usuario a la sesión
-                session.user.email = token.email; // Agregar email a la sesión
-                session.user.name = token.name; // Agregar nombre a la sesión
-            }
+            if (session.user) session.user.id = token.id;
             return session;
         }
     }

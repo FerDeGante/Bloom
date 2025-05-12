@@ -4,7 +4,7 @@
   "static/chunks/[root-of-the-server]__2bde1d6b._.js",
   "static/chunks/node_modules_next_dist_compiled_20fcc6eb._.js",
   "static/chunks/node_modules_next_dist_shared_lib_5dcd69ab._.js",
-  "static/chunks/node_modules_next_dist_client_f131196d._.js",
+  "static/chunks/node_modules_next_dist_client_7c50c76b._.js",
   "static/chunks/node_modules_next_dist_55f53007._.js",
   "static/chunks/node_modules_next_81c3cf81._.js",
   "static/chunks/node_modules_react-dom_82bb97c6._.js",
