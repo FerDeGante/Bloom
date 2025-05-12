@@ -1,15 +1,16 @@
-
 # netlify.toml
 
 [build]
-  # cómo instalar dependencias (opcional)
-  install = "npm ci"
-  # tu comando de build
-  command = "npm run build"
-  # carpeta que el plugin-nextjs publica
-  publish = ".next"
+  # Tu comando de build de Next.js
+  command   = "npm run build"
+  # La carpeta que Next.js genera para servir
+  publish   = ".next"
+  # Directorio donde Netlify escribirá las funciones (lo usa el plugin)
+  functions = "netlify/functions"
 
-# Variables de entorno para producción
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
 [context.production.environment]
   # Prisma / Neon
   DATABASE_URL                       = "postgresql://neondb_owner:npg_DBUat0C7vnfz@ep-little-moon-a460redc-pooler.us-east-1.aws.neon.tech/neondb?pgbouncer=true&sslmode=require"
@@ -22,17 +23,6 @@
   NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY = "pk_test_…"
   STRIPE_SECRET                      = "sk_test_…"
 
-  # Si usas otras (Easy-Appointments, etc):
+  # Otras variables (EA, base URL, etc)
   EA_KEY                             = "tu_api_key_easy_appointments"
   NEXT_PUBLIC_APP_BASE               = "https://bloom-fisio.netlify.app"
-
-# Este bloque va al nivel raíz, ¡no dentro del [context]!
-[[plugins]]
-  package = "@netlify/plugin-nextjs"
-
-# ¡Clave! Redirige todo /api/* a las funciones que genera el plugin
-[[redirects]]
-  from       = "/api/*"
-  to         = "/.netlify/functions/:splat"
-  status     = 200
-  force      = true
