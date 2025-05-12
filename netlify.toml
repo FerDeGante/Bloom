@@ -1,28 +1,25 @@
-# netlify.toml
+# netlify.toml (en la raíz, junto a package.json)
 
 [build]
-  # Tu comando de build de Next.js
-  command   = "npm run build"
-  # La carpeta que Next.js genera para servir
-  publish   = ".next"
-  # Directorio donde Netlify escribirá las funciones (lo usa el plugin)
-  functions = "netlify/functions"
+  command = "npm run build"  # tu script de build de Next.js
+  publish = ".next"          # carpeta de salida
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"
 
+# Variables de entorno para producción (puedes también configurarlas
+# directamente en la UI de Netlify si prefieres)
 [context.production.environment]
-  # Prisma / Neon
-  DATABASE_URL                       = "postgresql://neondb_owner:npg_DBUat0C7vnfz@ep-little-moon-a460redc-pooler.us-east-1.aws.neon.tech/neondb?pgbouncer=true&sslmode=require"
+  # Base de tu app
+  NEXTAUTH_URL                       = "https://bloom-fisio.netlify.app"
+  NEXT_PUBLIC_APP_BASE               = "https://bloom-fisio.netlify.app"
 
   # NextAuth
-  NEXTAUTH_URL                       = "https://bloom-fisio.netlify.app"
   NEXTAUTH_SECRET                    = "TU_SECRETO_DE_32_CARACTERES"
+
+  # Base de datos (Neon)
+  DATABASE_URL                       = "postgresql://neondb_owner:npg_DBUat0C7vnfz@ep-little-moon-a460redc-pooler.us-east-1.aws.neon.tech/neondb?pgbouncer=true&sslmode=require"
 
   # Stripe
   NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY = "pk_test_…"
   STRIPE_SECRET                      = "sk_test_…"
-
-  # Otras variables (EA, base URL, etc)
-  EA_KEY                             = "tu_api_key_easy_appointments"
-  NEXT_PUBLIC_APP_BASE               = "https://bloom-fisio.netlify.app"
