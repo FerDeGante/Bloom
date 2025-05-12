@@ -1,7 +1,6 @@
 // src/pages/login.tsx
 import { useState } from "react";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/router";
 import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
@@ -11,7 +10,6 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,17 +20,18 @@ export default function LoginPage() {
       redirect: false,
       email,
       password,
-      callbackUrl: "/dashboard?tab=reservar",
+      callbackUrl: `${window.location.origin}/dashboard?tab=reservar`,
     });
 
     setLoading(false);
 
     if (res?.error) {
-      // Mostrar mensaje de authorize()
       setError(res.error);
+    } else if (res?.url) {
+      // forzamos la navegación al dashboard
+      window.location.href = res.url;
     } else {
-      // En res.url tendremos "/dashboard?tab=reservar"
-      router.replace(res?.url || "/dashboard?tab=reservar");
+      setError("Error desconocido, inténtalo de nuevo");
     }
   };
 
@@ -43,7 +42,6 @@ export default function LoginPage() {
         <link rel="icon" href="/images/logo_bloom_clean.png" />
       </Head>
       <div className="vh-100 d-flex flex-column justify-content-center align-items-center">
-        {/* Logo */}
         <div className="position-absolute top-0 start-0 p-3">
           <Link href="/" legacyBehavior>
             <a>
@@ -56,15 +54,13 @@ export default function LoginPage() {
             </a>
           </Link>
         </div>
-
         <form
           onSubmit={handleSubmit}
           className="contact-card p-4"
-          style={{ width: "100%", maxWidth: "400px" }}
+          style={{ width: "100%", maxWidth: 400 }}
         >
           <h2 className="mb-3 text-center">Iniciar Sesión</h2>
           {error && <div className="alert alert-danger">{error}</div>}
-
           <div className="form-floating mb-3">
             <input
               id="email"
@@ -78,7 +74,6 @@ export default function LoginPage() {
             />
             <label htmlFor="email">Correo electrónico</label>
           </div>
-
           <div className="form-floating mb-4">
             <input
               id="password"
@@ -92,7 +87,6 @@ export default function LoginPage() {
             />
             <label htmlFor="password">Contraseña</label>
           </div>
-
           <button
             type="submit"
             className="btn btn-orange w-100 py-2"
@@ -100,7 +94,6 @@ export default function LoginPage() {
           >
             {loading ? "Cargando..." : "Entrar"}
           </button>
-
           <p className="text-center mt-3">
             ¿No tienes cuenta?{" "}
             <Link href="/register" legacyBehavior>

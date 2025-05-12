@@ -57,20 +57,12 @@ globalThis.__BUILD_MANIFEST = {
       "static/chunks/src_pages_dashboard_index_tsx_af656bab._.js"
     ],
     "/login": [
-      "static/chunks/node_modules_next_8e47a57f._.js",
+      "static/chunks/node_modules_next_bb985d6d._.js",
       "static/chunks/node_modules_react-dom_82bb97c6._.js",
       "static/chunks/node_modules_8764e743._.js",
       "static/chunks/[root-of-the-server]__32a52f19._.js",
       "static/chunks/src_pages_login_5771e187._.js",
-      "static/chunks/src_pages_login_deb51f23._.js"
-    ],
-    "/register": [
-      "static/chunks/node_modules_next_8e47a57f._.js",
-      "static/chunks/node_modules_react-dom_82bb97c6._.js",
-      "static/chunks/node_modules_2a5cf4bb._.js",
-      "static/chunks/[root-of-the-server]__ea4c0aaf._.js",
-      "static/chunks/src_pages_register_5771e187._.js",
-      "static/chunks/src_pages_register_ce49deb1._.js"
+      "static/chunks/src_pages_login_e2295983._.js"
     ]
   },
   "devFiles": [],

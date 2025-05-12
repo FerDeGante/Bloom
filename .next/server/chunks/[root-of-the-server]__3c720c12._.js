@@ -45,13 +45,19 @@ module.exports = mod;
 
 var { g: global, __dirname } = __turbopack_context__;
 {
-// src/lib/prisma.ts
 __turbopack_context__.s({
-    "default": (()=>__TURBOPACK__default__export__)
+    "default": (()=>__TURBOPACK__default__export__),
+    "prisma": (()=>prisma)
 });
 var __TURBOPACK__imported__module__$5b$externals$5d2f40$prisma$2f$client__$5b$external$5d$__$2840$prisma$2f$client$2c$__cjs$29$__ = __turbopack_context__.i("[externals]/@prisma/client [external] (@prisma/client, cjs)");
 ;
-const prisma = new __TURBOPACK__imported__module__$5b$externals$5d2f40$prisma$2f$client__$5b$external$5d$__$2840$prisma$2f$client$2c$__cjs$29$__["PrismaClient"]();
+const prisma = global.prisma || new __TURBOPACK__imported__module__$5b$externals$5d2f40$prisma$2f$client__$5b$external$5d$__$2840$prisma$2f$client$2c$__cjs$29$__["PrismaClient"]({
+    log: [
+        "query",
+        "error"
+    ]
+});
+if ("TURBOPACK compile-time truthy", 1) global.prisma = prisma;
 const __TURBOPACK__default__export__ = prisma;
 }}),
 "[externals]/bcrypt [external] (bcrypt, cjs)": (function(__turbopack_context__) {
@@ -86,12 +92,14 @@ const authOptions = {
     secret: process.env.NEXTAUTH_SECRET,
     session: {
         strategy: "jwt",
-        maxAge: 60 * 60 * 24,
-        updateAge: 60 * 60
+        maxAge: 60 * 60 * 24
+    },
+    pages: {
+        signIn: "/login"
     },
     providers: [
         (0, __TURBOPACK__imported__module__$5b$externals$5d2f$next$2d$auth$2f$providers$2f$credentials__$5b$external$5d$__$28$next$2d$auth$2f$providers$2f$credentials$2c$__cjs$29$__["default"])({
-            name: "Credenciales",
+            name: "Email",
             credentials: {
                 email: {
                     label: "Correo",
@@ -102,30 +110,17 @@ const authOptions = {
                     type: "password"
                 }
             },
-            async authorize (credentials, req) {
-                const email = credentials?.email;
-                const password = credentials?.password;
-                if (!email || !password) {
-                    throw new Error("Correo y contraseña son obligatorios");
-                }
+            async authorize (credentials) {
+                if (!credentials?.email || !credentials?.password) return null;
                 const user = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$api$5d$__$28$ecmascript$29$__["default"].user.findUnique({
                     where: {
-                        email
+                        email: credentials.email
                     }
                 });
-                if (!user) {
-                    throw new Error("Usuario no encontrado");
+                if (user && await (0, __TURBOPACK__imported__module__$5b$externals$5d2f$bcrypt__$5b$external$5d$__$28$bcrypt$2c$__cjs$29$__["compare"])(credentials.password, user.password)) {
+                    return user;
                 }
-                const isValid = await (0, __TURBOPACK__imported__module__$5b$externals$5d2f$bcrypt__$5b$external$5d$__$28$bcrypt$2c$__cjs$29$__["compare"])(password, user.password);
-                if (!isValid) {
-                    throw new Error("Contraseña incorrecta");
-                }
-                // Devuelve sólo los campos que quieres exponer en session.user
-                return {
-                    id: user.id,
-                    name: user.name,
-                    email: user.email
-                };
+                return null;
             }
         })
     ],

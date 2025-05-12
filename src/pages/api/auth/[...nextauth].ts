@@ -9,61 +9,39 @@ export const authOptions: NextAuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
   session: {
     strategy: "jwt",
-    maxAge: 60 * 60 * 24, // 1 día
-    updateAge: 60 * 60,   // refrescar cada hora
+    maxAge: 60 * 60 * 24,
+  },
+  pages: {
+    signIn: "/login",
   },
   providers: [
     CredentialsProvider({
-      name: "Credenciales",
+      name: "Email",
       credentials: {
         email: { label: "Correo", type: "email" },
         password: { label: "Contraseña", type: "password" },
       },
       async authorize(credentials) {
-        const email = credentials?.email;
-        const password = credentials?.password;
-
-        if (!email || !password) {
-          throw new Error("Correo y contraseña son obligatorios");
-        }
-
+        if (!credentials?.email || !credentials?.password) return null;
         const user = await prisma.user.findUnique({
-          where: { email },
+          where: { email: credentials.email },
         });
-
-        if (!user) {
-          throw new Error("Usuario no encontrado");
+        if (user && (await compare(credentials.password, user.password))) {
+          return user;
         }
-
-        const isValid = await compare(password, user.password);
-        if (!isValid) {
-          throw new Error("Contraseña incorrecta");
-        }
-
-        // Devuelve sólo los campos que quieres exponer en session.user
-        return { id: user.id, name: user.name, email: user.email };
+        return null;
       },
     }),
   ],
   callbacks: {
     async jwt({ token, user }) {
-      if (user) {
-        token.id = user.id;
-        token.email = user.email;
-      }
+      if (user) token.id = user.id;
       return token;
     },
     async session({ session, token }) {
-      if (session.user) {
-        session.user.id = token.id as string;
-        session.user.email = token.email as string;
-      }
+      if (session.user) session.user.id = token.id as string;
       return session;
     },
-  },
-  pages: {
-    signIn: "/login",
-    error: "/login",
   },
 };
 

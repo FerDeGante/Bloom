@@ -21,13 +21,19 @@ module.exports = mod;
 
 var { g: global, __dirname } = __turbopack_context__;
 {
-// src/lib/prisma.ts
 __turbopack_context__.s({
-    "default": (()=>__TURBOPACK__default__export__)
+    "default": (()=>__TURBOPACK__default__export__),
+    "prisma": (()=>prisma)
 });
 var __TURBOPACK__imported__module__$5b$externals$5d2f40$prisma$2f$client__$5b$external$5d$__$2840$prisma$2f$client$2c$__cjs$29$__ = __turbopack_context__.i("[externals]/@prisma/client [external] (@prisma/client, cjs)");
 ;
-const prisma = new __TURBOPACK__imported__module__$5b$externals$5d2f40$prisma$2f$client__$5b$external$5d$__$2840$prisma$2f$client$2c$__cjs$29$__["PrismaClient"]();
+const prisma = global.prisma || new __TURBOPACK__imported__module__$5b$externals$5d2f40$prisma$2f$client__$5b$external$5d$__$2840$prisma$2f$client$2c$__cjs$29$__["PrismaClient"]({
+    log: [
+        "query",
+        "error"
+    ]
+});
+if ("TURBOPACK compile-time truthy", 1) global.prisma = prisma;
 const __TURBOPACK__default__export__ = prisma;
 }}),
 "[externals]/bcrypt [external] (bcrypt, cjs)": (function(__turbopack_context__) {
@@ -43,7 +49,6 @@ module.exports = mod;
 
 var { g: global, __dirname } = __turbopack_context__;
 {
-// src/pages/api/auth/register.ts
 __turbopack_context__.s({
     "default": (()=>handler)
 });
@@ -52,29 +57,21 @@ var __TURBOPACK__imported__module__$5b$externals$5d2f$bcrypt__$5b$external$5d$__
 ;
 ;
 async function handler(req, res) {
-    if (req.method !== "POST") {
-        return res.status(405).json({
-            error: "Método no permitido"
-        });
-    }
+    if (req.method !== "POST") return res.status(405).json({
+        error: "Método no permitido"
+    });
     const { name, email, password } = req.body;
-    if (!name || !email || !password) {
-        return res.status(400).json({
-            error: "Faltan campos"
-        });
-    }
-    // Validar que no exista
+    if (!name || !email || !password) return res.status(400).json({
+        error: "Faltan campos"
+    });
     const exists = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$api$5d$__$28$ecmascript$29$__["default"].user.findUnique({
         where: {
             email
         }
     });
-    if (exists) {
-        return res.status(400).json({
-            error: "Email ya registrado"
-        });
-    }
-    // Crear usuario
+    if (exists) return res.status(400).json({
+        error: "Email ya existe"
+    });
     const hashed = await (0, __TURBOPACK__imported__module__$5b$externals$5d2f$bcrypt__$5b$external$5d$__$28$bcrypt$2c$__cjs$29$__["hash"])(password, 10);
     await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$api$5d$__$28$ecmascript$29$__["default"].user.create({
         data: {
