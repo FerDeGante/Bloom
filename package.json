@@ -23,7 +23,6 @@
     "next-auth": "^4.24.11",
     "nodemon": "^3.1.10",
     "npx": "^10.2.2",
-    "prisma": "^6.7.0",
     "push": "^0.1.1",
     "react": "^19.1.0",
     "react-bootstrap": "^2.10.9",
@@ -36,6 +35,7 @@
     "@eslint/eslintrc": "^3",
     "@types/bcrypt": "^5.0.2",
     "eslint": "^9",
-    "eslint-config-next": "15.3.0"
+    "eslint-config-next": "15.3.0",
+    "prisma": "^6.7.0"
   }
 }

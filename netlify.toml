@@ -1,25 +1,25 @@
-# netlify.toml (en la raíz, junto a package.json)
+# netlify.toml
 
 [build]
-  command = "npm run build"  # tu script de build de Next.js
-  publish = ".next"          # carpeta de salida
+  # Primero generamos el cliente de Prisma y luego compilamos Next.js
+  command = "npm run generate && npm run build"
+  # Carpeta de salida para Netlify
+  publish = ".next"
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"
 
-# Variables de entorno para producción (puedes también configurarlas
-# directamente en la UI de Netlify si prefieres)
 [context.production.environment]
-  # Base de tu app
+  # URL base de tu app
   NEXTAUTH_URL                       = "https://bloom-fisio.netlify.app"
   NEXT_PUBLIC_APP_BASE               = "https://bloom-fisio.netlify.app"
 
   # NextAuth
-  NEXTAUTH_SECRET                    = "TU_SECRETO_DE_32_CARACTERES"
+  NEXTAUTH_SECRET                    = "tu_secreto_de_32_caracteres"
 
-  # Base de datos (Neon)
+  # Base de datos (Neon + pgbouncer)
   DATABASE_URL                       = "postgresql://neondb_owner:npg_DBUat0C7vnfz@ep-little-moon-a460redc-pooler.us-east-1.aws.neon.tech/neondb?pgbouncer=true&sslmode=require"
 
   # Stripe
-  NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY = "pk_test_…"
-  STRIPE_SECRET                      = "sk_test_…"
+  NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY = "pk_test_51RGO86FV5ZpZiouC9XFmHRhzP2YgU5u0QaUAJLOIZKY4DVnquGnWVcpSMKpQPFvml1gJnWjwVh6JNWwrwF0mZPeV00Jlsbblzq"
+  STRIPE_SECRET                      = "sk_test_51RGO86FV5ZpZiouCyuhrfVmzxRr5DlgTYTNOzMysSy33FAuPpPEyTaUjEZGj96xD0e9xSroSI1wudMqlhSSCoS2p00jpmZgS3a"
