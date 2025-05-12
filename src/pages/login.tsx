@@ -1,3 +1,4 @@
+// src/pages/login.tsx
 import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/router";
@@ -21,16 +22,17 @@ export default function LoginPage() {
       redirect: false,
       email,
       password,
+      callbackUrl: "/dashboard?tab=reservar",
     });
 
     setLoading(false);
 
     if (res?.error) {
-      // El mensaje que arroje authorize(...) arriba
+      // Mostrar mensaje de authorize()
       setError(res.error);
     } else {
-      // Login exitoso
-      router.replace("/dashboard?tab=reservar");
+      // En res.url tendremos "/dashboard?tab=reservar"
+      router.replace(res?.url || "/dashboard?tab=reservar");
     }
   };
 
@@ -41,14 +43,17 @@ export default function LoginPage() {
         <link rel="icon" href="/images/logo_bloom_clean.png" />
       </Head>
       <div className="vh-100 d-flex flex-column justify-content-center align-items-center">
+        {/* Logo */}
         <div className="position-absolute top-0 start-0 p-3">
-          <Link href="/">
-            <Image
-              src="/images/logo_bloom_clean.png"
-              alt="Bloom Fisio"
-              width={80}
-              height={80}
-            />
+          <Link href="/" legacyBehavior>
+            <a>
+              <Image
+                src="/images/logo_bloom_clean.png"
+                alt="Bloom Fisio"
+                width={80}
+                height={80}
+              />
+            </a>
           </Link>
         </div>
 
@@ -97,7 +102,10 @@ export default function LoginPage() {
           </button>
 
           <p className="text-center mt-3">
-            ¿No tienes cuenta? <Link href="/register">Regístrate</Link>
+            ¿No tienes cuenta?{" "}
+            <Link href="/register" legacyBehavior>
+              <a>Regístrate</a>
+            </Link>
           </p>
         </form>
       </div>
