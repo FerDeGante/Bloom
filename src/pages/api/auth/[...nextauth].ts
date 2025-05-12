@@ -9,8 +9,8 @@ export const authOptions: NextAuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
   session: {
     strategy: "jwt",
-    maxAge: 60 * 60 * 24,   // 1 día
-    updateAge: 60 * 60,     // refrescar cada hora
+    maxAge: 60 * 60 * 24, // 1 día
+    updateAge: 60 * 60,   // refrescar cada hora
   },
   providers: [
     CredentialsProvider({
@@ -19,9 +19,10 @@ export const authOptions: NextAuthOptions = {
         email: { label: "Correo", type: "email" },
         password: { label: "Contraseña", type: "password" },
       },
-      async authorize(credentials, req) {
+      async authorize(credentials) {
         const email = credentials?.email;
         const password = credentials?.password;
+
         if (!email || !password) {
           throw new Error("Correo y contraseña son obligatorios");
         }
@@ -29,6 +30,7 @@ export const authOptions: NextAuthOptions = {
         const user = await prisma.user.findUnique({
           where: { email },
         });
+
         if (!user) {
           throw new Error("Usuario no encontrado");
         }
@@ -45,13 +47,23 @@ export const authOptions: NextAuthOptions = {
   ],
   callbacks: {
     async jwt({ token, user }) {
-      if (user) token.id = (user as any).id;
+      if (user) {
+        token.id = user.id;
+        token.email = user.email;
+      }
       return token;
     },
     async session({ session, token }) {
-      if (session.user) session.user.id = token.id as string;
+      if (session.user) {
+        session.user.id = token.id as string;
+        session.user.email = token.email as string;
+      }
       return session;
     },
+  },
+  pages: {
+    signIn: "/login",
+    error: "/login",
   },
 };
 
