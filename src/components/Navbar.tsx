@@ -1,4 +1,3 @@
-// src/components/Navbar.tsx
 "use client";
 
 import { useEffect, useState } from "react";
@@ -20,16 +19,11 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // path siempre string, tab opcionalmente string
-  const go = (path: string, tab?: string): void => {
+  const goToReservas = () => {
     if (session) {
-      if (tab) {
-        router.push(`/dashboard?tab=${encodeURIComponent(tab)}`);
-      } else {
-        router.push(path);
-      }
+      router.push("/reservasform");
     } else {
-      router.push("/login");
+      router.push("/login?redirect=/reservasform");
     }
   };
 
@@ -57,18 +51,21 @@ export default function Navbar() {
             <button
               type="button"
               className="nav-link btn btn-link d-flex align-items-center"
-              onClick={() => go("/", "reservar")}
+              onClick={goToReservas}
             >
-              <FaCalendarAlt className="me-1" /> Agendar
+              <FaCalendarAlt className="me-1" />
+              Agendar
             </button>
 
             <Link href="/nosotros" className="nav-link d-flex align-items-center">
-              <FaInfoCircle className="me-1" /> Nosotros
+              <FaInfoCircle className="me-1" />
+              Nosotros
             </Link>
 
             {!session && (
               <Link href="/login" className="nav-link d-flex align-items-center">
-                <FaSignInAlt className="me-1" /> Iniciar sesión
+                <FaSignInAlt className="me-1" />
+                Iniciar sesión
               </Link>
             )}
 
@@ -76,7 +73,8 @@ export default function Navbar() {
               <NavDropdown
                 title={
                   <span className="d-flex align-items-center">
-                    <FaUser className="me-1" /> {session.user?.name}
+                    <FaUser className="me-1" />
+                    {session.user?.name}
                   </span>
                 }
                 id="user-dd"
@@ -87,7 +85,7 @@ export default function Navbar() {
                 <button
                   type="button"
                   className="dropdown-item"
-                  onClick={() => go("/dashboard")}
+                  onClick={() => router.push("/dashboard")}
                 >
                   Mi Dashboard
                 </button>

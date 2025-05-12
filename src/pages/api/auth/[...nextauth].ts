@@ -1,34 +1,26 @@
+// src/pages/api/auth/[...nextauth].ts
 import NextAuth, { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { PrismaAdapter } from "@next-auth/prisma-adapter";
-import prisma from "@/lib/prisma";
-import { compare } from "bcrypt";
+import { PrismaAdapter }  from "@next-auth/prisma-adapter";
+import prisma              from "@/lib/prisma";
+import { compare }         from "bcrypt";
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
   secret: process.env.NEXTAUTH_SECRET,
-  session: {
-    strategy: "jwt",
-    maxAge: 60 * 60 * 24,
-  },
-  pages: {
-    signIn: "/login",
-  },
+  pages: { signIn: "/login" },
+  session: { strategy: "jwt", maxAge: 86400 },
   providers: [
     CredentialsProvider({
       name: "Email",
       credentials: {
-        email: { label: "Correo", type: "email" },
-        password: { label: "Contraseña", type: "password" },
+        email:    { label: "Correo",      type: "email"    },
+        password: { label: "Contraseña",  type: "password" },
       },
-      async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) return null;
-        const user = await prisma.user.findUnique({
-          where: { email: credentials.email },
-        });
-        if (user && (await compare(credentials.password, user.password))) {
-          return user;
-        }
+      async authorize(creds) {
+        if (!creds?.email || !creds?.password) return null;
+        const user = await prisma.user.findUnique({ where: { email: creds.email } });
+        if (user && await compare(creds.password, user.password)) return user;
         return null;
       },
     }),
@@ -43,6 +35,7 @@ export const authOptions: NextAuthOptions = {
       return session;
     },
   },
+  debug: process.env.NODE_ENV === "development",
 };
 
 export default NextAuth(authOptions);

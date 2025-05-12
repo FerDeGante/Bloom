@@ -81,6 +81,7 @@ module.exports = mod;
 
 var { g: global, __dirname } = __turbopack_context__;
 {
+// src/pages/api/auth/[...nextauth].ts
 __turbopack_context__.s({
     "authOptions": (()=>authOptions),
     "default": (()=>__TURBOPACK__default__export__)
@@ -98,12 +99,12 @@ var __TURBOPACK__imported__module__$5b$externals$5d2f$bcrypt__$5b$external$5d$__
 const authOptions = {
     adapter: (0, __TURBOPACK__imported__module__$5b$externals$5d2f40$next$2d$auth$2f$prisma$2d$adapter__$5b$external$5d$__$2840$next$2d$auth$2f$prisma$2d$adapter$2c$__cjs$29$__["PrismaAdapter"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$api$5d$__$28$ecmascript$29$__["default"]),
     secret: process.env.NEXTAUTH_SECRET,
-    session: {
-        strategy: "jwt",
-        maxAge: 60 * 60 * 24
-    },
     pages: {
         signIn: "/login"
+    },
+    session: {
+        strategy: "jwt",
+        maxAge: 86400
     },
     providers: [
         (0, __TURBOPACK__imported__module__$5b$externals$5d2f$next$2d$auth$2f$providers$2f$credentials__$5b$external$5d$__$28$next$2d$auth$2f$providers$2f$credentials$2c$__cjs$29$__["default"])({
@@ -118,16 +119,14 @@ const authOptions = {
                     type: "password"
                 }
             },
-            async authorize (credentials) {
-                if (!credentials?.email || !credentials?.password) return null;
+            async authorize (creds) {
+                if (!creds?.email || !creds?.password) return null;
                 const user = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$api$5d$__$28$ecmascript$29$__["default"].user.findUnique({
                     where: {
-                        email: credentials.email
+                        email: creds.email
                     }
                 });
-                if (user && await (0, __TURBOPACK__imported__module__$5b$externals$5d2f$bcrypt__$5b$external$5d$__$28$bcrypt$2c$__cjs$29$__["compare"])(credentials.password, user.password)) {
-                    return user;
-                }
+                if (user && await (0, __TURBOPACK__imported__module__$5b$externals$5d2f$bcrypt__$5b$external$5d$__$28$bcrypt$2c$__cjs$29$__["compare"])(creds.password, user.password)) return user;
                 return null;
             }
         })
@@ -141,7 +140,8 @@ const authOptions = {
             if (session.user) session.user.id = token.id;
             return session;
         }
-    }
+    },
+    debug: ("TURBOPACK compile-time value", "development") === "development"
 };
 const __TURBOPACK__default__export__ = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$next$2d$auth__$5b$external$5d$__$28$next$2d$auth$2c$__cjs$29$__["default"])(authOptions);
 }}),
