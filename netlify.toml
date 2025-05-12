@@ -1,30 +1,38 @@
+Toml:
 # netlify.toml
 
 [build]
-  # comando para instalar deps (opcional, Netlify ya corre `npm install` por defecto)
+  # cómo instalar dependencias (opcional)
   install = "npm ci"
-  # tu build script de Next.js
+  # tu comando de build
   command = "npm run build"
-  # carpeta que publica el plugin-nextjs
+  # carpeta que el plugin-nextjs publica
   publish = ".next"
 
+# Variables de entorno para producción
 [context.production.environment]
   # Prisma / Neon
-  DATABASE_URL                         = "postgresql://neondb_owner:npg_DBUat0C7vnfz@ep-little-moon-a460redc-pooler.us-east-1.aws.neon.tech/neondb?pgbouncer=true&sslmode=require"
+  DATABASE_URL                       = "postgresql://neondb_owner:npg_DBUat0C7vnfz@ep-little-moon-a460redc-pooler.us-east-1.aws.neon.tech/neondb?pgbouncer=true&sslmode=require"
 
   # NextAuth
-  NEXTAUTH_URL                         = "https://bloom-fisio.netlify.app"
-  NEXTAUTH_SECRET                      = "tu_secreto_de_32_caracteres"
+  NEXTAUTH_URL                       = "https://bloom-fisio.netlify.app"
+  NEXTAUTH_SECRET                    = "TU_SECRETO_DE_32_CARACTERES"
 
   # Stripe
-  NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY   = "pk_test_51RGO86FV5ZpZiouC9XFmHRhzP2YgU5u0QaUAJLOIZKY4DVnquGnWVcpSMKpQPFvml1gJnWjwVh6JNWwrwF0mZPeV00Jlsbblzq"
-  STRIPE_SECRET                        = "sk_test_51RGO86FV5ZpZiouCyuhrfVmzxRr5DlgTYTNOzMysSy33FAuPpPEyTaUjEZGj96xD0e9xSroSI1wudMqlhSSCoS2p00jpmZgS3a"
+  NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY = "pk_test_…"
+  STRIPE_SECRET                      = "sk_test_…"
 
-  # Tu URL pública (si la usas en algún helper)
-  NEXT_PUBLIC_APP_BASE                 = "https://bloom-fisio.netlify.app"
+  # Si usas otras (Easy-Appointments, etc):
+  EA_KEY                             = "tu_api_key_easy_appointments"
+  NEXT_PUBLIC_APP_BASE               = "https://bloom-fisio.netlify.app"
 
-
-
-# ¡OJO! Este bloque va **al nivel raíz**, no dentro de [context.production.environment]
+# Este bloque va al nivel raíz, ¡no dentro del [context]!
 [[plugins]]
   package = "@netlify/plugin-nextjs"
+
+# ¡Clave! Redirige todo /api/* a las funciones que genera el plugin
+[[redirects]]
+  from       = "/api/*"
+  to         = "/.netlify/functions/:splat"
+  status     = 200
+  force      = true
