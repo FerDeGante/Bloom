@@ -1,48 +1,51 @@
 import Link from "next/link";
+import React, { ReactNode } from "react";
 import {
   FaWater,
-  FaChild,
-  FaHands,
+  FaShoePrints,
+  FaHandsHelping,
+  FaRunning,
   FaSpa,
-  FaLeaf,
+  FaPaintBrush,
+  FaShieldAlt,
   FaDumbbell,
-  FaAppleAlt,
-  FaPills,
+  FaLeaf,
+  FaAmbulance,
 } from "react-icons/fa";
 
-const servicios = [
-  { id: "agua", icon: <FaWater />, label: "Estimulación en agua" },
-  { id: "piso", icon: <FaChild />, label: "Estimulación en piso" },
-  { id: "quiropractica", icon: <FaHands />, label: "Quiropráctica" },
-  { id: "fisioterapia", icon: <FaSpa />, label: "Fisioterapia" },
-  { id: "masajes", icon: <FaLeaf />, label: "Masajes" },
-  { id: "cosmetologia", icon: <FaSpa />, label: "Cosmetología" },
-  { id: "prevencion-lesiones", icon: <FaDumbbell />, label: "Prevención de lesiones" },
-  { id: "preparacion-fisica", icon: <FaDumbbell />, label: "Preparación física" },
-  { id: "nutricion", icon: <FaAppleAlt />, label: "Nutrición" },
-  { id: "medicina-rehabilitacion", icon: <FaPills />, label: "Medicina en rehabilitación" },
-];
+interface Servicio {
+  slug: string;
+  icon: ReactNode;
+  label: string;
+  color: "primary" | "secondary" | "tertiary";
+}
 
-const colorClasses = [
-  "service-primary",
-  "service-secondary",
-  "service-tertiary",
+const servicios: Servicio[] = [
+  { slug: "agua", icon: <FaWater />, label: "Estimulación en agua", color: "primary" },
+  { slug: "piso", icon: <FaShoePrints />, label: "Estimulación en piso", color: "secondary" },
+  { slug: "quiropractica", icon: <FaHandsHelping />, label: "Quiropráctica", color: "tertiary" },
+  { slug: "fisioterapia", icon: <FaRunning />, label: "Fisioterapia", color: "primary" },
+  { slug: "masajes", icon: <FaSpa />, label: "Masajes", color: "secondary" },
+  { slug: "cosmetologia", icon: <FaPaintBrush />, label: "Cosmetología", color: "tertiary" },
+  { slug: "prevencion-lesiones", icon: <FaShieldAlt />, label: "Prevención de lesiones", color: "primary" },
+  { slug: "preparacion-fisica", icon: <FaDumbbell />, label: "Preparación física", color: "secondary" },
+  { slug: "nutricion", icon: <FaLeaf />, label: "Nutrición", color: "tertiary" },
+  { slug: "medicina-rehabilitacion", icon: <FaAmbulance />, label: "Medicina en rehabilitación", color: "primary" },
 ];
 
 export default function NuestrosServicios() {
   return (
-    <section className="py-5 services-grid" id="reservar">
-      <div className="container text-center">
-        <h2 className="mb-4">Nuestros servicios</h2>
+    <section className="services-grid section-gray">
+      <div className="container">
         <div className="row g-4">
-          {servicios.map((s, i) => (
-            <div key={s.id} className="col-6 col-sm-4 col-md-3 d-flex">
+          {servicios.map((s) => (
+            <div key={s.slug} className="col-6 col-sm-4 col-md-3">
               <Link
-                href="/reservas"
-                className={`service-btn ${colorClasses[i % 3]}`}
+                href={`/dashboard?tab=reservar&servicio=${s.slug}`}
+                className={`service-btn service-${s.color}`}
               >
-                <div className="icon">{s.icon}</div>
-                <div className="label">{s.label}</div>
+                <span className="icon">{s.icon}</span>
+                <span className="label">{s.label}</span>
               </Link>
             </div>
           ))}

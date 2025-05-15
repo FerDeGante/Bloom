@@ -41,7 +41,7 @@ async function handler(req, res) {
         return res.status(405).end("Method not allowed");
     }
     const body = req.body;
-    // 1) Determinar los line items: o vienen como array lineItems o viene priceId
+    // Prepara line items
     let lineItems = [];
     if (Array.isArray(body.lineItems)) {
         lineItems = body.lineItems.map((li)=>({
@@ -67,12 +67,12 @@ async function handler(req, res) {
                 "card"
             ],
             line_items: lineItems,
-            // metadata opcional
             ...body.metadata && {
                 metadata: body.metadata
             },
-            success_url: `${("TURBOPACK compile-time value", "http://localhost:3000")}/dashboard?tab=mis-paquetes`,
-            cancel_url: `${("TURBOPACK compile-time value", "http://localhost:3000")}/dashboard?tab=mis-paquetes`
+            // IMPORTANTE: usar el placeholder {CHECKOUT_SESSION_ID}
+            success_url: `${("TURBOPACK compile-time value", "http://localhost:3000")}/success?session_id={CHECKOUT_SESSION_ID}`,
+            cancel_url: `${("TURBOPACK compile-time value", "http://localhost:3000")}/dashboard?tab=reservar`
         });
         return res.status(200).json({
             sessionId: session.id

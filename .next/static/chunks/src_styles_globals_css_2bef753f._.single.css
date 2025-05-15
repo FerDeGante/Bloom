@@ -66,6 +66,15 @@ body {
   position: relative;
 }
 
+@media (width <= 767px) {
+  .hero {
+    background-position: top;
+    background-size: contain;
+    height: auto;
+    min-height: 100vh;
+  }
+}
+
 .hero-content {
   justify-content: center;
   align-items: center;
@@ -193,6 +202,15 @@ body {
 
 .servicio-card .card-title {
   color: var(--primary);
+}
+
+.package-card {
+  transition: transform .2s, box-shadow .2s;
+}
+
+.package-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 8px 16px #0000001a;
 }
 
 .dashboard-container {

@@ -42,10 +42,13 @@ const Home: NextPage = () => {
         <p className="lead mb-4">
           Reserva tu sesión de fisioterapia de forma fácil y segura.
         </p>
-        <button onClick={handleHero} className="btn-hero">
-          Agendar tu cita
-          <span className="underline" />
-        </button>
+        <button
+  onClick={() => router.push('/dashboard?tab=reservar')}
+  className="btn-hero"
+>
+  Agendar tu cita
+  <span className="underline" />
+</button>
       </section>
 
       <NuestrosServicios />

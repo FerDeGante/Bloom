@@ -595,7 +595,6 @@ var __turbopack_async_dependencies__ = __turbopack_handle_async_dependencies__([
 ;
 ;
 ;
-// Lista completa de servicios y su Price ID en Stripe
 const servicios = [
     {
         slug: "agua",
@@ -646,6 +645,11 @@ const servicios = [
         slug: "medicina-rehabilitacion",
         label: "Medicina en rehabilitación",
         priceId: "price_1RJd9HFV5ZpZiouClVlCujAm"
+    },
+    {
+        slug: "terpia-post-vacuna",
+        label: "Terapia post vacuna",
+        priceId: "price_1ROMxFFV5ZpZiouCdkM2KoHF"
     }
 ];
 const terapeutas = [
@@ -658,35 +662,52 @@ const terapeutas = [
 function ReservasForm() {
     const { data: session, status } = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$next$2d$auth$2f$react__$5b$external$5d$__$28$next$2d$auth$2f$react$2c$__cjs$29$__["useSession"])();
     const router = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$navigation$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["useRouter"])();
+    const [step, setStep] = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useState"])(1);
     const [servicio, setServicio] = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useState"])("");
     const [terapeuta, setTerapeuta] = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useState"])("");
     const [fecha, setFecha] = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useState"])(null);
     const [horario, setHorario] = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useState"])(null);
     const [error, setError] = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useState"])("");
-    // Redirige a login si no está autenticado
+    const [availableHours, setAvailableHours] = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useState"])([]);
+    const horasSemana = Array.from({
+        length: 9
+    }, (_, i)=>10 + i); // 10–18
+    const horasSabado = Array.from({
+        length: 6
+    }, (_, i)=>9 + i); // 9–14
+    // 1) Protección de ruta
     (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useEffect"])(()=>{
-        if (status === "unauthenticated") {
-            router.replace("/login");
-        }
+        if (status === "unauthenticated") router.replace("/login");
     }, [
         status,
         router
     ]);
-    const handleSubmit = async (e)=>{
-        e.preventDefault();
-        if (!servicio || !terapeuta || !fecha || horario === null) {
-            setError("Completa todos los campos");
+    // 2) Filtrar horas pasadas
+    (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useEffect"])(()=>{
+        if (!fecha) {
+            setAvailableHours([]);
             return;
         }
-        const svc = servicios.find((s)=>s.slug === servicio);
-        // Si la fecha es hoy, evitar horas pasadas
-        const ahora = new Date();
-        if (fecha.toDateString() === ahora.toDateString() && horario <= ahora.getHours()) {
-            setError("Selecciona una hora futura");
+        const now = new Date();
+        const base = fecha.getDay() === 6 ? horasSabado : horasSemana;
+        const filtered = fecha.toDateString() === now.toDateString() ? base.filter((h)=>h > now.getHours()) : base;
+        setAvailableHours(filtered);
+    }, [
+        fecha
+    ]);
+    // 3) Paso 1 → validación y siguiente
+    const handleNext = (e)=>{
+        e.preventDefault();
+        if (!servicio || !terapeuta || !fecha || horario === null) {
+            setError("Por favor completa todos los campos");
             return;
         }
         setError("");
-        // Preparar el body para Stripe
+        setStep(2);
+    };
+    // 4) Confirmar y Stripe
+    const handleConfirm = async ()=>{
+        const svc = servicios.find((s)=>s.slug === servicio);
         const stripeBody = {
             userId: session?.user?.id,
             lineItems: [
@@ -702,7 +723,6 @@ function ReservasForm() {
                 hour: `${horario}:00`
             }
         };
-        // Llamar a la API de checkout
         const res = await fetch("/api/stripe/checkout", {
             method: "POST",
             headers: {
@@ -711,26 +731,18 @@ function ReservasForm() {
             body: JSON.stringify(stripeBody)
         });
         const { sessionId } = await res.json();
-        // Redirigir a Stripe Checkout
         const stripe = await (0, __TURBOPACK__imported__module__$5b$externals$5d2f40$stripe$2f$stripe$2d$js__$5b$external$5d$__$2840$stripe$2f$stripe$2d$js$2c$__cjs$29$__["loadStripe"])(("TURBOPACK compile-time value", "pk_test_51RGO86FV5ZpZiouC9XFmHRhzP2YgU5u0QaUAJLOIZKY4DVnquGnWVcpSMKpQPFvml1gJnWjwVh6JNWwrwF0mZPeV00Jlsbblzq"));
         stripe?.redirectToCheckout({
             sessionId
         });
     };
-    // Horarios disponibles
-    const horasSemana = Array.from({
-        length: 9
-    }, (_, i)=>10 + i); // 10–18
-    const horasSabado = Array.from({
-        length: 6
-    }, (_, i)=>9 + i); // 9–14
     if (status === "loading" || !session) {
         return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$bootstrap$2f$esm$2f$Container$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Container$3e$__["Container"], {
             className: "py-5 text-center",
             children: "Cargando…"
         }, void 0, false, {
             fileName: "[project]/src/components/ReservasForm.tsx",
-            lineNumber: 100,
+            lineNumber: 108,
             columnNumber: 12
         }, this);
     }
@@ -742,208 +754,305 @@ function ReservasForm() {
                 children: "Reservar cita"
             }, void 0, false, {
                 fileName: "[project]/src/components/ReservasForm.tsx",
-                lineNumber: 105,
+                lineNumber: 113,
                 columnNumber: 7
             }, this),
-            error && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$bootstrap$2f$esm$2f$Alert$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Alert$3e$__["Alert"], {
-                variant: "danger",
-                children: error
-            }, void 0, false, {
-                fileName: "[project]/src/components/ReservasForm.tsx",
-                lineNumber: 106,
-                columnNumber: 17
-            }, this),
-            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$bootstrap$2f$esm$2f$Form$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Form$3e$__["Form"], {
-                onSubmit: handleSubmit,
-                style: {
-                    maxWidth: 600,
-                    margin: "0 auto"
-                },
+            step === 1 ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["Fragment"], {
                 children: [
-                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$bootstrap$2f$esm$2f$Form$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Form$3e$__["Form"].Group, {
-                        className: "mb-3",
+                    error && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$bootstrap$2f$esm$2f$Alert$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Alert$3e$__["Alert"], {
+                        variant: "danger",
+                        children: error
+                    }, void 0, false, {
+                        fileName: "[project]/src/components/ReservasForm.tsx",
+                        lineNumber: 117,
+                        columnNumber: 21
+                    }, this),
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$bootstrap$2f$esm$2f$Form$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Form$3e$__["Form"], {
+                        onSubmit: handleNext,
+                        style: {
+                            maxWidth: 600,
+                            margin: "0 auto"
+                        },
                         children: [
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$bootstrap$2f$esm$2f$Form$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Form$3e$__["Form"].Label, {
-                                children: "Servicio"
-                            }, void 0, false, {
-                                fileName: "[project]/src/components/ReservasForm.tsx",
-                                lineNumber: 111,
-                                columnNumber: 11
-                            }, this),
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$bootstrap$2f$esm$2f$Form$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Form$3e$__["Form"].Select, {
-                                value: servicio,
-                                onChange: (e)=>{
-                                    setServicio(e.target.value);
-                                    setFecha(null);
-                                    setHorario(null);
-                                },
-                                required: true,
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$bootstrap$2f$esm$2f$Form$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Form$3e$__["Form"].Group, {
+                                className: "mb-3",
                                 children: [
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("option", {
-                                        value: "",
-                                        children: "Selecciona un servicio"
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$bootstrap$2f$esm$2f$Form$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Form$3e$__["Form"].Label, {
+                                        children: "Servicio"
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/ReservasForm.tsx",
                                         lineNumber: 121,
-                                        columnNumber: 13
+                                        columnNumber: 15
                                     }, this),
-                                    servicios.map((s)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("option", {
-                                            value: s.slug,
-                                            children: s.label
-                                        }, s.slug, false, {
-                                            fileName: "[project]/src/components/ReservasForm.tsx",
-                                            lineNumber: 123,
-                                            columnNumber: 15
-                                        }, this))
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$bootstrap$2f$esm$2f$Form$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Form$3e$__["Form"].Select, {
+                                        value: servicio,
+                                        onChange: (e)=>{
+                                            setServicio(e.target.value);
+                                            setFecha(null);
+                                            setHorario(null);
+                                        },
+                                        required: true,
+                                        children: [
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("option", {
+                                                value: "",
+                                                children: "Selecciona un servicio"
+                                            }, void 0, false, {
+                                                fileName: "[project]/src/components/ReservasForm.tsx",
+                                                lineNumber: 131,
+                                                columnNumber: 17
+                                            }, this),
+                                            servicios.map((s)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("option", {
+                                                    value: s.slug,
+                                                    children: s.label
+                                                }, s.slug, false, {
+                                                    fileName: "[project]/src/components/ReservasForm.tsx",
+                                                    lineNumber: 133,
+                                                    columnNumber: 19
+                                                }, this))
+                                        ]
+                                    }, void 0, true, {
+                                        fileName: "[project]/src/components/ReservasForm.tsx",
+                                        lineNumber: 122,
+                                        columnNumber: 15
+                                    }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/ReservasForm.tsx",
-                                lineNumber: 112,
-                                columnNumber: 11
-                            }, this)
-                        ]
-                    }, void 0, true, {
-                        fileName: "[project]/src/components/ReservasForm.tsx",
-                        lineNumber: 110,
-                        columnNumber: 9
-                    }, this),
-                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$bootstrap$2f$esm$2f$Form$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Form$3e$__["Form"].Group, {
-                        className: "mb-3",
-                        children: [
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$bootstrap$2f$esm$2f$Form$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Form$3e$__["Form"].Label, {
-                                children: "Terapeuta"
-                            }, void 0, false, {
-                                fileName: "[project]/src/components/ReservasForm.tsx",
-                                lineNumber: 132,
-                                columnNumber: 11
+                                lineNumber: 120,
+                                columnNumber: 13
                             }, this),
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$bootstrap$2f$esm$2f$Form$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Form$3e$__["Form"].Select, {
-                                value: terapeuta,
-                                onChange: (e)=>{
-                                    setTerapeuta(e.target.value);
-                                    setFecha(null);
-                                    setHorario(null);
-                                },
-                                required: true,
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$bootstrap$2f$esm$2f$Form$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Form$3e$__["Form"].Group, {
+                                className: "mb-3",
                                 children: [
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("option", {
-                                        value: "",
-                                        children: "Selecciona un terapeuta"
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$bootstrap$2f$esm$2f$Form$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Form$3e$__["Form"].Label, {
+                                        children: "Terapeuta"
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/ReservasForm.tsx",
                                         lineNumber: 142,
-                                        columnNumber: 13
+                                        columnNumber: 15
                                     }, this),
-                                    terapeutas.map((t)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("option", {
-                                            value: t,
-                                            children: t
-                                        }, t, false, {
-                                            fileName: "[project]/src/components/ReservasForm.tsx",
-                                            lineNumber: 144,
-                                            columnNumber: 15
-                                        }, this))
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$bootstrap$2f$esm$2f$Form$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Form$3e$__["Form"].Select, {
+                                        value: terapeuta,
+                                        onChange: (e)=>{
+                                            setTerapeuta(e.target.value);
+                                            setFecha(null);
+                                            setHorario(null);
+                                        },
+                                        required: true,
+                                        children: [
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("option", {
+                                                value: "",
+                                                children: "Selecciona un terapeuta"
+                                            }, void 0, false, {
+                                                fileName: "[project]/src/components/ReservasForm.tsx",
+                                                lineNumber: 152,
+                                                columnNumber: 17
+                                            }, this),
+                                            terapeutas.map((t)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("option", {
+                                                    value: t,
+                                                    children: t
+                                                }, t, false, {
+                                                    fileName: "[project]/src/components/ReservasForm.tsx",
+                                                    lineNumber: 154,
+                                                    columnNumber: 19
+                                                }, this))
+                                        ]
+                                    }, void 0, true, {
+                                        fileName: "[project]/src/components/ReservasForm.tsx",
+                                        lineNumber: 143,
+                                        columnNumber: 15
+                                    }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/ReservasForm.tsx",
-                                lineNumber: 133,
-                                columnNumber: 11
-                            }, this)
-                        ]
-                    }, void 0, true, {
-                        fileName: "[project]/src/components/ReservasForm.tsx",
-                        lineNumber: 131,
-                        columnNumber: 9
-                    }, this),
-                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$bootstrap$2f$esm$2f$Form$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Form$3e$__["Form"].Group, {
-                        className: "mb-4",
-                        children: [
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$bootstrap$2f$esm$2f$Form$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Form$3e$__["Form"].Label, {
-                                children: "Fecha"
-                            }, void 0, false, {
-                                fileName: "[project]/src/components/ReservasForm.tsx",
-                                lineNumber: 153,
-                                columnNumber: 11
-                            }, this),
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$externals$5d2f$react$2d$calendar__$5b$external$5d$__$28$react$2d$calendar$2c$__esm_import$29$__["default"], {
-                                onChange: (d)=>setFecha(Array.isArray(d) ? d[0] : d),
-                                value: fecha ?? new Date(),
-                                minDate: new Date(),
-                                tileDisabled: ({ date })=>date.getDay() === 0,
-                                className: "mb-3"
-                            }, void 0, false, {
-                                fileName: "[project]/src/components/ReservasForm.tsx",
-                                lineNumber: 154,
-                                columnNumber: 11
-                            }, this)
-                        ]
-                    }, void 0, true, {
-                        fileName: "[project]/src/components/ReservasForm.tsx",
-                        lineNumber: 152,
-                        columnNumber: 9
-                    }, this),
-                    fecha && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$bootstrap$2f$esm$2f$Form$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Form$3e$__["Form"].Group, {
-                        className: "mb-4",
-                        children: [
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$bootstrap$2f$esm$2f$Form$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Form$3e$__["Form"].Label, {
-                                children: "Hora"
-                            }, void 0, false, {
-                                fileName: "[project]/src/components/ReservasForm.tsx",
-                                lineNumber: 166,
+                                lineNumber: 141,
                                 columnNumber: 13
                             }, this),
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$bootstrap$2f$esm$2f$Row$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Row$3e$__["Row"], {
-                                children: (fecha.getDay() === 6 ? horasSabado : horasSemana).map((h)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$bootstrap$2f$esm$2f$Col$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Col$3e$__["Col"], {
-                                        xs: 4,
-                                        md: 3,
-                                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$bootstrap$2f$esm$2f$Button$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Button$3e$__["Button"], {
-                                            variant: "outline-primary",
-                                            className: `w-100 slot-btn ${horario === h ? "selected" : ""}`,
-                                            type: "button",
-                                            onClick: ()=>setHorario(h),
-                                            children: [
-                                                h,
-                                                ":00"
-                                            ]
-                                        }, void 0, true, {
-                                            fileName: "[project]/src/components/ReservasForm.tsx",
-                                            lineNumber: 170,
-                                            columnNumber: 19
-                                        }, this)
-                                    }, h, false, {
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$bootstrap$2f$esm$2f$Form$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Form$3e$__["Form"].Group, {
+                                className: "mb-4",
+                                children: [
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$bootstrap$2f$esm$2f$Form$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Form$3e$__["Form"].Label, {
+                                        children: "Fecha"
+                                    }, void 0, false, {
                                         fileName: "[project]/src/components/ReservasForm.tsx",
-                                        lineNumber: 169,
+                                        lineNumber: 163,
+                                        columnNumber: 15
+                                    }, this),
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$externals$5d2f$react$2d$calendar__$5b$external$5d$__$28$react$2d$calendar$2c$__esm_import$29$__["default"], {
+                                        onChange: (d)=>setFecha(Array.isArray(d) ? d[0] : d),
+                                        value: fecha ?? new Date(),
+                                        minDate: new Date(),
+                                        tileDisabled: ({ date })=>date.getDay() === 0,
+                                        className: "mb-3"
+                                    }, void 0, false, {
+                                        fileName: "[project]/src/components/ReservasForm.tsx",
+                                        lineNumber: 164,
+                                        columnNumber: 15
+                                    }, this)
+                                ]
+                            }, void 0, true, {
+                                fileName: "[project]/src/components/ReservasForm.tsx",
+                                lineNumber: 162,
+                                columnNumber: 13
+                            }, this),
+                            fecha && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$bootstrap$2f$esm$2f$Form$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Form$3e$__["Form"].Group, {
+                                className: "mb-4",
+                                children: [
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$bootstrap$2f$esm$2f$Form$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Form$3e$__["Form"].Label, {
+                                        children: "Hora"
+                                    }, void 0, false, {
+                                        fileName: "[project]/src/components/ReservasForm.tsx",
+                                        lineNumber: 176,
                                         columnNumber: 17
-                                    }, this))
+                                    }, this),
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$bootstrap$2f$esm$2f$Row$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Row$3e$__["Row"], {
+                                        children: availableHours.map((h)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$bootstrap$2f$esm$2f$Col$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Col$3e$__["Col"], {
+                                                xs: 4,
+                                                md: 3,
+                                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$bootstrap$2f$esm$2f$Button$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Button$3e$__["Button"], {
+                                                    variant: "outline-primary",
+                                                    className: `w-100 slot-btn ${horario === h ? "selected" : ""}`,
+                                                    type: "button",
+                                                    onClick: ()=>setHorario(h),
+                                                    children: [
+                                                        h,
+                                                        ":00"
+                                                    ]
+                                                }, void 0, true, {
+                                                    fileName: "[project]/src/components/ReservasForm.tsx",
+                                                    lineNumber: 180,
+                                                    columnNumber: 23
+                                                }, this)
+                                            }, h, false, {
+                                                fileName: "[project]/src/components/ReservasForm.tsx",
+                                                lineNumber: 179,
+                                                columnNumber: 21
+                                            }, this))
+                                    }, void 0, false, {
+                                        fileName: "[project]/src/components/ReservasForm.tsx",
+                                        lineNumber: 177,
+                                        columnNumber: 17
+                                    }, this)
+                                ]
+                            }, void 0, true, {
+                                fileName: "[project]/src/components/ReservasForm.tsx",
+                                lineNumber: 175,
+                                columnNumber: 15
+                            }, this),
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$bootstrap$2f$esm$2f$Button$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Button$3e$__["Button"], {
+                                type: "submit",
+                                className: "w-100 btn-orange",
+                                children: "Siguiente"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/ReservasForm.tsx",
-                                lineNumber: 167,
+                                lineNumber: 194,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/ReservasForm.tsx",
-                        lineNumber: 165,
+                        lineNumber: 118,
                         columnNumber: 11
-                    }, this),
-                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$bootstrap$2f$esm$2f$Button$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Button$3e$__["Button"], {
-                        type: "submit",
-                        className: "w-100 btn-orange",
-                        children: "Confirmar y pagar"
-                    }, void 0, false, {
-                        fileName: "[project]/src/components/ReservasForm.tsx",
-                        lineNumber: 184,
-                        columnNumber: 9
                     }, this)
                 ]
-            }, void 0, true, {
-                fileName: "[project]/src/components/ReservasForm.tsx",
-                lineNumber: 108,
-                columnNumber: 7
-            }, this)
+            }, void 0, true) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["Fragment"], {
+                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
+                    className: "p-4",
+                    style: {
+                        maxWidth: 600,
+                        margin: "0 auto"
+                    },
+                    children: [
+                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("h3", {
+                            children: "Confirma tu reserva"
+                        }, void 0, false, {
+                            fileName: "[project]/src/components/ReservasForm.tsx",
+                            lineNumber: 202,
+                            columnNumber: 13
+                        }, this),
+                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("p", {
+                            children: [
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("strong", {
+                                    children: "Servicio:"
+                                }, void 0, false, {
+                                    fileName: "[project]/src/components/ReservasForm.tsx",
+                                    lineNumber: 204,
+                                    columnNumber: 15
+                                }, this),
+                                " ",
+                                servicios.find((s)=>s.slug === servicio)?.label
+                            ]
+                        }, void 0, true, {
+                            fileName: "[project]/src/components/ReservasForm.tsx",
+                            lineNumber: 203,
+                            columnNumber: 13
+                        }, this),
+                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("p", {
+                            children: [
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("strong", {
+                                    children: "Terapeuta:"
+                                }, void 0, false, {
+                                    fileName: "[project]/src/components/ReservasForm.tsx",
+                                    lineNumber: 208,
+                                    columnNumber: 15
+                                }, this),
+                                " ",
+                                terapeuta
+                            ]
+                        }, void 0, true, {
+                            fileName: "[project]/src/components/ReservasForm.tsx",
+                            lineNumber: 207,
+                            columnNumber: 13
+                        }, this),
+                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("p", {
+                            children: [
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("strong", {
+                                    children: "Fecha:"
+                                }, void 0, false, {
+                                    fileName: "[project]/src/components/ReservasForm.tsx",
+                                    lineNumber: 211,
+                                    columnNumber: 15
+                                }, this),
+                                " ",
+                                fecha?.toLocaleDateString(),
+                                " a las ",
+                                horario,
+                                ":00"
+                            ]
+                        }, void 0, true, {
+                            fileName: "[project]/src/components/ReservasForm.tsx",
+                            lineNumber: 210,
+                            columnNumber: 13
+                        }, this),
+                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$bootstrap$2f$esm$2f$Button$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Button$3e$__["Button"], {
+                            onClick: handleConfirm,
+                            className: "w-100 btn-orange mb-2",
+                            children: "Confirmar y Pagar"
+                        }, void 0, false, {
+                            fileName: "[project]/src/components/ReservasForm.tsx",
+                            lineNumber: 214,
+                            columnNumber: 13
+                        }, this),
+                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$bootstrap$2f$esm$2f$Button$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Button$3e$__["Button"], {
+                            variant: "link",
+                            onClick: ()=>setStep(1),
+                            children: "← Volver"
+                        }, void 0, false, {
+                            fileName: "[project]/src/components/ReservasForm.tsx",
+                            lineNumber: 217,
+                            columnNumber: 13
+                        }, this)
+                    ]
+                }, void 0, true, {
+                    fileName: "[project]/src/components/ReservasForm.tsx",
+                    lineNumber: 201,
+                    columnNumber: 11
+                }, this)
+            }, void 0, false)
         ]
     }, void 0, true, {
         fileName: "[project]/src/components/ReservasForm.tsx",
-        lineNumber: 104,
+        lineNumber: 112,
         columnNumber: 5
     }, this);
 }

@@ -13,7 +13,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   const body = req.body as any;
 
-  // 1) Determinar los line items: o vienen como array lineItems o viene priceId
+  // Prepara line items
   let lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = [];
   if (Array.isArray(body.lineItems)) {
     lineItems = body.lineItems.map((li: any) => ({
@@ -33,10 +33,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       mode: "payment",
       payment_method_types: ["card"],
       line_items: lineItems,
-      // metadata opcional
       ...(body.metadata && { metadata: body.metadata }),
-      success_url: `${process.env.NEXT_PUBLIC_APP_BASE}/dashboard?tab=mis-paquetes`,
-      cancel_url: `${process.env.NEXT_PUBLIC_APP_BASE}/dashboard?tab=mis-paquetes`,
+      // IMPORTANTE: usar el placeholder {CHECKOUT_SESSION_ID}
+      success_url: `${process.env.NEXT_PUBLIC_APP_BASE}/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${process.env.NEXT_PUBLIC_APP_BASE}/dashboard?tab=reservar`,
     });
     return res.status(200).json({ sessionId: session.id });
   } catch (err: any) {

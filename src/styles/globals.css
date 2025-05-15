@@ -67,6 +67,15 @@ body {
   position: relative;
   z-index: 0;
 }
+@media (max-width: 767px) {
+  .hero {
+    background-size: contain;
+    background-position: top center;
+    height: auto; /* Ajusta la altura automáticamente según el contenido */
+    min-height: 100vh; /* Asegura que ocupe al menos el alto de la ventana */
+  }
+}
+
 .hero-content {
   position: absolute;
   top: 0; left: 0;
@@ -182,6 +191,16 @@ body {
 .servicio-card .card-title {
   color: var(--primary);
 }
+
+/* Paquetes cards */
+.package-card {
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.package-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+}
+
 
 /* Dashboard SPA */
 .dashboard-container {
