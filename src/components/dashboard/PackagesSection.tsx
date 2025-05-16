@@ -46,7 +46,7 @@ const paquetesData: PackageData[] = [
     title: "Fisioterapia",
     image: "/images/fisio_animado.jpeg",
     options: [
-      { label: "1 sesión",    price: 0,    priceId: "price_1RJd3WFV5ZpZiouC9PDzHjKU", sessions: 1 },
+      { label: "1 sesión",    price: 500,    priceId: "price_1RJd3WFV5ZpZiouC9PDzHjKU", sessions: 1 },
       { label: "5 sesiones",  price: 2000, priceId: "price_1RP6WwFV5ZpZiouCN3m0luq3", sessions: 5 },
       { label: "10 sesiones", price: 3000, priceId: "price_1RP6W9FV5ZpZiouCBXnZwxLW", sessions: 10 },
     ],

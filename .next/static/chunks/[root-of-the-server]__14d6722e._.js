@@ -1240,7 +1240,7 @@ const paquetesData = [
         options: [
             {
                 label: "1 sesión",
-                price: 0,
+                price: 500,
                 priceId: "price_1RJd3WFV5ZpZiouC9PDzHjKU",
                 sessions: 1
             },
@@ -1670,6 +1670,18 @@ const therapistList = [
     {
         id: "ther_2",
         name: "Miguel Ramírez"
+    },
+    {
+        id: "ther_3",
+        name: "Alitzel Pacheco"
+    },
+    {
+        id: "ther_4",
+        name: "Francia"
+    },
+    {
+        id: "ther_5",
+        name: "Gisela"
     }
 ];
 function ReservarPaquete({ type, sessions, priceId }) {
@@ -1747,7 +1759,7 @@ function ReservarPaquete({ type, sessions, priceId }) {
         animation: "border"
     }, void 0, false, {
         fileName: "[project]/src/components/dashboard/ReservarPaquete.tsx",
-        lineNumber: 94,
+        lineNumber: 96,
         columnNumber: 48
     }, this);
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$bootstrap$2f$esm$2f$Container$2e$js__$5b$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Container$3e$__["Container"], {
@@ -1758,7 +1770,7 @@ function ReservarPaquete({ type, sessions, priceId }) {
                 children: done < sessions ? `Sesión ${current + 1} de ${sessions}` : "Resumen"
             }, void 0, false, {
                 fileName: "[project]/src/components/dashboard/ReservarPaquete.tsx",
-                lineNumber: 98,
+                lineNumber: 100,
                 columnNumber: 7
             }, this),
             error && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$bootstrap$2f$esm$2f$Alert$2e$js__$5b$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Alert$3e$__["Alert"], {
@@ -1766,7 +1778,7 @@ function ReservarPaquete({ type, sessions, priceId }) {
                 children: error
             }, void 0, false, {
                 fileName: "[project]/src/components/dashboard/ReservarPaquete.tsx",
-                lineNumber: 101,
+                lineNumber: 103,
                 columnNumber: 17
             }, this),
             done < sessions ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["Fragment"], {
@@ -1778,7 +1790,7 @@ function ReservarPaquete({ type, sessions, priceId }) {
                                 children: "Terapeuta"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/dashboard/ReservarPaquete.tsx",
-                                lineNumber: 106,
+                                lineNumber: 108,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$bootstrap$2f$esm$2f$Form$2e$js__$5b$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Form$3e$__["Form"].Select, {
@@ -1792,7 +1804,7 @@ function ReservarPaquete({ type, sessions, priceId }) {
                                         children: "Selecciona un terapeuta"
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/dashboard/ReservarPaquete.tsx",
-                                        lineNumber: 111,
+                                        lineNumber: 113,
                                         columnNumber: 15
                                     }, this),
                                     therapistList.map((t)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -1800,19 +1812,19 @@ function ReservarPaquete({ type, sessions, priceId }) {
                                             children: t.name
                                         }, t.id, false, {
                                             fileName: "[project]/src/components/dashboard/ReservarPaquete.tsx",
-                                            lineNumber: 113,
+                                            lineNumber: 115,
                                             columnNumber: 17
                                         }, this))
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/dashboard/ReservarPaquete.tsx",
-                                lineNumber: 107,
+                                lineNumber: 109,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/dashboard/ReservarPaquete.tsx",
-                        lineNumber: 105,
+                        lineNumber: 107,
                         columnNumber: 11
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$calendar$2f$dist$2f$esm$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__$3c$locals$3e$__["default"], {
@@ -1825,7 +1837,7 @@ function ReservarPaquete({ type, sessions, priceId }) {
                         maxDate: maxDate
                     }, void 0, false, {
                         fileName: "[project]/src/components/dashboard/ReservarPaquete.tsx",
-                        lineNumber: 118,
+                        lineNumber: 120,
                         columnNumber: 11
                     }, this),
                     thisSlot.date && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1835,7 +1847,7 @@ function ReservarPaquete({ type, sessions, priceId }) {
                                 children: "Hora:"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/dashboard/ReservarPaquete.tsx",
-                                lineNumber: 125,
+                                lineNumber: 127,
                                 columnNumber: 15
                             }, this),
                             " ",
@@ -1861,13 +1873,13 @@ function ReservarPaquete({ type, sessions, priceId }) {
                                     ]
                                 }, h, true, {
                                     fileName: "[project]/src/components/dashboard/ReservarPaquete.tsx",
-                                    lineNumber: 127,
+                                    lineNumber: 129,
                                     columnNumber: 17
                                 }, this))
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/dashboard/ReservarPaquete.tsx",
-                        lineNumber: 124,
+                        lineNumber: 126,
                         columnNumber: 13
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1879,7 +1891,7 @@ function ReservarPaquete({ type, sessions, priceId }) {
                                 children: "← Anterior"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/dashboard/ReservarPaquete.tsx",
-                                lineNumber: 138,
+                                lineNumber: 140,
                                 columnNumber: 27
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$bootstrap$2f$esm$2f$Button$2e$js__$5b$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Button$3e$__["Button"], {
@@ -1888,13 +1900,13 @@ function ReservarPaquete({ type, sessions, priceId }) {
                                 children: current < sessions - 1 ? "Siguiente" : "Finalizar"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/dashboard/ReservarPaquete.tsx",
-                                lineNumber: 139,
+                                lineNumber: 141,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/dashboard/ReservarPaquete.tsx",
-                        lineNumber: 137,
+                        lineNumber: 139,
                         columnNumber: 11
                     }, this)
                 ]
@@ -1915,12 +1927,12 @@ function ReservarPaquete({ type, sessions, priceId }) {
                                 ]
                             }, i, true, {
                                 fileName: "[project]/src/components/dashboard/ReservarPaquete.tsx",
-                                lineNumber: 148,
+                                lineNumber: 150,
                                 columnNumber: 15
                             }, this))
                     }, void 0, false, {
                         fileName: "[project]/src/components/dashboard/ReservarPaquete.tsx",
-                        lineNumber: 146,
+                        lineNumber: 148,
                         columnNumber: 11
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$bootstrap$2f$esm$2f$Button$2e$js__$5b$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Button$3e$__["Button"], {
@@ -1929,7 +1941,7 @@ function ReservarPaquete({ type, sessions, priceId }) {
                         children: "Confirmar y pagar"
                     }, void 0, false, {
                         fileName: "[project]/src/components/dashboard/ReservarPaquete.tsx",
-                        lineNumber: 155,
+                        lineNumber: 157,
                         columnNumber: 11
                     }, this)
                 ]
@@ -1937,7 +1949,7 @@ function ReservarPaquete({ type, sessions, priceId }) {
         ]
     }, void 0, true, {
         fileName: "[project]/src/components/dashboard/ReservarPaquete.tsx",
-        lineNumber: 97,
+        lineNumber: 99,
         columnNumber: 5
     }, this);
 }

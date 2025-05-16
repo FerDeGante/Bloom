@@ -25,7 +25,9 @@ const priceToServiceId: Record<string, string> = {
 const therapistList = [
   { id: "ther_1", name: "Jesús Ramírez" },
   { id: "ther_2", name: "Miguel Ramírez" },
-  // …
+  { id: "ther_3", name: "Alitzel Pacheco" },
+  { id: "ther_4", name: "Francia" },
+  { id: "ther_5", name: "Gisela" },
 ];
 
 interface Props {

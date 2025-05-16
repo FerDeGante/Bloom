@@ -45,6 +45,7 @@ module.exports = mod;
 
 var { g: global, __dirname } = __turbopack_context__;
 {
+// src/lib/prisma.ts
 __turbopack_context__.s({
     "default": (()=>__TURBOPACK__default__export__),
     "prisma": (()=>prisma)
@@ -57,7 +58,9 @@ const prisma = global.prisma || new __TURBOPACK__imported__module__$5b$externals
         "error"
     ]
 });
-if ("TURBOPACK compile-time truthy", 1) global.prisma = prisma;
+if ("TURBOPACK compile-time truthy", 1) {
+    global.prisma = prisma;
+}
 const __TURBOPACK__default__export__ = prisma;
 }}),
 "[externals]/bcrypt [external] (bcrypt, cjs)": (function(__turbopack_context__) {
