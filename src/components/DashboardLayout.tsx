@@ -1,7 +1,9 @@
+// File: src/components/DashboardLayout.tsx
 "use client";
 
-import { useState, ReactNode } from "react";
+import { ReactNode, useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/router";
 import ProtectedRoute from "./ProtectedRoute";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
@@ -9,24 +11,47 @@ import Footer from "./Footer";
 import AccountSection from "./dashboard/AccountSection";
 import PackagesSection from "./dashboard/PackagesSection";
 import HistorySection from "./dashboard/HistorySection";
-import ReservarSection from "./dashboard/ReservarSection";
+import ReservarPaquete from "./dashboard/ReservarPaquete";
 
 type TabKey = "mi-cuenta" | "mis-paquetes" | "historial" | "reservar";
 
 export default function DashboardLayout({ children }: { children?: ReactNode }) {
   const { data: session } = useSession();
-  const [tab, setTab] = useState<TabKey>("mi-cuenta");
+  const router = useRouter();
+  const { view, type, sessions, priceId } = router.query;
 
-  const tabs: readonly [TabKey, string][] = [
+  const reservarQuery =
+    view === "reservar-paquete" &&
+    typeof type === "string" &&
+    typeof sessions === "string" &&
+    typeof priceId === "string";
+
+  const [tab, setTab] = useState<TabKey>(
+    reservarQuery ? "reservar" : "mis-paquetes"
+  );
+
+  useEffect(() => {
+    if (reservarQuery) {
+      setTab("reservar");
+    }
+  }, [reservarQuery]);
+
+  const tabs: [TabKey, string][] = [
     ["mi-cuenta", "Mi cuenta"],
     ["mis-paquetes", "Mis paquetes"],
-    ["historial", "Historial de reservas"],
+    ["historial", "Historial"],
     ["reservar", "Reservar"],
   ];
 
+  const handleTab = (key: TabKey) => {
+    setTab(key);
+    if (key !== "reservar") {
+      router.replace("/dashboard", undefined, { shallow: true });
+    }
+  };
+
   return (
     <ProtectedRoute>
-      {/* Este Navbar sólo se renderiza una vez en Dashboard */}
       <Navbar />
 
       <div className="dashboard-container py-4">
@@ -40,7 +65,7 @@ export default function DashboardLayout({ children }: { children?: ReactNode }) 
               <button
                 type="button"
                 className={`nav-link ${tab === key ? "active" : ""}`}
-                onClick={() => setTab(key)}
+                onClick={() => handleTab(key)}
               >
                 {label}
               </button>
@@ -49,14 +74,24 @@ export default function DashboardLayout({ children }: { children?: ReactNode }) 
         </ul>
 
         {tab === "mi-cuenta" && <AccountSection />}
-        {tab === "mis-paquetes" && <PackagesSection />}
-        {tab === "historial" && <HistorySection />}
-        {tab === "reservar" && <ReservarSection />}
 
-        {children}
+        {tab === "mis-paquetes" && <PackagesSection />}
+
+        {tab === "historial" && <HistorySection />}
+
+        {tab === "reservar" &&
+          (reservarQuery ? (
+            <ReservarPaquete
+              type={type}
+              sessions={Number(sessions)}
+              priceId={priceId}
+            />
+          ) : (
+            <PackagesSection />
+          ))}
+
       </div>
 
-      {/* Este Footer sólo se renderiza una vez en Dashboard */}
       <Footer />
     </ProtectedRoute>
   );

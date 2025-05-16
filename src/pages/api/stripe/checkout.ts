@@ -1,3 +1,4 @@
+// src/pages/api/stripe/checkout.ts
 import type { NextApiRequest, NextApiResponse } from "next";
 import Stripe from "stripe";
 
@@ -12,8 +13,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   const body = req.body as any;
-
-  // Prepara line items
   let lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = [];
   if (Array.isArray(body.lineItems)) {
     lineItems = body.lineItems.map((li: any) => ({
@@ -23,9 +22,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   } else if (typeof body.priceId === "string") {
     lineItems = [{ price: body.priceId, quantity: 1 }];
   } else {
-    return res
-      .status(400)
-      .json({ error: "Debes enviar priceId o lineItems en el body" });
+    return res.status(400).json({ error: "Debes enviar priceId o lineItems en el body" });
   }
 
   try {
@@ -33,8 +30,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       mode: "payment",
       payment_method_types: ["card"],
       line_items: lineItems,
-      ...(body.metadata && { metadata: body.metadata }),
-      // IMPORTANTE: usar el placeholder {CHECKOUT_SESSION_ID}
+      metadata: body.metadata,
       success_url: `${process.env.NEXT_PUBLIC_APP_BASE}/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${process.env.NEXT_PUBLIC_APP_BASE}/dashboard?tab=reservar`,
     });

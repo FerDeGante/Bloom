@@ -1,55 +1,94 @@
+// src/components/dashboard/HistorySection.tsx
 "use client";
 
-import { useSession } from "next-auth/react";
-import { useEffect, useState } from "react";
-import { Table, Alert } from "react-bootstrap";
-import { format } from "date-fns";
+import React, { useEffect, useState } from "react";
+import { Table, Spinner, Alert } from "react-bootstrap";
+import { Edit3 } from "react-feather";
 
-interface Reservation {
+interface HistoryItem {
   id: string;
-  service: { name: string };
-  therapist: { name: string };
-  date: string;
+  date: string;       // ISO string
+  serviceName: string;
+  therapistName: string;
 }
 
 export default function HistorySection() {
-  const { status } = useSession({ required: true });
-  const [history, setHistory] = useState<Reservation[]>([]);
+  const [rows, setRows] = useState<HistoryItem[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("/api/appointments")
-      .then((r) => r.ok ? r.json() : Promise.reject())
-      .then((data) => setHistory(data.reservations || []))
-      .catch(() => setHistory([]))
+    fetch("/api/appointments/history")
+      .then(res => {
+        if (!res.ok) throw new Error("Unauthorized");
+        return res.json();
+      })
+      .then((data: HistoryItem[]) => setRows(data))
+      .catch(console.error)
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <p>Cargando historial…</p>;
-  if (history.length === 0) {
-    return <Alert variant="info">No tienes reservaciones.</Alert>;
+  if (loading) {
+    return (
+      <div className="text-center py-5">
+        <Spinner animation="border" />
+      </div>
+    );
+  }
+
+  if (rows.length === 0) {
+    return (
+      <Alert variant="info" className="text-center">
+        Aún no tienes sesiones agendadas.
+      </Alert>
+    );
   }
 
   return (
-    <div className="table-responsive">
-      <Table striped>
+    <div className="overflow-auto">
+      <Table hover responsive className="dashboard-table">
         <thead>
           <tr>
             <th>Servicio</th>
             <th>Terapeuta</th>
-            <th>Fecha</th>
-            <th>Hora</th>
+            <th>Fecha y hora</th>
+            <th>Acciones</th>
           </tr>
         </thead>
         <tbody>
-          {history.map((item) => {
-            const dt = new Date(item.date);
+          {rows.map(r => {
+            const dt = new Date(r.date);
+            const fecha = dt.toLocaleDateString();
+            const hora = dt.toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+            });
+            const isFuture = dt.getTime() > Date.now();
+
             return (
-              <tr key={item.id}>
-                <td>{item.service.name}</td>
-                <td>{item.therapist.name}</td>
-                <td>{format(dt, "yyyy-MM-dd")}</td>
-                <td>{format(dt, "HH:mm")}</td>
+              <tr key={r.id}>
+                <td>{r.serviceName}</td>
+                <td>{r.therapistName}</td>
+                <td>
+                  {fecha} • {hora}
+                </td>
+                <td>
+                  <span
+                    title={
+                      isFuture
+                        ? "Editar esta sesión"
+                        : "No puedes editar sesiones pasadas"
+                    }
+                  >
+                    <Edit3
+                      size={18}
+                      className={isFuture ? "icon-editable" : "icon-disabled"}
+                      onClick={() => {
+                        if (!isFuture) return;
+                        // abrir modal de edición aquí
+                      }}
+                    />
+                  </span>
+                </td>
               </tr>
             );
           })}

@@ -49,7 +49,6 @@ const __TURBOPACK__default__export__ = prisma;
 
 var { g: global, __dirname } = __turbopack_context__;
 {
-// src/pages/api/appointments/history.ts
 __turbopack_context__.s({
     "default": (()=>handler)
 });
@@ -58,10 +57,20 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__
 ;
 ;
 async function handler(req, res) {
+    if (req.method !== "GET") {
+        res.setHeader("Allow", "GET");
+        return res.status(405).json({
+            error: "Method not allowed"
+        });
+    }
     const session = await (0, __TURBOPACK__imported__module__$5b$externals$5d2f$next$2d$auth$2f$react__$5b$external$5d$__$28$next$2d$auth$2f$react$2c$__cjs$29$__["getSession"])({
         req
     });
-    if (!session || !session.user?.id) return res.status(401).end();
+    if (!session?.user?.id) {
+        return res.status(401).json({
+            error: "Unauthorized"
+        });
+    }
     const hist = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$api$5d$__$28$ecmascript$29$__["default"].reservation.findMany({
         where: {
             userId: session.user.id
@@ -74,12 +83,13 @@ async function handler(req, res) {
             date: "desc"
         }
     });
-    res.json(hist.map((r)=>({
+    const data = hist.map((r)=>({
             id: r.id,
-            date: r.date,
+            date: r.date.toISOString(),
             serviceName: r.service.name,
             therapistName: r.therapist.name
-        })));
+        }));
+    return res.status(200).json(data);
 }
 }}),
 "[project]/node_modules/next/dist/esm/server/route-modules/pages-api/module.compiled.js [api] (ecmascript)": (function(__turbopack_context__) {

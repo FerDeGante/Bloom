@@ -53,13 +53,19 @@ module.exports = mod;
 
 var { g: global, __dirname } = __turbopack_context__;
 {
-// src/lib/prisma.ts
 __turbopack_context__.s({
-    "default": (()=>__TURBOPACK__default__export__)
+    "default": (()=>__TURBOPACK__default__export__),
+    "prisma": (()=>prisma)
 });
 var __TURBOPACK__imported__module__$5b$externals$5d2f40$prisma$2f$client__$5b$external$5d$__$2840$prisma$2f$client$2c$__cjs$29$__ = __turbopack_context__.i("[externals]/@prisma/client [external] (@prisma/client, cjs)");
 ;
-const prisma = new __TURBOPACK__imported__module__$5b$externals$5d2f40$prisma$2f$client__$5b$external$5d$__$2840$prisma$2f$client$2c$__cjs$29$__["PrismaClient"]();
+const prisma = global.prisma || new __TURBOPACK__imported__module__$5b$externals$5d2f40$prisma$2f$client__$5b$external$5d$__$2840$prisma$2f$client$2c$__cjs$29$__["PrismaClient"]({
+    log: [
+        "query",
+        "error"
+    ]
+});
+if ("TURBOPACK compile-time truthy", 1) global.prisma = prisma;
 const __TURBOPACK__default__export__ = prisma;
 }}),
 "[externals]/bcrypt [external] (bcrypt, cjs)": (function(__turbopack_context__) {
@@ -77,31 +83,32 @@ var { g: global, __dirname } = __turbopack_context__;
 {
 // src/pages/api/auth/[...nextauth].ts
 __turbopack_context__.s({
+    "authOptions": (()=>authOptions),
     "default": (()=>__TURBOPACK__default__export__)
 });
 var __TURBOPACK__imported__module__$5b$externals$5d2f$next$2d$auth__$5b$external$5d$__$28$next$2d$auth$2c$__cjs$29$__ = __turbopack_context__.i("[externals]/next-auth [external] (next-auth, cjs)");
 var __TURBOPACK__imported__module__$5b$externals$5d2f$next$2d$auth$2f$providers$2f$credentials__$5b$external$5d$__$28$next$2d$auth$2f$providers$2f$credentials$2c$__cjs$29$__ = __turbopack_context__.i("[externals]/next-auth/providers/credentials [external] (next-auth/providers/credentials, cjs)");
 var __TURBOPACK__imported__module__$5b$externals$5d2f40$next$2d$auth$2f$prisma$2d$adapter__$5b$external$5d$__$2840$next$2d$auth$2f$prisma$2d$adapter$2c$__cjs$29$__ = __turbopack_context__.i("[externals]/@next-auth/prisma-adapter [external] (@next-auth/prisma-adapter, cjs)");
-var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$api$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/src/lib/prisma.ts [api] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$api$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/src/lib/prisma.ts [api] (ecmascript)"); // revisa que prisma.ts importe correctamente
 var __TURBOPACK__imported__module__$5b$externals$5d2f$bcrypt__$5b$external$5d$__$28$bcrypt$2c$__cjs$29$__ = __turbopack_context__.i("[externals]/bcrypt [external] (bcrypt, cjs)");
 ;
 ;
 ;
 ;
 ;
-const __TURBOPACK__default__export__ = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$next$2d$auth__$5b$external$5d$__$28$next$2d$auth$2c$__cjs$29$__["default"])({
+const authOptions = {
     adapter: (0, __TURBOPACK__imported__module__$5b$externals$5d2f40$next$2d$auth$2f$prisma$2d$adapter__$5b$external$5d$__$2840$next$2d$auth$2f$prisma$2d$adapter$2c$__cjs$29$__["PrismaAdapter"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$api$5d$__$28$ecmascript$29$__["default"]),
     secret: process.env.NEXTAUTH_SECRET,
-    session: {
-        strategy: "jwt"
-    },
     pages: {
-        signIn: "/login",
-        error: "/login"
+        signIn: "/login"
+    },
+    session: {
+        strategy: "jwt",
+        maxAge: 86400
     },
     providers: [
         (0, __TURBOPACK__imported__module__$5b$externals$5d2f$next$2d$auth$2f$providers$2f$credentials__$5b$external$5d$__$28$next$2d$auth$2f$providers$2f$credentials$2c$__cjs$29$__["default"])({
-            name: "Email",
+            name: "Email / Password",
             credentials: {
                 email: {
                     label: "Correo",
@@ -112,15 +119,14 @@ const __TURBOPACK__default__export__ = (0, __TURBOPACK__imported__module__$5b$ex
                     type: "password"
                 }
             },
-            async authorize (credentials) {
+            async authorize (creds) {
+                if (!creds?.email || !creds?.password) return null;
                 const user = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$api$5d$__$28$ecmascript$29$__["default"].user.findUnique({
                     where: {
-                        email: credentials.email
+                        email: creds.email
                     }
                 });
-                if (user && await (0, __TURBOPACK__imported__module__$5b$externals$5d2f$bcrypt__$5b$external$5d$__$28$bcrypt$2c$__cjs$29$__["compare"])(credentials.password, user.password)) {
-                    return user;
-                }
+                if (user && await (0, __TURBOPACK__imported__module__$5b$externals$5d2f$bcrypt__$5b$external$5d$__$28$bcrypt$2c$__cjs$29$__["compare"])(creds.password, user.password)) return user;
                 return null;
             }
         })
@@ -134,8 +140,10 @@ const __TURBOPACK__default__export__ = (0, __TURBOPACK__imported__module__$5b$ex
             if (session.user) session.user.id = token.id;
             return session;
         }
-    }
-});
+    },
+    debug: ("TURBOPACK compile-time value", "development") === "development"
+};
+const __TURBOPACK__default__export__ = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$next$2d$auth__$5b$external$5d$__$28$next$2d$auth$2c$__cjs$29$__["default"])(authOptions);
 }}),
 "[project]/src/pages/api/auth/change-password.ts [api] (ecmascript)": ((__turbopack_context__) => {
 "use strict";
@@ -155,35 +163,56 @@ var __TURBOPACK__imported__module__$5b$externals$5d2f$bcrypt__$5b$external$5d$__
 ;
 ;
 async function handler(req, res) {
-    if (req.method !== "POST") return res.status(405).end();
+    if (req.method !== "POST") {
+        // Solo permitimos POST
+        return res.status(405).end();
+    }
+    // Obtiene la sesión del usuario
     const session = await (0, __TURBOPACK__imported__module__$5b$externals$5d2f$next$2d$auth$2f$next__$5b$external$5d$__$28$next$2d$auth$2f$next$2c$__cjs$29$__["getServerSession"])(req, res, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$pages$2f$api$2f$auth$2f5b2e2e2e$nextauth$5d2e$ts__$5b$api$5d$__$28$ecmascript$29$__["authOptions"]);
-    if (!session?.user?.id) return res.status(401).json({
-        error: "No autorizado"
-    });
+    if (!session?.user?.id) {
+        return res.status(401).json({
+            error: "No autorizado"
+        });
+    }
+    // Extrae parámetros del body
     const { currentPassword, newPassword } = req.body;
+    if (!currentPassword || !newPassword) {
+        return res.status(400).json({
+            error: "Faltan campos"
+        });
+    }
+    // Busca el usuario en la base de datos
     const user = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$api$5d$__$28$ecmascript$29$__["default"].user.findUnique({
         where: {
             id: session.user.id
         }
     });
-    if (!user) return res.status(404).json({
-        error: "Usuario no encontrado"
-    });
-    // validar currentPassword
-    const match = await __turbopack_context__.r("[externals]/bcrypt [external] (bcrypt, cjs, async loader)")(__turbopack_context__.i).then((m)=>m.compare(currentPassword, user.password));
-    if (!match) return res.status(400).json({
-        error: "Contraseña actual incorrecta"
-    });
-    // update
+    if (!user) {
+        return res.status(404).json({
+            error: "Usuario no encontrado"
+        });
+    }
+    // Verifica que la contraseña actual coincida
+    const isMatch = await (0, __TURBOPACK__imported__module__$5b$externals$5d2f$bcrypt__$5b$external$5d$__$28$bcrypt$2c$__cjs$29$__["compare"])(currentPassword, user.password);
+    if (!isMatch) {
+        return res.status(401).json({
+            error: "Contraseña actual incorrecta"
+        });
+    }
+    // Hashea y guarda la nueva contraseña
+    const hashed = await (0, __TURBOPACK__imported__module__$5b$externals$5d2f$bcrypt__$5b$external$5d$__$28$bcrypt$2c$__cjs$29$__["hash"])(newPassword, 10);
     await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$api$5d$__$28$ecmascript$29$__["default"].user.update({
         where: {
-            id: session.user.id
+            id: user.id
         },
         data: {
-            password: await (0, __TURBOPACK__imported__module__$5b$externals$5d2f$bcrypt__$5b$external$5d$__$28$bcrypt$2c$__cjs$29$__["hash"])(newPassword, 10)
+            password: hashed
         }
     });
-    return res.status(200).end();
+    // Respuesta exitosa
+    return res.status(200).json({
+        message: "Contraseña actualizada correctamente"
+    });
 }
 }}),
 "[project]/node_modules/next/dist/esm/server/route-modules/pages-api/module.compiled.js [api] (ecmascript)": (function(__turbopack_context__) {

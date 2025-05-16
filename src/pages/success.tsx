@@ -2,90 +2,69 @@
 import { GetServerSideProps } from "next";
 import Stripe from "stripe";
 import Link from "next/link";
-import DashboardLayout from "@/components/DashboardLayout";
 
-interface SuccessProps {
-  calLink: string;
-}
+interface SessionItem { calLink: string; label: string; }
 
-export const getServerSideProps: GetServerSideProps<SuccessProps> = async ({
-  query,
-}) => {
+interface SuccessProps { items: SessionItem[]; }
+
+export const getServerSideProps: GetServerSideProps<SuccessProps> = async ({ query }) => {
   const sessionId = query.session_id as string;
-  const stripe = new Stripe(process.env.STRIPE_SECRET!, {
-    apiVersion: "2025-04-30.basil",
+  if (!sessionId) {
+    return { redirect: { destination: "/dashboard?tab=reservar", permanent: false } };
+  }
+
+  const stripe = new Stripe(process.env.STRIPE_SECRET!, { apiVersion: "2025-04-30.basil" });
+  const session = await stripe.checkout.sessions.retrieve(sessionId);
+  const m = session.metadata!;
+
+  const dates: string[] = JSON.parse(m.dates as string);
+  const hours: string[] = JSON.parse(m.hours as string);
+  const label = m.servicio as string; // opcional
+
+  const items = dates.map((d,i) => {
+    const [h=0] = hours[i].split(":").map(Number);
+    const start = new Date(d); start.setHours(h,0,0);
+    const end = new Date(start.getTime()+3600000);
+    const fmt = (x:Date)=>x.toISOString().replace(/[-:]|\.\d{3}/g,"");
+    const calLink = [
+      "https://www.google.com/calendar/render?action=TEMPLATE",
+      `&text=${encodeURIComponent(label)}`,
+      `&dates=${fmt(start)}/${fmt(end)}`,
+      `&details=${encodeURIComponent("Bloom Fisio")}`,
+      `&location=${encodeURIComponent("Bloom Fisio")}`,
+    ].join("");
+    return {
+      calLink,
+      label: `${start.toLocaleDateString()} • ${start.toLocaleTimeString([], {
+        hour:"2-digit", minute:"2-digit"
+      })}`
+    };
   });
 
-  // Recupera la sesión de Checkout para leer metadata
-  const session = await stripe.checkout.sessions.retrieve(sessionId);
-  const { metadata } = session;
-
-  // metadata.date es ISO, metadata.hour e metadata.servicio son slugs
-  const dateISO = metadata?.date as string;
-  const hour = metadata?.hour as string;
-  const servicioSlug = metadata?.servicio as string;
-  const terapeuta = metadata?.terapeuta as string;
-
-  // Mapeo slug → etiqueta legible
-  const serviceNames: Record<string, string> = {
-    agua: "Estimulación en agua",
-    piso: "Estimulación en piso",
-    quiropractica: "Quiropráctica",
-    fisioterapia: "Fisioterapia",
-    masajes: "Masajes",
-    cosmetologia: "Cosmetología",
-    "prevencion-lesiones": "Prevención de lesiones",
-    "preparacion-fisica": "Preparación física",
-    nutricion: "Nutrición",
-    "medicina-rehabilitacion": "Medicina en rehabilitación",
-    "terpia-post-vacuna": "Terapia post vacuna",
-  };
-  const servicioLabel =
-    serviceNames[servicioSlug] ?? `Cita de ${servicioSlug}`;
-
-  // Calcula start/end en formato YYYYMMDDTHHMMSSZ
-  const start = new Date(dateISO);
-  const [h, m] = hour.split(":").map(Number);
-  start.setHours(h, m, 0);
-  const end = new Date(start.getTime() + 60 * 60 * 1000);
-
-  const fmt = (d: Date) => d.toISOString().replace(/[-:]|\.\d{3}/g, "");
-  const dates = `${fmt(start)}/${fmt(end)}`;
-
-  const text = encodeURIComponent(servicioLabel);
-  const details = encodeURIComponent(`Terapeuta: ${terapeuta}`);
-  const location = encodeURIComponent("Bloom Fisio");
-
-  const calLink = `https://www.google.com/calendar/render` +
-    `?action=TEMPLATE` +
-    `&text=${text}` +
-    `&dates=${dates}` +
-    `&details=${details}` +
-    `&location=${location}`;
-
-  return { props: { calLink } };
+  return { props: { items } };
 };
 
-export default function Success({ calLink }: SuccessProps) {
+export default function Success({ items }: SuccessProps) {
   return (
-    <DashboardLayout>
-      <div style={{ textAlign: "center", padding: "4rem 1rem" }}>
-        <h1>¡Gracias por tu pago!</h1>
-        <p>Ahora puedes agregar esta cita a tu Google Calendar:</p>
-        <a
-          href={calLink}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="btn btn-primary my-3"
-        >
-          ➕ Agregar a Calendar
-        </a>
-        <div>
-          <Link href="/dashboard?tab=reservar" legacyBehavior>
-            <button className="btn btn-secondary">← Volver al Dashboard</button>
-          </Link>
+    <div className="text-center py-5">
+      <h1>¡Gracias por tu pago!</h1>
+      <p>Agrega tus sesiones al calendario:</p>
+      {items.map((it,i)=>(
+        <div key={i} className="mb-3">
+          <p><strong>Sesión {i+1}:</strong> {it.label}</p>
+          <a
+            href={it.calLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn btn-orange mb-2"
+          >
+            ➕ Agregar al Calendario
+          </a>
         </div>
-      </div>
-    </DashboardLayout>
+      ))}
+      <Link href="/dashboard?tab=historial" legacyBehavior>
+        <button className="btn btn-orange mt-4">Ver Historial</button>
+      </Link>
+    </div>
   );
 }

@@ -8,7 +8,7 @@ export default function AccountSection() {
   const { data: session } = useSession();
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
-  const [status, setStatus] = useState("idle");      // <- sin genéricos
+  const [status, setStatus] = useState("idle");
   const [error, setError] = useState(null);
 
   const handleSubmit = async (e) => {
@@ -34,17 +34,23 @@ export default function AccountSection() {
   return (
     <div className="text-center">
       <h3>Mi cuenta</h3>
-      <p><strong>Nombre:</strong> {session.user.name}</p>
-      <p><strong>Email:</strong> {session.user.email}</p>
+      <p>
+        <strong>Nombre:</strong> {session?.user?.name}
+      </p>
+      <p>
+        <strong>Email:</strong> {session?.user?.email}
+      </p>
 
       <hr />
 
       <h5>Cambiar contraseña</h5>
-      <Form onSubmit={handleSubmit} style={{ maxWidth: 400, margin: "0 auto" }}>
-        {status === "ok" && <Alert variant="success">Contraseña actualizada</Alert>}
+      <Form onSubmit={handleSubmit} className="form-container">
+        {status === "ok" && (
+          <Alert variant="success">Contraseña actualizada</Alert>
+        )}
         {status === "error" && <Alert variant="danger">{error}</Alert>}
 
-        <Form.Group className="mb-3">
+        <Form.Group className="mb-3" controlId="currentPassword">
           <Form.Label>Contraseña actual</Form.Label>
           <Form.Control
             type="password"
@@ -54,7 +60,7 @@ export default function AccountSection() {
           />
         </Form.Group>
 
-        <Form.Group className="mb-3">
+        <Form.Group className="mb-3" controlId="newPassword">
           <Form.Label>Nueva contraseña</Form.Label>
           <Form.Control
             type="password"

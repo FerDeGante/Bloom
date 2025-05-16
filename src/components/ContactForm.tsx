@@ -63,17 +63,7 @@ export default function ContactForm() {
           required
         />
       </Form.Group>
-      <Form.Group className="mb-3">
-        <Form.Control
-          as="textarea"
-          name="message"
-          rows={4}
-          placeholder="Tu mensaje"
-          value={form.message}
-          onChange={handleChange}
-          required
-        />
-      </Form.Group>
+     
       <Button
         type="submit"
         disabled={status === 'sending'}

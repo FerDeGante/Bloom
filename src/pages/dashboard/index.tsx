@@ -1,6 +1,6 @@
-// src/pages/dashboard/index.tsx
-import Head from "next/head"
-import DashboardLayout from "@/components/DashboardLayout"
+// File: src/components/DashboardLayout.tsx
+import Head from "next/head";
+import DashboardLayout from "@/components/DashboardLayout";
 
 export default function DashboardPage() {
   return (
@@ -8,8 +8,7 @@ export default function DashboardPage() {
       <Head>
         <title>Dashboard • Bloom Fisio</title>
       </Head>
-      {/* NO vuelvas a poner Navbar / Footer aquí */}
       <DashboardLayout />
     </>
-  )
+  );
 }

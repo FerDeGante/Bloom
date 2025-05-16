@@ -477,63 +477,90 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$link
 ;
 ;
 var __N_SSP = true;
-function Success({ calLink }) {
+function Success({ items }) {
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-        style: {
-            textAlign: "center",
-            padding: "4rem 1rem"
-        },
+        className: "text-center py-5",
         children: [
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h1", {
                 children: "¡Gracias por tu pago!"
             }, void 0, false, {
                 fileName: "[project]/src/pages/success.tsx",
-                lineNumber: 71,
+                lineNumber: 131,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                children: "Ahora puedes agregar esta cita a tu Google Calendar:"
+                children: "Ahora puedes agregar cada sesión a tu Google Calendar:"
             }, void 0, false, {
                 fileName: "[project]/src/pages/success.tsx",
-                lineNumber: 72,
+                lineNumber: 132,
                 columnNumber: 7
             }, this),
-            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("a", {
-                href: calLink,
-                target: "_blank",
-                rel: "noopener noreferrer",
-                className: "btn btn-primary my-3",
-                children: "➕ Agregar a Calendar"
-            }, void 0, false, {
-                fileName: "[project]/src/pages/success.tsx",
-                lineNumber: 73,
-                columnNumber: 7
-            }, this),
-            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$link$2e$js__$5b$client$5d$__$28$ecmascript$29$__["default"], {
-                    href: "/",
-                    children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                        className: "btn btn-secondary",
-                        children: "← Volver al inicio"
-                    }, void 0, false, {
-                        fileName: "[project]/src/pages/success.tsx",
-                        lineNumber: 83,
-                        columnNumber: 11
-                    }, this)
+            items.map((item, idx)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                    className: "mb-4",
+                    children: [
+                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                            children: [
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("strong", {
+                                    children: [
+                                        "Sesión ",
+                                        idx + 1,
+                                        ":"
+                                    ]
+                                }, void 0, true, {
+                                    fileName: "[project]/src/pages/success.tsx",
+                                    lineNumber: 137,
+                                    columnNumber: 13
+                                }, this),
+                                " ",
+                                item.label,
+                                " — ",
+                                item.therapistName
+                            ]
+                        }, void 0, true, {
+                            fileName: "[project]/src/pages/success.tsx",
+                            lineNumber: 136,
+                            columnNumber: 11
+                        }, this),
+                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("a", {
+                            href: item.calLink,
+                            target: "_blank",
+                            rel: "noopener noreferrer",
+                            className: "btn btn-orange me-2 mb-2",
+                            children: [
+                                "➕ Agregar sesión al Calendario ",
+                                idx + 1
+                            ]
+                        }, void 0, true, {
+                            fileName: "[project]/src/pages/success.tsx",
+                            lineNumber: 139,
+                            columnNumber: 11
+                        }, this)
+                    ]
+                }, idx, true, {
+                    fileName: "[project]/src/pages/success.tsx",
+                    lineNumber: 135,
+                    columnNumber: 9
+                }, this)),
+            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$link$2e$js__$5b$client$5d$__$28$ecmascript$29$__["default"], {
+                href: "/dashboard?tab=historial",
+                legacyBehavior: true,
+                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                    className: "btn btn-orange",
+                    children: "Ver Historial"
                 }, void 0, false, {
                     fileName: "[project]/src/pages/success.tsx",
-                    lineNumber: 82,
+                    lineNumber: 151,
                     columnNumber: 9
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/src/pages/success.tsx",
-                lineNumber: 81,
+                lineNumber: 150,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/src/pages/success.tsx",
-        lineNumber: 70,
+        lineNumber: 130,
         columnNumber: 5
     }, this);
 }

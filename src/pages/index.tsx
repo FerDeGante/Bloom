@@ -1,4 +1,3 @@
-// src/pages/index.tsx
 import type { NextPage } from 'next'
 import Head from 'next/head'
 import { useSession } from 'next-auth/react'
@@ -29,11 +28,11 @@ const Home: NextPage = () => {
         <link rel="icon" href="/images/logo_bloom_clean.png" />
       </Head>
 
-      {/* El Navbar/​Footer global lo inyecta _app.tsx */}
+      {/* El Navbar/Footer global lo inyecta _app.tsx */}
 
       {/* Hero vacío para mostrar la imagen completa */}
       <header className="hero d-flex align-items-center justify-content-center">
-        {/* nada más, la imagen centrada se ve completa */}
+        {/* la imagen de fondo se centra y ocupa todo */}
       </header>
 
       {/* Subhero: texto y botón */}
@@ -42,13 +41,10 @@ const Home: NextPage = () => {
         <p className="lead mb-4">
           Reserva tu sesión de fisioterapia de forma fácil y segura.
         </p>
-        <button
-  onClick={() => router.push('/dashboard?tab=reservar')}
-  className="btn-hero"
->
-  Agendar tu cita
-  <span className="underline" />
-</button>
+        <button onClick={handleHero} className="btn-hero">
+          Agendar tu cita
+          <span className="underline" />
+        </button>
       </section>
 
       <NuestrosServicios />

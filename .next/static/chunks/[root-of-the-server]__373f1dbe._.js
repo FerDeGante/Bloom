@@ -1155,7 +1155,6 @@ var { g: global, __dirname, k: __turbopack_refresh__, m: module } = __turbopack_
 __turbopack_context__.s({
     "default": (()=>PackagesSection)
 });
-var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$polyfills$2f$process$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/dist/build/polyfills/process.js [client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/react/jsx-dev-runtime.js [client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/react/index.js [client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$image$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/image.js [client] (ecmascript)");
@@ -1165,15 +1164,10 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$boo
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$bootstrap$2f$esm$2f$Card$2e$js__$5b$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Card$3e$__ = __turbopack_context__.i("[project]/node_modules/react-bootstrap/esm/Card.js [client] (ecmascript) <export default as Card>");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$bootstrap$2f$esm$2f$Button$2e$js__$5b$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Button$3e$__ = __turbopack_context__.i("[project]/node_modules/react-bootstrap/esm/Button.js [client] (ecmascript) <export default as Button>");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$bootstrap$2f$esm$2f$Alert$2e$js__$5b$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Alert$3e$__ = __turbopack_context__.i("[project]/node_modules/react-bootstrap/esm/Alert.js [client] (ecmascript) <export default as Alert>");
-var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$stripe$2f$stripe$2d$js$2f$lib$2f$index$2e$mjs__$5b$client$5d$__$28$ecmascript$29$__$3c$module__evaluation$3e$__ = __turbopack_context__.i("[project]/node_modules/@stripe/stripe-js/lib/index.mjs [client] (ecmascript) <module evaluation>");
-var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$stripe$2f$stripe$2d$js$2f$dist$2f$index$2e$mjs__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/@stripe/stripe-js/dist/index.mjs [client] (ecmascript)");
-var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$icons$2f$fa$2f$index$2e$mjs__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/react-icons/fa/index.mjs [client] (ecmascript)");
-var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$icons$2f$gi$2f$index$2e$mjs__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/react-icons/gi/index.mjs [client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$router$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/router.js [client] (ecmascript)");
 ;
 var _s = __turbopack_context__.k.signature();
 "use client";
-;
-;
 ;
 ;
 ;
@@ -1185,19 +1179,28 @@ const paquetesData = [
         image: "/images/estimlacion_agua_animado.jpeg",
         options: [
             {
-                label: "4 sesiones/mes (1x semana)",
+                label: "1 sesión (1 mes)",
+                price: 500,
+                priceId: "price_1RJd0OFV5ZpZiouCasDGf28F",
+                sessions: 1
+            },
+            {
+                label: "4 sesiones/mes (1×sem)",
                 price: 1400,
-                priceId: "price_1RMBAKFV5ZpZiouCCnrjam5N"
+                priceId: "price_1RMBAKFV5ZpZiouCCnrjam5N",
+                sessions: 4
             },
             {
-                label: "8 sesiones/mes (2x semana)",
+                label: "8 sesiones/mes (2×sem)",
                 price: 2250,
-                priceId: "price_1RMBFKFV5ZpZiouCJ1vHKREU"
+                priceId: "price_1RMBFKFV5ZpZiouCJ1vHKREU",
+                sessions: 8
             },
             {
-                label: "12 sesiones/mes (3x semana)",
+                label: "12 sesiones/mes (3×sem)",
                 price: 2500,
-                priceId: "price_1RMBIaFV5ZpZiouC8l6QjW2N"
+                priceId: "price_1RMBIaFV5ZpZiouC8l6QjW2N",
+                sessions: 12
             }
         ]
     },
@@ -1207,19 +1210,28 @@ const paquetesData = [
         image: "/images/estimulacion_piso_animado.jpeg",
         options: [
             {
-                label: "4 sesiones/mes (1x semana)",
+                label: "1 sesión (1 mes)",
+                price: 500,
+                priceId: "price_1RJd1jFV5ZpZiouC1xXvllVc",
+                sessions: 1
+            },
+            {
+                label: "4 sesiones/mes (1×sem)",
                 price: 1400,
-                priceId: "price_1RP6S2FV5ZpZiouC6cVpXQsJ"
+                priceId: "price_1RP6S2FV5ZpZiouC6cVpXQsJ",
+                sessions: 4
             },
             {
-                label: "8 sesiones/mes (2x semana)",
+                label: "8 sesiones/mes (2×sem)",
                 price: 2250,
-                priceId: "price_1RMBIaFV5ZpZiouC8l6QjW2N"
+                priceId: "price_1RMBIaFV5ZpZiouC8l6QjW2N",
+                sessions: 8
             },
             {
-                label: "12 sesiones/mes (3x semana)",
+                label: "12 sesiones/mes (3×sem)",
                 price: 2500,
-                priceId: "price_1RP6TaFV5ZpZiouCoG5G58S3"
+                priceId: "price_1RP6TaFV5ZpZiouCoG5G58S3",
+                sessions: 12
             }
         ]
     },
@@ -1229,48 +1241,32 @@ const paquetesData = [
         image: "/images/fisio_animado.jpeg",
         options: [
             {
-                label: "10 sesiones",
-                price: 3000,
-                priceId: "price_1RP6W9FV5ZpZiouCBXnZwxLW"
+                label: "1 sesión",
+                price: 0,
+                priceId: "price_1RJd3WFV5ZpZiouC9PDzHjKU",
+                sessions: 1
             },
             {
                 label: "5 sesiones",
                 price: 2000,
-                priceId: "price_1RP6WwFV5ZpZiouCN3m0luq3"
+                priceId: "price_1RP6WwFV5ZpZiouCN3m0luq3",
+                sessions: 5
+            },
+            {
+                label: "10 sesiones",
+                price: 3000,
+                priceId: "price_1RP6W9FV5ZpZiouCBXnZwxLW",
+                sessions: 10
             }
         ]
     }
 ];
-// Mapeo de iconos por tipo, usamos React.ReactNode
-const iconMap = {
-    agua: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$icons$2f$fa$2f$index$2e$mjs__$5b$client$5d$__$28$ecmascript$29$__["FaWater"], {
-        size: 48
-    }, void 0, false, {
-        fileName: "[project]/src/components/dashboard/PackagesSection.tsx",
-        lineNumber: 57,
-        columnNumber: 9
-    }, this),
-    piso: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$icons$2f$gi$2f$index$2e$mjs__$5b$client$5d$__$28$ecmascript$29$__["GiFootprint"], {
-        size: 48
-    }, void 0, false, {
-        fileName: "[project]/src/components/dashboard/PackagesSection.tsx",
-        lineNumber: 58,
-        columnNumber: 9
-    }, this),
-    fisioterapia: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$icons$2f$fa$2f$index$2e$mjs__$5b$client$5d$__$28$ecmascript$29$__["FaRunning"], {
-        size: 48
-    }, void 0, false, {
-        fileName: "[project]/src/components/dashboard/PackagesSection.tsx",
-        lineNumber: 59,
-        columnNumber: 17
-    }, this)
-};
 function PackagesSection() {
     _s();
     const [hasPackages, setHasPackages] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(false);
+    const router = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$router$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useRouter"])();
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useEffect"])({
         "PackagesSection.useEffect": ()=>{
-            // fetch real a /api/user/packages
             setHasPackages(false);
         }
     }["PackagesSection.useEffect"], []);
@@ -1284,144 +1280,138 @@ function PackagesSection() {
                     children: "No tienes paquetes vigentes."
                 }, void 0, false, {
                     fileName: "[project]/src/components/dashboard/PackagesSection.tsx",
-                    lineNumber: 73,
+                    lineNumber: 69,
                     columnNumber: 9
                 }, this),
                 paquetesData.map((pkg)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("section", {
                         className: "mb-5",
                         children: [
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
-                                className: "mb-3 d-flex align-items-center gap-2",
-                                children: [
-                                    iconMap[pkg.type],
-                                    pkg.title
-                                ]
-                            }, void 0, true, {
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h4", {
+                                className: "mb-3",
+                                children: pkg.title
+                            }, void 0, false, {
                                 fileName: "[project]/src/components/dashboard/PackagesSection.tsx",
-                                lineNumber: 79,
+                                lineNumber: 74,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$bootstrap$2f$esm$2f$Row$2e$js__$5b$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Row$3e$__["Row"], {
                                 className: "g-4",
                                 children: pkg.options.map((opt)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$bootstrap$2f$esm$2f$Col$2e$js__$5b$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Col$3e$__["Col"], {
-                                        xs: 12,
-                                        md: 4,
+                                        md: 3,
                                         children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$bootstrap$2f$esm$2f$Card$2e$js__$5b$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Card$3e$__["Card"], {
-                                            className: "package-card h-100 text-center",
+                                            className: "package-card servicio-card h-100 shadow-sm",
                                             children: [
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$image$2e$js__$5b$client$5d$__$28$ecmascript$29$__["default"], {
-                                                    src: pkg.image,
-                                                    alt: pkg.title,
-                                                    width: 400,
-                                                    height: 200,
-                                                    className: "card-img-top"
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                    className: "card-img-wrap",
+                                                    children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$image$2e$js__$5b$client$5d$__$28$ecmascript$29$__["default"], {
+                                                        src: pkg.image,
+                                                        alt: opt.label,
+                                                        layout: "responsive",
+                                                        width: 400,
+                                                        height: 200
+                                                    }, void 0, false, {
+                                                        fileName: "[project]/src/components/dashboard/PackagesSection.tsx",
+                                                        lineNumber: 80,
+                                                        columnNumber: 23
+                                                    }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/dashboard/PackagesSection.tsx",
-                                                    lineNumber: 87,
+                                                    lineNumber: 79,
                                                     columnNumber: 21
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$bootstrap$2f$esm$2f$Card$2e$js__$5b$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Card$3e$__["Card"].Body, {
                                                     className: "d-flex flex-column",
                                                     children: [
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                            className: "mb-2",
-                                                            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("strong", {
-                                                                children: opt.label
-                                                            }, void 0, false, {
-                                                                fileName: "[project]/src/components/dashboard/PackagesSection.tsx",
-                                                                lineNumber: 96,
-                                                                columnNumber: 25
-                                                            }, this)
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$bootstrap$2f$esm$2f$Card$2e$js__$5b$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Card$3e$__["Card"].Title, {
+                                                            children: opt.label
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/components/dashboard/PackagesSection.tsx",
-                                                            lineNumber: 95,
+                                                            lineNumber: 89,
                                                             columnNumber: 23
                                                         }, this),
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                            className: "mb-3",
-                                                            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                className: "h5",
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$bootstrap$2f$esm$2f$Card$2e$js__$5b$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Card$3e$__["Card"].Text, {
+                                                            className: "mb-4",
+                                                            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("strong", {
                                                                 children: [
                                                                     "$",
                                                                     opt.price.toLocaleString()
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/src/components/dashboard/PackagesSection.tsx",
-                                                                lineNumber: 99,
+                                                                lineNumber: 91,
                                                                 columnNumber: 25
                                                             }, this)
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/components/dashboard/PackagesSection.tsx",
-                                                            lineNumber: 98,
+                                                            lineNumber: 90,
                                                             columnNumber: 23
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$bootstrap$2f$esm$2f$Button$2e$js__$5b$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Button$3e$__["Button"], {
                                                             variant: "orange",
                                                             className: "mt-auto",
-                                                            onClick: async ()=>{
-                                                                const res = await fetch("/api/stripe/checkout", {
-                                                                    method: "POST",
-                                                                    headers: {
-                                                                        "Content-Type": "application/json"
-                                                                    },
-                                                                    body: JSON.stringify({
+                                                            onClick: ()=>router.push({
+                                                                    pathname: "/dashboard",
+                                                                    query: {
+                                                                        view: "reservar-paquete",
+                                                                        type: pkg.type,
+                                                                        sessions: opt.sessions,
                                                                         priceId: opt.priceId
-                                                                    })
-                                                                });
-                                                                const { sessionId } = await res.json();
-                                                                const stripe = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$stripe$2f$stripe$2d$js$2f$dist$2f$index$2e$mjs__$5b$client$5d$__$28$ecmascript$29$__["loadStripe"])(("TURBOPACK compile-time value", "pk_test_51RGO86FV5ZpZiouC9XFmHRhzP2YgU5u0QaUAJLOIZKY4DVnquGnWVcpSMKpQPFvml1gJnWjwVh6JNWwrwF0mZPeV00Jlsbblzq"));
-                                                                stripe?.redirectToCheckout({
-                                                                    sessionId
-                                                                });
-                                                            },
+                                                                    }
+                                                                }, undefined, {
+                                                                    shallow: true
+                                                                }),
                                                             children: "¡Lo quiero!"
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/components/dashboard/PackagesSection.tsx",
-                                                            lineNumber: 101,
+                                                            lineNumber: 93,
                                                             columnNumber: 23
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/src/components/dashboard/PackagesSection.tsx",
-                                                    lineNumber: 94,
+                                                    lineNumber: 88,
                                                     columnNumber: 21
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/components/dashboard/PackagesSection.tsx",
-                                            lineNumber: 86,
+                                            lineNumber: 78,
                                             columnNumber: 19
                                         }, this)
                                     }, opt.priceId, false, {
                                         fileName: "[project]/src/components/dashboard/PackagesSection.tsx",
-                                        lineNumber: 85,
+                                        lineNumber: 77,
                                         columnNumber: 17
                                     }, this))
                             }, void 0, false, {
                                 fileName: "[project]/src/components/dashboard/PackagesSection.tsx",
-                                lineNumber: 83,
+                                lineNumber: 75,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, pkg.type, true, {
                         fileName: "[project]/src/components/dashboard/PackagesSection.tsx",
-                        lineNumber: 78,
+                        lineNumber: 73,
                         columnNumber: 11
                     }, this))
             ]
         }, void 0, true, {
             fileName: "[project]/src/components/dashboard/PackagesSection.tsx",
-            lineNumber: 72,
+            lineNumber: 68,
             columnNumber: 7
         }, this);
     }
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$bootstrap$2f$esm$2f$Container$2e$js__$5b$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Container$3e$__["Container"], {}, void 0, false, {
         fileName: "[project]/src/components/dashboard/PackagesSection.tsx",
-        lineNumber: 130,
+        lineNumber: 125,
         columnNumber: 10
     }, this);
 }
-_s(PackagesSection, "q3gqi0iX3n2LbsmjX15yhRByxVo=");
+_s(PackagesSection, "dgwauDdcKpkjKlxiKxoCoiJpyCI=", false, function() {
+    return [
+        __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$router$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useRouter"]
+    ];
+});
 _c = PackagesSection;
 var _c;
 __turbopack_context__.k.register(_c, "PackagesSection");
@@ -1434,63 +1424,60 @@ if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelper
 
 var { g: global, __dirname, k: __turbopack_refresh__, m: module } = __turbopack_context__;
 {
+// src/components/dashboard/HistorySection.tsx
 __turbopack_context__.s({
     "default": (()=>HistorySection)
 });
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/react/jsx-dev-runtime.js [client] (ecmascript)");
-var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2d$auth$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next-auth/react/index.js [client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/react/index.js [client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$bootstrap$2f$esm$2f$Table$2e$js__$5b$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Table$3e$__ = __turbopack_context__.i("[project]/node_modules/react-bootstrap/esm/Table.js [client] (ecmascript) <export default as Table>");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$bootstrap$2f$esm$2f$Spinner$2e$js__$5b$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Spinner$3e$__ = __turbopack_context__.i("[project]/node_modules/react-bootstrap/esm/Spinner.js [client] (ecmascript) <export default as Spinner>");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$bootstrap$2f$esm$2f$Alert$2e$js__$5b$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Alert$3e$__ = __turbopack_context__.i("[project]/node_modules/react-bootstrap/esm/Alert.js [client] (ecmascript) <export default as Alert>");
-var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$date$2d$fns$2f$format$2e$js__$5b$client$5d$__$28$ecmascript$29$__$3c$locals$3e$__ = __turbopack_context__.i("[project]/node_modules/date-fns/format.js [client] (ecmascript) <locals>");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$feather$2f$dist$2f$icons$2f$edit$2d$3$2e$js__$5b$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Edit3$3e$__ = __turbopack_context__.i("[project]/node_modules/react-feather/dist/icons/edit-3.js [client] (ecmascript) <export default as Edit3>");
 ;
 var _s = __turbopack_context__.k.signature();
 "use client";
 ;
 ;
 ;
-;
 function HistorySection() {
     _s();
-    const { status } = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2d$auth$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useSession"])({
-        required: true
-    });
-    const [history, setHistory] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])([]);
+    const [rows, setRows] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])([]);
     const [loading, setLoading] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(true);
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useEffect"])({
         "HistorySection.useEffect": ()=>{
             fetch("/api/appointments").then({
-                "HistorySection.useEffect": (r)=>r.ok ? r.json() : Promise.reject()
+                "HistorySection.useEffect": (r)=>r.json()
             }["HistorySection.useEffect"]).then({
-                "HistorySection.useEffect": (data)=>setHistory(data.reservations || [])
-            }["HistorySection.useEffect"]).catch({
-                "HistorySection.useEffect": ()=>setHistory([])
-            }["HistorySection.useEffect"]).finally({
+                "HistorySection.useEffect": (d)=>setRows(d.reservations)
+            }["HistorySection.useEffect"]).catch(console.error).finally({
                 "HistorySection.useEffect": ()=>setLoading(false)
             }["HistorySection.useEffect"]);
         }
     }["HistorySection.useEffect"], []);
-    if (loading) return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-        children: "Cargando historial…"
+    if (loading) return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$bootstrap$2f$esm$2f$Spinner$2e$js__$5b$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Spinner$3e$__["Spinner"], {
+        className: "m-5",
+        animation: "border"
     }, void 0, false, {
         fileName: "[project]/src/components/dashboard/HistorySection.tsx",
         lineNumber: 28,
         columnNumber: 23
     }, this);
-    if (history.length === 0) {
-        return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$bootstrap$2f$esm$2f$Alert$2e$js__$5b$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Alert$3e$__["Alert"], {
-            variant: "info",
-            children: "No tienes reservaciones."
-        }, void 0, false, {
-            fileName: "[project]/src/components/dashboard/HistorySection.tsx",
-            lineNumber: 30,
-            columnNumber: 12
-        }, this);
-    }
+    if (rows.length === 0) return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$bootstrap$2f$esm$2f$Alert$2e$js__$5b$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Alert$3e$__["Alert"], {
+        variant: "info",
+        className: "text-center",
+        children: "No hay sesiones agendadas."
+    }, void 0, false, {
+        fileName: "[project]/src/components/dashboard/HistorySection.tsx",
+        lineNumber: 31,
+        columnNumber: 7
+    }, this);
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-        className: "table-responsive",
+        className: "overflow-auto",
         children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$bootstrap$2f$esm$2f$Table$2e$js__$5b$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Table$3e$__["Table"], {
-            striped: true,
+            hover: true,
+            responsive: true,
+            className: "dashboard-table",
             children: [
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("thead", {
                     children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("tr", {
@@ -1499,103 +1486,126 @@ function HistorySection() {
                                 children: "Servicio"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/dashboard/HistorySection.tsx",
-                                lineNumber: 38,
+                                lineNumber: 41,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
                                 children: "Terapeuta"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/dashboard/HistorySection.tsx",
-                                lineNumber: 39,
+                                lineNumber: 42,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
-                                children: "Fecha"
+                                children: "Fecha y hora"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/dashboard/HistorySection.tsx",
-                                lineNumber: 40,
+                                lineNumber: 43,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
-                                children: "Hora"
+                                children: "Acciones"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/dashboard/HistorySection.tsx",
-                                lineNumber: 41,
+                                lineNumber: 44,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/dashboard/HistorySection.tsx",
-                        lineNumber: 37,
+                        lineNumber: 40,
                         columnNumber: 11
                     }, this)
                 }, void 0, false, {
                     fileName: "[project]/src/components/dashboard/HistorySection.tsx",
-                    lineNumber: 36,
+                    lineNumber: 39,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("tbody", {
-                    children: history.map((item)=>{
-                        const dt = new Date(item.date);
+                    children: rows.map((r)=>{
+                        const dt = new Date(r.datetime);
                         return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("tr", {
+                            className: r.edited ? "table-warning" : "",
                             children: [
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
-                                    children: item.service.name
-                                }, void 0, false, {
-                                    fileName: "[project]/src/components/dashboard/HistorySection.tsx",
-                                    lineNumber: 49,
-                                    columnNumber: 17
-                                }, this),
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
-                                    children: item.therapist.name
-                                }, void 0, false, {
-                                    fileName: "[project]/src/components/dashboard/HistorySection.tsx",
-                                    lineNumber: 50,
-                                    columnNumber: 17
-                                }, this),
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
-                                    children: (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$date$2d$fns$2f$format$2e$js__$5b$client$5d$__$28$ecmascript$29$__$3c$locals$3e$__["format"])(dt, "yyyy-MM-dd")
-                                }, void 0, false, {
-                                    fileName: "[project]/src/components/dashboard/HistorySection.tsx",
-                                    lineNumber: 51,
-                                    columnNumber: 17
-                                }, this),
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
-                                    children: (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$date$2d$fns$2f$format$2e$js__$5b$client$5d$__$28$ecmascript$29$__$3c$locals$3e$__["format"])(dt, "HH:mm")
+                                    children: r.service
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/dashboard/HistorySection.tsx",
                                     lineNumber: 52,
                                     columnNumber: 17
+                                }, this),
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
+                                    children: r.therapist
+                                }, void 0, false, {
+                                    fileName: "[project]/src/components/dashboard/HistorySection.tsx",
+                                    lineNumber: 53,
+                                    columnNumber: 17
+                                }, this),
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
+                                    children: [
+                                        dt.toLocaleDateString(),
+                                        " •",
+                                        " ",
+                                        dt.toLocaleTimeString([], {
+                                            hour: "2-digit",
+                                            minute: "2-digit"
+                                        })
+                                    ]
+                                }, void 0, true, {
+                                    fileName: "[project]/src/components/dashboard/HistorySection.tsx",
+                                    lineNumber: 54,
+                                    columnNumber: 17
+                                }, this),
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
+                                    children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                        title: r.edited ? "Ya editaste esta sesión" : "Editar sesión",
+                                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$feather$2f$dist$2f$icons$2f$edit$2d$3$2e$js__$5b$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Edit3$3e$__["Edit3"], {
+                                            size: 18,
+                                            className: r.edited ? "icon-disabled" : "icon-editable",
+                                            onClick: ()=>{
+                                                if (!r.edited) {
+                                                /* abrir modal de edición */ }
+                                            }
+                                        }, void 0, false, {
+                                            fileName: "[project]/src/components/dashboard/HistorySection.tsx",
+                                            lineNumber: 67,
+                                            columnNumber: 21
+                                        }, this)
+                                    }, void 0, false, {
+                                        fileName: "[project]/src/components/dashboard/HistorySection.tsx",
+                                        lineNumber: 62,
+                                        columnNumber: 19
+                                    }, this)
+                                }, void 0, false, {
+                                    fileName: "[project]/src/components/dashboard/HistorySection.tsx",
+                                    lineNumber: 61,
+                                    columnNumber: 17
                                 }, this)
                             ]
-                        }, item.id, true, {
+                        }, r.id, true, {
                             fileName: "[project]/src/components/dashboard/HistorySection.tsx",
-                            lineNumber: 48,
+                            lineNumber: 51,
                             columnNumber: 15
                         }, this);
                     })
                 }, void 0, false, {
                     fileName: "[project]/src/components/dashboard/HistorySection.tsx",
-                    lineNumber: 44,
+                    lineNumber: 47,
                     columnNumber: 9
                 }, this)
             ]
         }, void 0, true, {
             fileName: "[project]/src/components/dashboard/HistorySection.tsx",
-            lineNumber: 35,
+            lineNumber: 38,
             columnNumber: 7
         }, this)
     }, void 0, false, {
         fileName: "[project]/src/components/dashboard/HistorySection.tsx",
-        lineNumber: 34,
+        lineNumber: 37,
         columnNumber: 5
     }, this);
 }
-_s(HistorySection, "KcEIBLUUvt0iS5e6KAIOBuHgVQc=", false, function() {
-    return [
-        __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2d$auth$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useSession"]
-    ];
-});
+_s(HistorySection, "W/ZLMQ+2NUGVR28SC07DRTuPjUg=");
 _c = HistorySection;
 var _c;
 __turbopack_context__.k.register(_c, "HistorySection");
@@ -2149,6 +2159,7 @@ if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelper
 
 var { g: global, __dirname, k: __turbopack_refresh__, m: module } = __turbopack_context__;
 {
+// src/components/DashboardLayout.tsx
 __turbopack_context__.s({
     "default": (()=>DashboardLayout)
 });
@@ -2200,7 +2211,7 @@ function DashboardLayout({ children }) {
         children: [
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$Navbar$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["default"], {}, void 0, false, {
                 fileName: "[project]/src/components/DashboardLayout.tsx",
-                lineNumber: 30,
+                lineNumber: 31,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2215,12 +2226,12 @@ function DashboardLayout({ children }) {
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/components/DashboardLayout.tsx",
-                            lineNumber: 34,
+                            lineNumber: 35,
                             columnNumber: 11
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/src/components/DashboardLayout.tsx",
-                        lineNumber: 33,
+                        lineNumber: 34,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("ul", {
@@ -2234,55 +2245,55 @@ function DashboardLayout({ children }) {
                                     children: label
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/DashboardLayout.tsx",
-                                    lineNumber: 40,
+                                    lineNumber: 41,
                                     columnNumber: 15
                                 }, this)
                             }, key, false, {
                                 fileName: "[project]/src/components/DashboardLayout.tsx",
-                                lineNumber: 39,
+                                lineNumber: 40,
                                 columnNumber: 13
                             }, this))
                     }, void 0, false, {
                         fileName: "[project]/src/components/DashboardLayout.tsx",
-                        lineNumber: 37,
+                        lineNumber: 38,
                         columnNumber: 9
                     }, this),
                     tab === "mi-cuenta" && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$dashboard$2f$AccountSection$2e$jsx__$5b$client$5d$__$28$ecmascript$29$__["default"], {}, void 0, false, {
                         fileName: "[project]/src/components/DashboardLayout.tsx",
-                        lineNumber: 51,
+                        lineNumber: 52,
                         columnNumber: 33
                     }, this),
                     tab === "mis-paquetes" && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$dashboard$2f$PackagesSection$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["default"], {}, void 0, false, {
                         fileName: "[project]/src/components/DashboardLayout.tsx",
-                        lineNumber: 52,
+                        lineNumber: 53,
                         columnNumber: 36
                     }, this),
                     tab === "historial" && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$dashboard$2f$HistorySection$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["default"], {}, void 0, false, {
                         fileName: "[project]/src/components/DashboardLayout.tsx",
-                        lineNumber: 53,
+                        lineNumber: 54,
                         columnNumber: 33
                     }, this),
                     tab === "reservar" && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$dashboard$2f$ReservarSection$2e$jsx__$5b$client$5d$__$28$ecmascript$29$__["default"], {}, void 0, false, {
                         fileName: "[project]/src/components/DashboardLayout.tsx",
-                        lineNumber: 54,
+                        lineNumber: 55,
                         columnNumber: 32
                     }, this),
                     children
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/components/DashboardLayout.tsx",
-                lineNumber: 32,
+                lineNumber: 33,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$Footer$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["default"], {}, void 0, false, {
                 fileName: "[project]/src/components/DashboardLayout.tsx",
-                lineNumber: 60,
+                lineNumber: 61,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/src/components/DashboardLayout.tsx",
-        lineNumber: 28,
+        lineNumber: 29,
         columnNumber: 5
     }, this);
 }
@@ -2303,7 +2314,6 @@ if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelper
 
 var { g: global, __dirname, k: __turbopack_refresh__, m: module } = __turbopack_context__;
 {
-// src/pages/dashboard/index.tsx
 __turbopack_context__.s({
     "default": (()=>DashboardPage)
 });
@@ -2321,17 +2331,17 @@ function DashboardPage() {
                     children: "Dashboard • Bloom Fisio"
                 }, void 0, false, {
                     fileName: "[project]/src/pages/dashboard/index.tsx",
-                    lineNumber: 9,
+                    lineNumber: 8,
                     columnNumber: 9
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/src/pages/dashboard/index.tsx",
-                lineNumber: 8,
+                lineNumber: 7,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$DashboardLayout$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["default"], {}, void 0, false, {
                 fileName: "[project]/src/pages/dashboard/index.tsx",
-                lineNumber: 12,
+                lineNumber: 10,
                 columnNumber: 7
             }, this)
         ]
@@ -2348,7 +2358,7 @@ if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelper
 
 var { g: global, __dirname, m: module, e: exports } = __turbopack_context__;
 {
-const PAGE_PATH = "/navbar/reservasform/page";
+const PAGE_PATH = "/dashboard";
 (window.__NEXT_P = window.__NEXT_P || []).push([
     PAGE_PATH,
     ()=>{

@@ -1,3 +1,4 @@
+// src/pages/_app.tsx
 import '../styles/globals.css'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import type { AppProps } from 'next/app'
@@ -14,7 +15,8 @@ export default function MyApp({
   const pathname = usePathname() || ''
 
   // Si la ruta está bajo "/dashboard", NO envolvemos en el Navbar/Footer global
-  const isDashboard = pathname === '/dashboard' || pathname.startsWith('/dashboard/')
+  const isDashboard =
+    pathname === '/dashboard' || pathname.startsWith('/dashboard/')
 
   return (
     <SessionProvider session={session}>
