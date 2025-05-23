@@ -11,26 +11,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     res.setHeader("Allow", "POST");
     return res.status(405).end("Method not allowed");
   }
-
-  const body = req.body as any;
-  let lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = [];
-  if (Array.isArray(body.lineItems)) {
-    lineItems = body.lineItems.map((li: any) => ({
-      price: li.price,
-      quantity: li.quantity,
-    }));
-  } else if (typeof body.priceId === "string") {
-    lineItems = [{ price: body.priceId, quantity: 1 }];
-  } else {
-    return res.status(400).json({ error: "Debes enviar priceId o lineItems en el body" });
-  }
-
+  const { priceId, metadata } = req.body as {
+    priceId: string;
+    metadata: Record<string, string>;
+  };
   try {
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
       payment_method_types: ["card"],
-      line_items: lineItems,
-      metadata: body.metadata,
+      line_items: [{ price: priceId, quantity: 1 }],
+      metadata: { ...metadata, priceId },
+      // 👉 Va a la UI de /success que muestra el calendario
       success_url: `${process.env.NEXT_PUBLIC_APP_BASE}/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${process.env.NEXT_PUBLIC_APP_BASE}/dashboard?tab=reservar`,
     });

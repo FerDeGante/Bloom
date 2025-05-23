@@ -29,6 +29,7 @@ module.exports = mod;
 
 var { g: global, __dirname } = __turbopack_context__;
 {
+// src/lib/prisma.ts
 __turbopack_context__.s({
     "default": (()=>__TURBOPACK__default__export__),
     "prisma": (()=>prisma)
@@ -41,7 +42,9 @@ const prisma = global.prisma || new __TURBOPACK__imported__module__$5b$externals
         "error"
     ]
 });
-if ("TURBOPACK compile-time truthy", 1) global.prisma = prisma;
+if ("TURBOPACK compile-time truthy", 1) {
+    global.prisma = prisma;
+}
 const __TURBOPACK__default__export__ = prisma;
 }}),
 "[project]/src/pages/api/appointments/history.ts [api] (ecmascript)": ((__turbopack_context__) => {
@@ -49,6 +52,7 @@ const __TURBOPACK__default__export__ = prisma;
 
 var { g: global, __dirname } = __turbopack_context__;
 {
+// src/pages/api/appointments/history.ts
 __turbopack_context__.s({
     "default": (()=>handler)
 });
@@ -71,7 +75,8 @@ async function handler(req, res) {
             error: "Unauthorized"
         });
     }
-    const hist = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$api$5d$__$28$ecmascript$29$__["default"].reservation.findMany({
+    // Traemos todas las reservas del usuario, con sus relaciones
+    const reservations = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$api$5d$__$28$ecmascript$29$__["default"].reservation.findMany({
         where: {
             userId: session.user.id
         },
@@ -83,7 +88,8 @@ async function handler(req, res) {
             date: "desc"
         }
     });
-    const data = hist.map((r)=>({
+    // Mapeamos al formato que usa HistorySection
+    const data = reservations.map((r)=>({
             id: r.id,
             date: r.date.toISOString(),
             serviceName: r.service.name,

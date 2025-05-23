@@ -108,3 +108,4 @@ export default function Navbar() {
     </BSNavbar>
   );
 }
+// quiero que eliminemos "agendar" del navbar y lo cambiemos por "reservas" y que el icono sea un calendario

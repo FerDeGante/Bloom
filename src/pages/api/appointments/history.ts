@@ -1,10 +1,11 @@
+// src/pages/api/appointments/history.ts
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getSession } from "next-auth/react";
 import prisma from "@/lib/prisma";
 
 export interface HistoryItem {
   id: string;
-  date: string;
+  date: string;        // ISO string
   serviceName: string;
   therapistName: string;
 }
@@ -23,13 +24,18 @@ export default async function handler(
     return res.status(401).json({ error: "Unauthorized" });
   }
 
-  const hist = await prisma.reservation.findMany({
+  // Traemos todas las reservas del usuario, con sus relaciones
+  const reservations = await prisma.reservation.findMany({
     where: { userId: session.user.id },
-    include: { service: true, therapist: true },
+    include: {
+      service: true,
+      therapist: true,
+    },
     orderBy: { date: "desc" },
   });
 
-  const data: HistoryItem[] = hist.map(r => ({
+  // Mapeamos al formato que usa HistorySection
+  const data: HistoryItem[] = reservations.map((r) => ({
     id: r.id,
     date: r.date.toISOString(),
     serviceName: r.service.name,

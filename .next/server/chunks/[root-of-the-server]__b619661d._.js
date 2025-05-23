@@ -23,6 +23,7 @@ __turbopack_async_result__();
 
 var { g: global, __dirname, a: __turbopack_async_module__ } = __turbopack_context__;
 __turbopack_async_module__(async (__turbopack_handle_async_dependencies__, __turbopack_async_result__) => { try {
+// src/pages/api/stripe/checkout.ts
 __turbopack_context__.s({
     "default": (()=>handler)
 });
@@ -40,37 +41,24 @@ async function handler(req, res) {
         res.setHeader("Allow", "POST");
         return res.status(405).end("Method not allowed");
     }
-    const body = req.body;
-    // Prepara line items
-    let lineItems = [];
-    if (Array.isArray(body.lineItems)) {
-        lineItems = body.lineItems.map((li)=>({
-                price: li.price,
-                quantity: li.quantity
-            }));
-    } else if (typeof body.priceId === "string") {
-        lineItems = [
-            {
-                price: body.priceId,
-                quantity: 1
-            }
-        ];
-    } else {
-        return res.status(400).json({
-            error: "Debes enviar priceId o lineItems en el body"
-        });
-    }
+    const { priceId, metadata } = req.body;
     try {
         const session = await stripe.checkout.sessions.create({
             mode: "payment",
             payment_method_types: [
                 "card"
             ],
-            line_items: lineItems,
-            ...body.metadata && {
-                metadata: body.metadata
+            line_items: [
+                {
+                    price: priceId,
+                    quantity: 1
+                }
+            ],
+            metadata: {
+                ...metadata,
+                priceId
             },
-            // IMPORTANTE: usar el placeholder {CHECKOUT_SESSION_ID}
+            // 👉 Va a la UI de /success que muestra el calendario
             success_url: `${("TURBOPACK compile-time value", "http://localhost:3000")}/success?session_id={CHECKOUT_SESSION_ID}`,
             cancel_url: `${("TURBOPACK compile-time value", "http://localhost:3000")}/dashboard?tab=reservar`
         });

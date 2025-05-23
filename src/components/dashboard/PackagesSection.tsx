@@ -1,124 +1,148 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import Image from "next/image";
-import { Container, Row, Col, Card, Button, Alert } from "react-bootstrap";
+import React from "react";
+import { Container, Row, Col } from "react-bootstrap";
 import { useRouter } from "next/router";
+import PackageCard, { Package } from "../PackageCard";
 
-interface PackageOption {
-  label: string;
-  price: number;
-  priceId: string;
-  sessions: number;
-}
-interface PackageData {
-  type: string;
-  title: string;
-  image: string;
-  options: PackageOption[];
-}
-
-const paquetesData: PackageData[] = [
+// — Paquetes principales —
+const paquetesPrincipales: Package[] = [
   {
-    type: "agua",
-    title: "Estimulación temprana en agua",
+    id: "agua_1",
+    title: "Estimulación temprana en agua (1×mes)",
+    sessions: 1,
+    inscription: 30,
+    price: 500,
+    description:
+      "Sesión individual para el desarrollo 👶 con ejercicios y juegos en agua.",
     image: "/images/estimlacion_agua_animado.jpeg",
-    options: [
-      { label: "1 sesión (1 mes)", price: 500,  priceId: "price_1RJd0OFV5ZpZiouCasDGf28F", sessions: 1 },
-      { label: "4 sesiones/mes (1×sem)", price: 1400, priceId: "price_1RMBAKFV5ZpZiouCCnrjam5N", sessions: 4 },
-      { label: "8 sesiones/mes (2×sem)", price: 2250, priceId: "price_1RMBFKFV5ZpZiouCJ1vHKREU", sessions: 8 },
-      { label: "12 sesiones/mes (3×sem)", price: 2500, priceId: "price_1RMBIaFV5ZpZiouC8l6QjW2N", sessions: 12 },
-    ],
+    priceId: "price_1RJd0OFV5ZpZiouCasDGf28F",
   },
   {
-    type: "piso",
-    title: "Estimulación temprana en piso",
-    image: "/images/estimulacion_piso_animado.jpeg",
-    options: [
-      { label: "1 sesión (1 mes)", price: 500,  priceId: "price_1RJd1jFV5ZpZiouC1xXvllVc", sessions: 1 },
-      { label: "4 sesiones/mes (1×sem)", price: 1400, priceId: "price_1RP6S2FV5ZpZiouC6cVpXQsJ", sessions: 4 },
-      { label: "8 sesiones/mes (2×sem)", price: 2250, priceId: "price_1RMBIaFV5ZpZiouC8l6QjW2N", sessions: 8 },
-      { label: "12 sesiones/mes (3×sem)", price: 2500, priceId: "price_1RP6TaFV5ZpZiouCoG5G58S3", sessions: 12 },
-    ],
+    id: "agua_4",
+    title: "Estimulación temprana en agua (4×mes)",
+    sessions: 4,
+    inscription: 30,
+    price: 1400,
+    description:
+      "Un encuentro semanal para desarrollo 👶 con ejercicios en agua.",
+    image: "/images/estimlacion_agua_animado.jpeg",
+    priceId: "price_1RMBAKFV5ZpZiouCCnrjam5N",
   },
   {
-    type: "fisioterapia",
-    title: "Fisioterapia",
-    image: "/images/fisio_animado.jpeg",
-    options: [
-      { label: "1 sesión",    price: 500,    priceId: "price_1RJd3WFV5ZpZiouC9PDzHjKU", sessions: 1 },
-      { label: "5 sesiones",  price: 2000, priceId: "price_1RP6WwFV5ZpZiouCN3m0luq3", sessions: 5 },
-      { label: "10 sesiones", price: 3000, priceId: "price_1RP6W9FV5ZpZiouCBXnZwxLW", sessions: 10 },
-    ],
+    id: "agua_8",
+    title: "Estimulación temprana en agua (8×mes)",
+    sessions: 8,
+    inscription: 30,
+    price: 2250,
+    description:
+      "Dos sesiones semanales para mayor progreso 👶💦 en agua.",
+    image: "/images/estimlacion_agua_animado.jpeg",
+    priceId: "price_1RMBFKFV5ZpZiouCJ1vHKREU",
   },
+  {
+    id: "agua_12",
+    title: "Estimulación temprana en agua (12×mes)",
+    sessions: 12,
+    inscription: 30,
+    price: 2500,
+    description:
+      "Tres sesiones semanales para avance constante 👶💦 en agua.",
+    image: "/images/estimlacion_agua_animado.jpeg",
+    priceId: "price_1RMBIaFV5ZpZiouC8l6QjW2N",
+  },
+  // ... más paquetes principales
+];
+
+// — “Otros servicios” (1 sesión, vigencia 30 días) —
+const otrosServicios: Package[] = [
+  {
+    id: "post_vacuna",
+    title: "Terapia post vacuna",
+    sessions: 1,
+    inscription: 30,
+    price: 500,
+    description: "Alivia molestias tras vacunación 💉",
+    image: "/images/post_vacuna_animado.jpeg",
+    priceId: "prod_SIyvmx4o5kkTKJ",
+  },
+  {
+    id: "quiropractica",
+    title: "Quiropráctica",
+    sessions: 1,
+    inscription: 30,
+    price: 500,
+    description: "Ajustes para tu columna 🦴",
+    image: "/images/quiro_animado.jpeg",
+    priceId: "prod_SE5DojRCwzy37u",
+  },
+  {
+    id: "masajes",
+    title: "Masajes",
+    sessions: 1,
+    inscription: 30,
+    price: 500,
+    description: "Relaja cuerpo y mente 💆‍♀️",
+    image: "/images/masajes_animado.jpeg",
+    priceId: "prod_SE5EcuLUlnoMo9",
+  },
+  // ... resto de “Otros servicios”
 ];
 
 export default function PackagesSection() {
-  const [hasPackages, setHasPackages] = useState(false);
   const router = useRouter();
 
-  useEffect(() => {
-    setHasPackages(false);
-  }, []);
-
-  if (!hasPackages) {
-    return (
-      <Container className="py-4">
-        <Alert variant="info" className="text-center">
-          No tienes paquetes vigentes.
-        </Alert>
-        {paquetesData.map((pkg) => (
-          <section key={pkg.type} className="mb-5">
-            <h4 className="mb-3">{pkg.title}</h4>
-            <Row className="g-4">
-              {pkg.options.map((opt) => (
-                <Col key={opt.priceId} md={3}>
-                  <Card className="package-card servicio-card h-100 shadow-sm">
-                    <div className="card-img-wrap">
-                      <Image
-                        src={pkg.image}
-                        alt={opt.label}
-                        layout="responsive"
-                        width={400}
-                        height={200}
-                      />
-                    </div>
-                    <Card.Body className="d-flex flex-column">
-                      <Card.Title>{opt.label}</Card.Title>
-                      <Card.Text className="mb-4">
-                        <strong>${opt.price.toLocaleString()}</strong>
-                      </Card.Text>
-                      <Button
-                        variant="orange"
-                        className="mt-auto"
-                        onClick={() =>
-                          router.push(
-                            {
-                              pathname: "/dashboard",
-                              query: {
-                                view: "reservar-paquete",
-                                type: pkg.type,
-                                sessions: opt.sessions,
-                                priceId: opt.priceId,
-                              },
-                            },
-                            undefined,
-                            { shallow: true }
-                          )
-                        }
-                      >
-                        ¡Lo quiero!
-                      </Button>
-                    </Card.Body>
-                  </Card>
-                </Col>
-              ))}
-            </Row>
-          </section>
-        ))}
-      </Container>
+  const handleBuy = (
+    priceId: string,
+    pkgId: string,
+    sessions: number,
+    title: string
+  ) => {
+    router.push(
+      {
+        pathname: "/dashboard",
+        query: {
+          view: "reservar-paquete",
+          type: pkgId,
+          sessions,
+          priceId,
+          title, // enviamos el título real
+        },
+      },
+      undefined,
+      { shallow: true }
     );
-  }
+  };
 
-  return <Container>{/* … paquetes activos … */}</Container>;
+  return (
+    <Container className="py-4">
+      <h2 className="mb-4">Nuestros paquetes</h2>
+      <Row className="g-4 mb-5">
+        {paquetesPrincipales.map((pkg) => (
+          <Col key={pkg.priceId} md={3}>
+            <PackageCard
+              pkg={pkg}
+              onBuy={() =>
+                handleBuy(pkg.priceId, pkg.id, pkg.sessions!, pkg.title)
+              }
+            />
+          </Col>
+        ))}
+      </Row>
+
+      <h2 className="mb-4">Otros servicios</h2>
+      <Row className="g-4">
+        {otrosServicios.map((svc) => (
+          <Col key={svc.priceId} md={3}>
+            <PackageCard
+              pkg={svc}
+              onBuy={() =>
+                handleBuy(svc.priceId, svc.id, svc.sessions!, svc.title)
+              }
+            />
+          </Col>
+        ))}
+      </Row>
+    </Container>
+  );
 }

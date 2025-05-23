@@ -44,64 +44,38 @@ const getServerSideProps = async ({ query })=>{
         apiVersion: "2025-04-30.basil"
     });
     const session = await stripe.checkout.sessions.retrieve(sessionId);
-    const m = session.metadata ?? {};
-    // Parse arrays
-    const datesArr = JSON.parse(m.dates);
-    const hoursArr = JSON.parse(m.hours);
-    const therapistsArr = JSON.parse(m.therapists);
-    const servicioSlug = m.servicio;
-    const sessionsCount = m.sessionsCount;
-    const serviceNames = {
-        agua: "Estimulación en agua",
-        piso: "Estimulación en piso",
-        quiropractica: "Quiropráctica",
-        fisioterapia: "Fisioterapia",
-        masajes: "Masajes",
-        cosmetologia: "Cosmetología",
-        "prevencion-lesiones": "Prevención de lesiones",
-        "preparacion-fisica": "Preparación física",
-        nutricion: "Nutrición",
-        "medicina-rehabilitacion": "Medicina en rehabilitación",
-        "terpia-post-vacuna": "Terapia post vacuna"
-    };
-    const servicioLabel = serviceNames[servicioSlug] ?? `Cita de ${servicioSlug}`;
-    const items = datesArr.map((dateISO, i)=>{
-        // build calendar link
-        const [h = 0, mtn = 0] = (hoursArr[i] || "0:00").split(":").map((v)=>Number(v) || 0);
-        const start = new Date(dateISO);
-        start.setHours(h, mtn, 0);
-        const end = new Date(start.getTime() + 60 * 60 * 1000);
-        const fmt = (d)=>d.toISOString().replace(/[-:]|\.\d{3}/g, "");
-        const dates = `${fmt(start)}/${fmt(end)}`;
-        const text = encodeURIComponent(servicioLabel);
-        const details = encodeURIComponent(`Terapeuta: ${therapistsArr[i]}`);
-        const location = encodeURIComponent("Bloom Fisio");
+    const m = session.metadata;
+    const dates = JSON.parse(m.dates);
+    const hours = JSON.parse(m.hours);
+    const label = m.servicio; // opcional
+    const items = dates.map((d, i)=>{
+        const [h = 0] = hours[i].split(":").map(Number);
+        const start = new Date(d);
+        start.setHours(h, 0, 0);
+        const end = new Date(start.getTime() + 3600000);
+        const fmt = (x)=>x.toISOString().replace(/[-:]|\.\d{3}/g, "");
         const calLink = [
             "https://www.google.com/calendar/render?action=TEMPLATE",
-            `&text=${text}`,
-            `&dates=${dates}`,
-            `&details=${details}`,
-            `&location=${location}`
+            `&text=${encodeURIComponent(label)}`,
+            `&dates=${fmt(start)}/${fmt(end)}`,
+            `&details=${encodeURIComponent("Bloom Fisio")}`,
+            `&location=${encodeURIComponent("Bloom Fisio")}`
         ].join("");
-        const label = `${start.toLocaleDateString()} • ${start.toLocaleTimeString([], {
-            hour: "2-digit",
-            minute: "2-digit"
-        })}`;
         return {
             calLink,
-            label,
-            therapist: therapistsArr[i]
+            label: `${start.toLocaleDateString()} • ${start.toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit"
+            })}`
         };
     });
-    const backLink = `/dashboard?view=reservar-paquete&type=${servicioSlug}&sessions=${sessionsCount}&priceId=${m.priceId}`;
     return {
         props: {
-            items,
-            backLink
+            items
         }
     };
 };
-function Success({ items, backLink }) {
+function Success({ items }) {
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
         className: "text-center py-5",
         children: [
@@ -109,17 +83,17 @@ function Success({ items, backLink }) {
                 children: "¡Gracias por tu pago!"
             }, void 0, false, {
                 fileName: "[project]/src/pages/success.tsx",
-                lineNumber: 101,
+                lineNumber: 50,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("p", {
-                children: "Agrega cada sesión a tu Google Calendar:"
+                children: "Agrega tus sesiones al calendario:"
             }, void 0, false, {
                 fileName: "[project]/src/pages/success.tsx",
-                lineNumber: 102,
+                lineNumber: 51,
                 columnNumber: 7
             }, this),
-            items.map((item, i)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
+            items.map((it, i)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
                     className: "mb-3",
                     children: [
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("p", {
@@ -132,82 +106,54 @@ function Success({ items, backLink }) {
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/pages/success.tsx",
-                                    lineNumber: 107,
-                                    columnNumber: 13
+                                    lineNumber: 54,
+                                    columnNumber: 14
                                 }, this),
                                 " ",
-                                item.label,
-                                " — ",
-                                item.therapist
+                                it.label
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/pages/success.tsx",
-                            lineNumber: 106,
+                            lineNumber: 54,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("a", {
-                            href: item.calLink,
+                            href: it.calLink,
                             target: "_blank",
                             rel: "noopener noreferrer",
-                            className: "btn btn-primary me-2 mb-2",
-                            children: [
-                                "➕ Agregar sesión ",
-                                i + 1
-                            ]
-                        }, void 0, true, {
+                            className: "btn btn-orange mb-2",
+                            children: "➕ 📅Agregar al Calendario"
+                        }, void 0, false, {
                             fileName: "[project]/src/pages/success.tsx",
-                            lineNumber: 109,
+                            lineNumber: 55,
                             columnNumber: 11
                         }, this)
                     ]
                 }, i, true, {
                     fileName: "[project]/src/pages/success.tsx",
-                    lineNumber: 105,
+                    lineNumber: 53,
                     columnNumber: 9
                 }, this)),
-            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
-                className: "mb-4",
-                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$link$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["default"], {
-                    href: backLink,
-                    legacyBehavior: true,
-                    children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("button", {
-                        className: "btn btn-link",
-                        children: "← Corregir mis fechas"
-                    }, void 0, false, {
-                        fileName: "[project]/src/pages/success.tsx",
-                        lineNumber: 122,
-                        columnNumber: 11
-                    }, this)
-                }, void 0, false, {
-                    fileName: "[project]/src/pages/success.tsx",
-                    lineNumber: 121,
-                    columnNumber: 9
-                }, this)
-            }, void 0, false, {
-                fileName: "[project]/src/pages/success.tsx",
-                lineNumber: 120,
-                columnNumber: 7
-            }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$link$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["default"], {
-                href: "/dashboard",
+                href: "/dashboard?tab=historial",
                 legacyBehavior: true,
                 children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("button", {
-                    className: "btn btn-secondary",
-                    children: "← Volver al Dashboard"
+                    className: "btn btn-orange mt-4",
+                    children: "Ver Historial"
                 }, void 0, false, {
                     fileName: "[project]/src/pages/success.tsx",
-                    lineNumber: 127,
+                    lineNumber: 66,
                     columnNumber: 9
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/src/pages/success.tsx",
-                lineNumber: 126,
+                lineNumber: 65,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/src/pages/success.tsx",
-        lineNumber: 100,
+        lineNumber: 49,
         columnNumber: 5
     }, this);
 }

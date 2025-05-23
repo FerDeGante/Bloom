@@ -550,7 +550,6 @@ var __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$run
 var __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__ = __turbopack_context__.i("[externals]/react [external] (react, cjs)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$bootstrap$2f$esm$2f$Table$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Table$3e$__ = __turbopack_context__.i("[project]/node_modules/react-bootstrap/esm/Table.js [ssr] (ecmascript) <export default as Table>");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$bootstrap$2f$esm$2f$Spinner$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Spinner$3e$__ = __turbopack_context__.i("[project]/node_modules/react-bootstrap/esm/Spinner.js [ssr] (ecmascript) <export default as Spinner>");
-var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$bootstrap$2f$esm$2f$Alert$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Alert$3e$__ = __turbopack_context__.i("[project]/node_modules/react-bootstrap/esm/Alert.js [ssr] (ecmascript) <export default as Alert>");
 var __TURBOPACK__imported__module__$5b$externals$5d2f$react$2d$feather__$5b$external$5d$__$28$react$2d$feather$2c$__cjs$29$__ = __turbopack_context__.i("[externals]/react-feather [external] (react-feather, cjs)");
 "use client";
 ;
@@ -561,10 +560,7 @@ function HistorySection() {
     const [rows, setRows] = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useState"])([]);
     const [loading, setLoading] = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useState"])(true);
     (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useEffect"])(()=>{
-        fetch("/api/appointments/history").then((res)=>{
-            if (!res.ok) throw new Error("Unauthorized");
-            return res.json();
-        }).then((data)=>setRows(data)).catch(console.error).finally(()=>setLoading(false));
+        fetch("/api/appointments/history").then((res)=>res.json()).then((data)=>setRows(data)).catch(console.error).finally(()=>setLoading(false));
     }, []);
     if (loading) {
         return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -573,23 +569,12 @@ function HistorySection() {
                 animation: "border"
             }, void 0, false, {
                 fileName: "[project]/src/components/dashboard/HistorySection.tsx",
-                lineNumber: 33,
+                lineNumber: 30,
                 columnNumber: 9
             }, this)
         }, void 0, false, {
             fileName: "[project]/src/components/dashboard/HistorySection.tsx",
-            lineNumber: 32,
-            columnNumber: 7
-        }, this);
-    }
-    if (rows.length === 0) {
-        return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$bootstrap$2f$esm$2f$Alert$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Alert$3e$__["Alert"], {
-            variant: "info",
-            className: "text-center",
-            children: "Aún no tienes sesiones agendadas."
-        }, void 0, false, {
-            fileName: "[project]/src/components/dashboard/HistorySection.tsx",
-            lineNumber: 40,
+            lineNumber: 29,
             columnNumber: 7
         }, this);
     }
@@ -607,43 +592,58 @@ function HistorySection() {
                                 children: "Servicio"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/dashboard/HistorySection.tsx",
-                                lineNumber: 51,
+                                lineNumber: 40,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("th", {
                                 children: "Terapeuta"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/dashboard/HistorySection.tsx",
-                                lineNumber: 52,
+                                lineNumber: 41,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("th", {
                                 children: "Fecha y hora"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/dashboard/HistorySection.tsx",
-                                lineNumber: 53,
+                                lineNumber: 42,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("th", {
                                 children: "Acciones"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/dashboard/HistorySection.tsx",
-                                lineNumber: 54,
+                                lineNumber: 43,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/dashboard/HistorySection.tsx",
-                        lineNumber: 50,
+                        lineNumber: 39,
                         columnNumber: 11
                     }, this)
                 }, void 0, false, {
                     fileName: "[project]/src/components/dashboard/HistorySection.tsx",
-                    lineNumber: 49,
+                    lineNumber: 38,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("tbody", {
-                    children: rows.map((r)=>{
+                    children: rows.length === 0 ? // fila vacía para preservar estructura
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("tr", {
+                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("td", {
+                            colSpan: 4,
+                            className: "text-center",
+                            children: "— No hay sesiones agendadas —"
+                        }, void 0, false, {
+                            fileName: "[project]/src/components/dashboard/HistorySection.tsx",
+                            lineNumber: 50,
+                            columnNumber: 15
+                        }, this)
+                    }, void 0, false, {
+                        fileName: "[project]/src/components/dashboard/HistorySection.tsx",
+                        lineNumber: 49,
+                        columnNumber: 13
+                    }, this) : rows.map((r)=>{
                         const dt = new Date(r.date);
                         const fecha = dt.toLocaleDateString();
                         const hora = dt.toLocaleTimeString([], {
@@ -657,15 +657,15 @@ function HistorySection() {
                                     children: r.serviceName
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/dashboard/HistorySection.tsx",
-                                    lineNumber: 69,
-                                    columnNumber: 17
+                                    lineNumber: 66,
+                                    columnNumber: 19
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("td", {
                                     children: r.therapistName
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/dashboard/HistorySection.tsx",
-                                    lineNumber: 70,
-                                    columnNumber: 17
+                                    lineNumber: 67,
+                                    columnNumber: 19
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("td", {
                                     children: [
@@ -675,55 +675,58 @@ function HistorySection() {
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/dashboard/HistorySection.tsx",
-                                    lineNumber: 71,
-                                    columnNumber: 17
+                                    lineNumber: 68,
+                                    columnNumber: 19
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("td", {
                                     children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("span", {
-                                        title: isFuture ? "Editar esta sesión" : "No puedes editar sesiones pasadas",
+                                        title: isFuture ? "Editar esta sesión" : "No puedes editar citas pasadas",
+                                        style: {
+                                            cursor: isFuture ? "pointer" : "not-allowed"
+                                        },
                                         children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$externals$5d2f$react$2d$feather__$5b$external$5d$__$28$react$2d$feather$2c$__cjs$29$__["Edit3"], {
                                             size: 18,
                                             className: isFuture ? "icon-editable" : "icon-disabled",
                                             onClick: ()=>{
                                                 if (!isFuture) return;
-                                            // abrir modal de edición aquí
+                                            // aquí abres modal de edición
                                             }
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/dashboard/HistorySection.tsx",
-                                            lineNumber: 82,
-                                            columnNumber: 21
+                                            lineNumber: 80,
+                                            columnNumber: 23
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/dashboard/HistorySection.tsx",
-                                        lineNumber: 75,
-                                        columnNumber: 19
+                                        lineNumber: 72,
+                                        columnNumber: 21
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/dashboard/HistorySection.tsx",
-                                    lineNumber: 74,
-                                    columnNumber: 17
+                                    lineNumber: 71,
+                                    columnNumber: 19
                                 }, this)
                             ]
                         }, r.id, true, {
                             fileName: "[project]/src/components/dashboard/HistorySection.tsx",
-                            lineNumber: 68,
-                            columnNumber: 15
+                            lineNumber: 65,
+                            columnNumber: 17
                         }, this);
                     })
                 }, void 0, false, {
                     fileName: "[project]/src/components/dashboard/HistorySection.tsx",
-                    lineNumber: 57,
+                    lineNumber: 46,
                     columnNumber: 9
                 }, this)
             ]
         }, void 0, true, {
             fileName: "[project]/src/components/dashboard/HistorySection.tsx",
-            lineNumber: 48,
+            lineNumber: 37,
             columnNumber: 7
         }, this)
     }, void 0, false, {
         fileName: "[project]/src/components/dashboard/HistorySection.tsx",
-        lineNumber: 47,
+        lineNumber: 36,
         columnNumber: 5
     }, this);
 }
@@ -818,8 +821,11 @@ function ReservarPaquete({ type, sessions, priceId }) {
         })));
     const [current, setCurrent] = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useState"])(0);
     const [error, setError] = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useState"])("");
-    const now = new Date();
-    const maxDate = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
+    // "today" a medianoche para incluir todo el día
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const maxDate = new Date(today);
+    maxDate.setDate(maxDate.getDate() + 30);
     (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useEffect"])(()=>{
         if (status === "unauthenticated") router.replace("/login");
     }, [
@@ -828,15 +834,15 @@ function ReservarPaquete({ type, sessions, priceId }) {
     ]);
     const thisSlot = slots[current];
     const done = slots.filter((s)=>s.date && s.hora !== null && s.therapistId).length;
-    const updateSlot = (data)=>setSlots((s)=>{
-            const nxt = [
-                ...s
+    const updateSlot = (data)=>setSlots((prev)=>{
+            const next = [
+                ...prev
             ];
-            nxt[current] = {
-                ...nxt[current],
+            next[current] = {
+                ...next[current],
                 ...data
             };
-            return nxt;
+            return next;
         });
     const next = ()=>{
         if (!thisSlot.therapistId) return setError("Selecciona un terapeuta");
@@ -876,9 +882,42 @@ function ReservarPaquete({ type, sessions, priceId }) {
         animation: "border"
     }, void 0, false, {
         fileName: "[project]/src/components/dashboard/ReservarPaquete.tsx",
-        lineNumber: 96,
-        columnNumber: 48
+        lineNumber: 114,
+        columnNumber: 12
     }, this);
+    // Auxiliares para días y horas
+    const isSunday = (date)=>date.getDay() === 0;
+    const isSaturday = (date)=>date.getDay() === 6;
+    const defaultHours = [
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+    ];
+    const saturdayHours = [
+        9,
+        10,
+        11,
+        12,
+        13,
+        14
+    ];
+    // Calcula las horas según día y hora actual
+    let availableHours = [];
+    if (thisSlot.date) {
+        const base = isSaturday(thisSlot.date) ? saturdayHours : defaultHours;
+        // filtra domingos
+        // (domingos ya deshabilitados en Calendar, aquí solo filtramos horas)
+        // filtra horas pasadas si es hoy
+        const isToday = thisSlot.date.toDateString() === new Date().toDateString();
+        const nowHour = new Date().getHours();
+        availableHours = base.filter((h)=>isToday ? h > nowHour : true);
+    }
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$bootstrap$2f$esm$2f$Container$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Container$3e$__["Container"], {
         className: "py-5",
         children: [
@@ -887,7 +926,7 @@ function ReservarPaquete({ type, sessions, priceId }) {
                 children: done < sessions ? `Sesión ${current + 1} de ${sessions}` : "Resumen"
             }, void 0, false, {
                 fileName: "[project]/src/components/dashboard/ReservarPaquete.tsx",
-                lineNumber: 100,
+                lineNumber: 143,
                 columnNumber: 7
             }, this),
             error && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$bootstrap$2f$esm$2f$Alert$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Alert$3e$__["Alert"], {
@@ -895,7 +934,7 @@ function ReservarPaquete({ type, sessions, priceId }) {
                 children: error
             }, void 0, false, {
                 fileName: "[project]/src/components/dashboard/ReservarPaquete.tsx",
-                lineNumber: 103,
+                lineNumber: 148,
                 columnNumber: 17
             }, this),
             done < sessions ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["Fragment"], {
@@ -907,7 +946,7 @@ function ReservarPaquete({ type, sessions, priceId }) {
                                 children: "Terapeuta"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/dashboard/ReservarPaquete.tsx",
-                                lineNumber: 108,
+                                lineNumber: 153,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$bootstrap$2f$esm$2f$Form$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Form$3e$__["Form"].Select, {
@@ -921,7 +960,7 @@ function ReservarPaquete({ type, sessions, priceId }) {
                                         children: "Selecciona un terapeuta"
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/dashboard/ReservarPaquete.tsx",
-                                        lineNumber: 113,
+                                        lineNumber: 158,
                                         columnNumber: 15
                                     }, this),
                                     therapistList.map((t)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("option", {
@@ -929,32 +968,33 @@ function ReservarPaquete({ type, sessions, priceId }) {
                                             children: t.name
                                         }, t.id, false, {
                                             fileName: "[project]/src/components/dashboard/ReservarPaquete.tsx",
-                                            lineNumber: 115,
+                                            lineNumber: 160,
                                             columnNumber: 17
                                         }, this))
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/dashboard/ReservarPaquete.tsx",
-                                lineNumber: 109,
+                                lineNumber: 154,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/dashboard/ReservarPaquete.tsx",
-                        lineNumber: 107,
+                        lineNumber: 152,
                         columnNumber: 11
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$externals$5d2f$react$2d$calendar__$5b$external$5d$__$28$react$2d$calendar$2c$__esm_import$29$__["default"], {
-                        onClickDay: (d)=>d >= now && d <= maxDate && updateSlot({
-                                date: d,
+                        onChange: (d)=>updateSlot({
+                                date: Array.isArray(d) ? d[0] : d,
                                 hora: null
                             }),
-                        value: thisSlot.date || now,
-                        minDate: now,
-                        maxDate: maxDate
+                        value: thisSlot.date || today,
+                        minDate: today,
+                        maxDate: maxDate,
+                        tileDisabled: ({ date, view })=>view === "month" && isSunday(date)
                     }, void 0, false, {
                         fileName: "[project]/src/components/dashboard/ReservarPaquete.tsx",
-                        lineNumber: 120,
+                        lineNumber: 167,
                         columnNumber: 11
                     }, this),
                     thisSlot.date && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -964,21 +1004,11 @@ function ReservarPaquete({ type, sessions, priceId }) {
                                 children: "Hora:"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/dashboard/ReservarPaquete.tsx",
-                                lineNumber: 127,
+                                lineNumber: 184,
                                 columnNumber: 15
                             }, this),
                             " ",
-                            [
-                                10,
-                                11,
-                                12,
-                                13,
-                                14,
-                                15,
-                                16,
-                                17,
-                                18
-                            ].map((h)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$bootstrap$2f$esm$2f$Button$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Button$3e$__["Button"], {
+                            availableHours.map((h)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$bootstrap$2f$esm$2f$Button$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Button$3e$__["Button"], {
                                     variant: thisSlot.hora === h ? "primary" : "outline-primary",
                                     className: "me-1 mb-2 slot-btn",
                                     onClick: ()=>updateSlot({
@@ -990,13 +1020,13 @@ function ReservarPaquete({ type, sessions, priceId }) {
                                     ]
                                 }, h, true, {
                                     fileName: "[project]/src/components/dashboard/ReservarPaquete.tsx",
-                                    lineNumber: 129,
+                                    lineNumber: 186,
                                     columnNumber: 17
                                 }, this))
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/dashboard/ReservarPaquete.tsx",
-                        lineNumber: 126,
+                        lineNumber: 183,
                         columnNumber: 13
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -1008,8 +1038,8 @@ function ReservarPaquete({ type, sessions, priceId }) {
                                 children: "← Anterior"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/dashboard/ReservarPaquete.tsx",
-                                lineNumber: 140,
-                                columnNumber: 27
+                                lineNumber: 202,
+                                columnNumber: 15
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$bootstrap$2f$esm$2f$Button$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Button$3e$__["Button"], {
                                 className: "btn-orange",
@@ -1017,13 +1047,13 @@ function ReservarPaquete({ type, sessions, priceId }) {
                                 children: current < sessions - 1 ? "Siguiente" : "Finalizar"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/dashboard/ReservarPaquete.tsx",
-                                lineNumber: 141,
+                                lineNumber: 209,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/dashboard/ReservarPaquete.tsx",
-                        lineNumber: 139,
+                        lineNumber: 200,
                         columnNumber: 11
                     }, this)
                 ]
@@ -1035,21 +1065,23 @@ function ReservarPaquete({ type, sessions, priceId }) {
                                 children: [
                                     "Sesión ",
                                     i + 1,
-                                    ": ",
+                                    ":",
+                                    " ",
                                     new Date(s.date).toLocaleDateString(),
                                     " a las ",
                                     s.hora,
-                                    ":00 — ",
+                                    ":00 —",
+                                    " ",
                                     therapistList.find((t)=>t.id === s.therapistId)?.name
                                 ]
                             }, i, true, {
                                 fileName: "[project]/src/components/dashboard/ReservarPaquete.tsx",
-                                lineNumber: 150,
+                                lineNumber: 218,
                                 columnNumber: 15
                             }, this))
                     }, void 0, false, {
                         fileName: "[project]/src/components/dashboard/ReservarPaquete.tsx",
-                        lineNumber: 148,
+                        lineNumber: 216,
                         columnNumber: 11
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$bootstrap$2f$esm$2f$Button$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Button$3e$__["Button"], {
@@ -1058,7 +1090,7 @@ function ReservarPaquete({ type, sessions, priceId }) {
                         children: "Confirmar y pagar"
                     }, void 0, false, {
                         fileName: "[project]/src/components/dashboard/ReservarPaquete.tsx",
-                        lineNumber: 157,
+                        lineNumber: 228,
                         columnNumber: 11
                     }, this)
                 ]
@@ -1066,7 +1098,7 @@ function ReservarPaquete({ type, sessions, priceId }) {
         ]
     }, void 0, true, {
         fileName: "[project]/src/components/dashboard/ReservarPaquete.tsx",
-        lineNumber: 99,
+        lineNumber: 142,
         columnNumber: 5
     }, this);
 }

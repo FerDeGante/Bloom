@@ -23,6 +23,7 @@ module.exports = mod;
 
 var { g: global, __dirname } = __turbopack_context__;
 {
+// src/lib/prisma.ts
 __turbopack_context__.s({
     "default": (()=>__TURBOPACK__default__export__),
     "prisma": (()=>prisma)
@@ -35,7 +36,9 @@ const prisma = global.prisma || new __TURBOPACK__imported__module__$5b$externals
         "error"
     ]
 });
-if ("TURBOPACK compile-time truthy", 1) global.prisma = prisma;
+if ("TURBOPACK compile-time truthy", 1) {
+    global.prisma = prisma;
+}
 const __TURBOPACK__default__export__ = prisma;
 }}),
 "[project]/src/pages/success.tsx [ssr] (ecmascript)": ((__turbopack_context__) => {
@@ -48,16 +51,12 @@ __turbopack_context__.s({
     "default": (()=>Success),
     "getServerSideProps": (()=>getServerSideProps)
 });
-var __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__ = __turbopack_context__.i("[externals]/react/jsx-dev-runtime [external] (react/jsx-dev-runtime, cjs)");
 var __TURBOPACK__imported__module__$5b$externals$5d2f$stripe__$5b$external$5d$__$28$stripe$2c$__esm_import$29$__ = __turbopack_context__.i("[externals]/stripe [external] (stripe, esm_import)");
-var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$link$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/link.js [ssr] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/src/lib/prisma.ts [ssr] (ecmascript)");
 var __turbopack_async_dependencies__ = __turbopack_handle_async_dependencies__([
     __TURBOPACK__imported__module__$5b$externals$5d2f$stripe__$5b$external$5d$__$28$stripe$2c$__esm_import$29$__
 ]);
 ([__TURBOPACK__imported__module__$5b$externals$5d2f$stripe__$5b$external$5d$__$28$stripe$2c$__esm_import$29$__] = __turbopack_async_dependencies__.then ? (await __turbopack_async_dependencies__)() : __turbopack_async_dependencies__);
-;
-;
 ;
 ;
 const getServerSideProps = async ({ query })=>{
@@ -70,181 +69,99 @@ const getServerSideProps = async ({ query })=>{
             }
         };
     }
+    // 1) Recuperar checkout y metadata
     const stripe = new __TURBOPACK__imported__module__$5b$externals$5d2f$stripe__$5b$external$5d$__$28$stripe$2c$__esm_import$29$__["default"](process.env.STRIPE_SECRET, {
         apiVersion: "2025-04-30.basil"
     });
-    const session = await stripe.checkout.sessions.retrieve(sessionId);
-    const m = session.metadata ?? {};
-    // Parse arrays from metadata
-    const datesArr = JSON.parse(m.dates);
-    const hoursArr = JSON.parse(m.hours);
-    const therapistsArr = JSON.parse(m.therapists);
-    const servicioSlug = m.servicio;
-    const serviceNames = {
-        agua: "Estimulación en agua",
-        piso: "Estimulación en piso",
-        quiropractica: "Quiropráctica",
-        fisioterapia: "Fisioterapia",
-        masajes: "Masajes",
-        cosmetologia: "Cosmetología",
-        "prevencion-lesiones": "Prevención de lesiones",
-        "preparacion-fisica": "Preparación física",
-        nutricion: "Nutrición",
-        "medicina-rehabilitacion": "Medicina en rehabilitación",
-        "terpia-post-vacuna": "Terapia post vacuna"
-    };
-    const servicioLabel = serviceNames[servicioSlug] ?? `Cita de ${servicioSlug}`;
-    // For each session, persist reservation in the database
-    for(let i = 0; i < datesArr.length; i++){
-        const dateISO = datesArr[i];
-        const [h = 0, mnt = 0] = (hoursArr[i] || "0:00").split(":").map((v)=>Number(v) || 0);
-        const therapistName = therapistsArr[i];
-        // Find the service and therapist records by name
-        const svc = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$ssr$5d$__$28$ecmascript$29$__["default"].service.findFirst({
-            where: {
-                name: servicioLabel
-            }
-        });
-        const ther = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$ssr$5d$__$28$ecmascript$29$__["default"].therapist.findFirst({
-            where: {
-                name: therapistName
-            }
-        });
-        if (svc && ther) {
-            const dt = new Date(dateISO);
-            dt.setHours(h, mnt, 0);
-            await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$ssr$5d$__$28$ecmascript$29$__["default"].reservation.create({
-                data: {
-                    userId: session.metadata?.userId,
-                    serviceId: svc.id,
-                    therapistId: ther.id,
-                    date: dt
-                }
-            });
+    const checkout = await stripe.checkout.sessions.retrieve(sessionId);
+    const m = checkout.metadata || {};
+    const userId = m.userId;
+    const serviceId = m.serviceId;
+    const priceId = m.priceId;
+    const serviceName = m.serviceName;
+    // parsear fechas y terapeutas
+    const dates = JSON.parse(m.dates || "[]");
+    const therapistIds = JSON.parse(m.therapistIds || "[]");
+    // 2) Upsert Service
+    await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$ssr$5d$__$28$ecmascript$29$__["default"].service.upsert({
+        where: {
+            id: serviceId
+        },
+        update: {
+            name: serviceName
+        },
+        create: {
+            id: serviceId,
+            name: serviceName
         }
+    });
+    // 3) Upsert Therapists
+    const therapistNames = JSON.parse(m.therapistNames || "[]");
+    for(let i = 0; i < therapistIds.length; i++){
+        await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$ssr$5d$__$28$ecmascript$29$__["default"].therapist.upsert({
+            where: {
+                id: therapistIds[i]
+            },
+            update: {
+                name: therapistNames[i]
+            },
+            create: {
+                id: therapistIds[i],
+                name: therapistNames[i]
+            }
+        });
     }
-    // Build calendar links for UI
-    const items = datesArr.map((dateISO, i)=>{
-        const [h = 0, mnt = 0] = (hoursArr[i] || "0:00").split(":").map((v)=>Number(v) || 0);
-        const start = new Date(dateISO);
-        start.setHours(h, mnt, 0);
-        const end = new Date(start.getTime() + 60 * 60 * 1000);
-        const fmt = (d)=>d.toISOString().replace(/[-:]|\.\d{3}/g, "");
-        const dates = `${fmt(start)}/${fmt(end)}`;
-        const text = encodeURIComponent(servicioLabel);
-        const details = encodeURIComponent(`Terapeuta: ${therapistsArr[i]}`);
-        const location = encodeURIComponent("Bloom Fisio");
-        const calLink = [
-            "https://www.google.com/calendar/render?action=TEMPLATE",
-            `&text=${text}`,
-            `&dates=${dates}`,
-            `&details=${details}`,
-            `&location=${location}`
-        ].join("");
-        const label = `${start.toLocaleDateString()} • ${start.toLocaleTimeString([], {
-            hour: "2-digit",
-            minute: "2-digit"
-        })}`;
+    // 4) Upsert UserPackage
+    const pkg = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$ssr$5d$__$28$ecmascript$29$__["default"].package.findUnique({
+        where: {
+            stripePriceId: priceId
+        }
+    });
+    if (pkg) {
+        await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$ssr$5d$__$28$ecmascript$29$__["default"].userPackage.upsert({
+            where: {
+                userId_pkgId: {
+                    userId,
+                    pkgId: pkg.id
+                }
+            },
+            update: {},
+            create: {
+                userId,
+                pkgId: pkg.id
+            }
+        });
+    }
+    // 5) Crear Reservations
+    const hours = JSON.parse(m.hours || "[]");
+    const recs = dates.map((d, i)=>{
+        const [h = "0"] = (hours[i] || "0").split(":");
+        const dt = new Date(d);
+        dt.setHours(parseInt(h, 10), 0, 0, 0);
         return {
-            dateISO,
-            hourRaw: hoursArr[i],
-            therapistName: therapistsArr[i],
-            calLink,
-            label
+            userId,
+            serviceId,
+            therapistId: therapistIds[i],
+            date: dt
         };
     });
+    if (recs.length) {
+        await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$ssr$5d$__$28$ecmascript$29$__["default"].reservation.createMany({
+            data: recs,
+            skipDuplicates: true
+        });
+    }
+    // 6) Redirigir al Dashboard, vista “Reservar” listando N sesiones
     return {
-        props: {
-            items
+        redirect: {
+            destination: `/dashboard?view=reservar-paquete&type=${serviceId}&sessions=${recs.length}&priceId=${priceId}`,
+            permanent: false
         }
     };
 };
-function Success({ items }) {
-    return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
-        className: "text-center py-5",
-        children: [
-            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("h1", {
-                children: "¡Gracias por tu pago!"
-            }, void 0, false, {
-                fileName: "[project]/src/pages/success.tsx",
-                lineNumber: 131,
-                columnNumber: 7
-            }, this),
-            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("p", {
-                children: "Ahora puedes agregar cada sesión a tu Google Calendar:"
-            }, void 0, false, {
-                fileName: "[project]/src/pages/success.tsx",
-                lineNumber: 132,
-                columnNumber: 7
-            }, this),
-            items.map((item, idx)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
-                    className: "mb-4",
-                    children: [
-                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("p", {
-                            children: [
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("strong", {
-                                    children: [
-                                        "Sesión ",
-                                        idx + 1,
-                                        ":"
-                                    ]
-                                }, void 0, true, {
-                                    fileName: "[project]/src/pages/success.tsx",
-                                    lineNumber: 137,
-                                    columnNumber: 13
-                                }, this),
-                                " ",
-                                item.label,
-                                " — ",
-                                item.therapistName
-                            ]
-                        }, void 0, true, {
-                            fileName: "[project]/src/pages/success.tsx",
-                            lineNumber: 136,
-                            columnNumber: 11
-                        }, this),
-                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("a", {
-                            href: item.calLink,
-                            target: "_blank",
-                            rel: "noopener noreferrer",
-                            className: "btn btn-orange me-2 mb-2",
-                            children: [
-                                "➕ Agregar sesión al Calendario ",
-                                idx + 1
-                            ]
-                        }, void 0, true, {
-                            fileName: "[project]/src/pages/success.tsx",
-                            lineNumber: 139,
-                            columnNumber: 11
-                        }, this)
-                    ]
-                }, idx, true, {
-                    fileName: "[project]/src/pages/success.tsx",
-                    lineNumber: 135,
-                    columnNumber: 9
-                }, this)),
-            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$link$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["default"], {
-                href: "/dashboard?tab=historial",
-                legacyBehavior: true,
-                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("button", {
-                    className: "btn btn-orange",
-                    children: "Ver Historial"
-                }, void 0, false, {
-                    fileName: "[project]/src/pages/success.tsx",
-                    lineNumber: 151,
-                    columnNumber: 9
-                }, this)
-            }, void 0, false, {
-                fileName: "[project]/src/pages/success.tsx",
-                lineNumber: 150,
-                columnNumber: 7
-            }, this)
-        ]
-    }, void 0, true, {
-        fileName: "[project]/src/pages/success.tsx",
-        lineNumber: 130,
-        columnNumber: 5
-    }, this);
+function Success() {
+    // nunca se renderiza: solo redirige
+    return null;
 }
 __turbopack_async_result__();
 } catch(e) { __turbopack_async_result__(e); } }, false);}),
@@ -379,8 +296,8 @@ const unstable_getServerSideProps = (0, __TURBOPACK__imported__module__$5b$proje
 const routeModule = new __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$esm$2f$server$2f$route$2d$modules$2f$pages$2f$module$2e$compiled$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["PagesRouteModule"]({
     definition: {
         kind: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$esm$2f$server$2f$route$2d$kind$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["RouteKind"].PAGES,
-        page: "/reservas",
-        pathname: "/reservas",
+        page: "/success",
+        pathname: "/success",
         // The following aren't used in production.
         bundlePath: '',
         filename: ''

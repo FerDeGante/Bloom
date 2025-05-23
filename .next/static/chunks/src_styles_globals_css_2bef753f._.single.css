@@ -213,6 +213,14 @@ body {
   transform: scale(1.05);
 }
 
+.no-paquetes-img {
+  image-rendering: auto;
+  width: 60%;
+  height: auto;
+  image-rendering: smooth;
+  border-radius: .5rem;
+}
+
 .dashboard-container {
   max-width: 900px;
   margin: 0 auto;

@@ -1,19 +1,19 @@
 __turbopack_load_page_chunks__("/dashboard", [
-  "static/chunks/[root-of-the-server]__14d6722e._.js",
+  "static/chunks/[root-of-the-server]__81930cf3._.js",
   "static/chunks/node_modules_next_dist_compiled_20fcc6eb._.js",
   "static/chunks/node_modules_next_dist_shared_lib_5dcd69ab._.js",
   "static/chunks/node_modules_next_dist_client_7c50c76b._.js",
   "static/chunks/node_modules_next_dist_55f53007._.js",
   "static/chunks/node_modules_next_81c3cf81._.js",
   "static/chunks/node_modules_react-dom_82bb97c6._.js",
-  "static/chunks/node_modules_@restart_ui_esm_129b8ff6._.js",
-  "static/chunks/node_modules_react-bootstrap_esm_ce00a8ed._.js",
+  "static/chunks/node_modules_@restart_ui_esm_fc33d06c._.js",
+  "static/chunks/node_modules_react-bootstrap_esm_3e7dd94e._.js",
   "static/chunks/node_modules_@popperjs_core_lib_156e6239._.js",
   "static/chunks/node_modules_react-icons_fa_index_mjs_bad01e3f._.js",
   "static/chunks/node_modules_react-icons_lib_75a63dfe._.js",
   "static/chunks/node_modules_react-calendar_dist_esm_3513275e._.js",
-  "static/chunks/node_modules_789ab506._.js",
+  "static/chunks/node_modules_374583be._.js",
   "static/chunks/node_modules_react-calendar_dist_Calendar_4b142295.css",
   "static/chunks/src_pages_dashboard_index_tsx_5771e187._.js",
-  "static/chunks/src_pages_dashboard_index_tsx_6da78571._.js"
+  "static/chunks/src_pages_dashboard_index_tsx_cf140753._.js"
 ])

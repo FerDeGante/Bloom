@@ -14,17 +14,19 @@ export default function MyApp({
 }: AppProps) {
   const pathname = usePathname() || ''
 
-  // Si la ruta está bajo "/dashboard", NO envolvemos en el Navbar/Footer global
+  // Tratamos /dashboard/* y /success como “rutas de Dashboard”:
   const isDashboard =
-    pathname === '/dashboard' || pathname.startsWith('/dashboard/')
+    pathname === '/dashboard' ||
+    pathname.startsWith('/dashboard/') ||
+    pathname === '/success'
 
   return (
     <SessionProvider session={session}>
       {isDashboard ? (
-        // El propio Component (DashboardPage) se encargará de su Navbar/Footer
+        // El componente se encarga de su propio Navbar/Footer
         <Component {...pageProps} />
       ) : (
-        // Resto de rutas usan el Navbar/Footer global
+        // Resto de rutas usan Navbar/Footer global
         <>
           <Navbar />
           <Component {...pageProps} />

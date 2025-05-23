@@ -1,12 +1,17 @@
 // src/components/PackageCard.tsx
 import React from 'react';
+import { Card, Button } from 'react-bootstrap';
+import { FaStopwatch, FaCalendarAlt, FaDollarSign } from 'react-icons/fa';
 
 export interface Package {
   id: string;
   title: string;
-  sessions: number;
+  sessions?: number;       // opcional para “Otros servicios”
+  inscription?: number;    // opcional
   price: number;
-  inscription: number;
+  description: string;
+  image: string;
+  priceId: string;
 }
 
 interface PackageCardProps {
@@ -16,18 +21,33 @@ interface PackageCardProps {
 
 export default function PackageCard({ pkg, onBuy }: PackageCardProps) {
   return (
-    <div className="card servicio-card text-center h-100">
-      <div className="card-body d-flex flex-column">
-        <h5 className="card-title">{pkg.title}</h5>
-        <p>{pkg.sessions} sesiones/mes</p>
-        <p>Inscripción: ${pkg.inscription}</p>
-        <p className="h4 mt-auto">${pkg.price}</p>
-        {onBuy && (
-          <button onClick={onBuy} className="btn btn-orange mt-3">
-            Comprar
-          </button>
-        )}
+    <Card className="h-100 shadow-sm servicio-card text-center">
+      <div className="card-img-wrap">
+        <Card.Img variant="top" src={pkg.image} alt={pkg.title} />
       </div>
-    </div>
+      <Card.Body className="d-flex flex-column">
+        <Card.Title>
+          {pkg.title} <span role="img" aria-label="estrella">✨</span>
+        </Card.Title>
+        <Card.Text className="flex-grow-1">
+          {pkg.description}
+          {pkg.sessions != null && pkg.inscription != null && (
+            <>
+              <br />
+              <FaStopwatch /> {pkg.sessions} {pkg.sessions === 1 ? 'sesión' : 'sesiones'}
+              <br />
+              <FaCalendarAlt /> Vigencia: {pkg.inscription} días
+            </>
+          )}
+          <br />
+          <FaDollarSign /> ${pkg.price.toLocaleString()} MXN
+        </Card.Text>
+        {onBuy && (
+          <Button onClick={onBuy} className="btn-orange mt-3">
+            ¡Lo quiero!
+          </Button>
+        )}
+      </Card.Body>
+    </Card>
   );
 }

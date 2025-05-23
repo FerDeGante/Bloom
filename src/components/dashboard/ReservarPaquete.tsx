@@ -2,7 +2,6 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
@@ -16,10 +15,25 @@ import {
 } from "react-bootstrap";
 import { loadStripe } from "@stripe/stripe-js";
 
-// Mapea cada priceId al serviceId real en tu BD
+interface Props {
+  type: string;
+  sessions: number;
+  priceId: string;
+  title: string;   // 📌 recibimos el título
+}
+
+interface Slot {
+  date: Date | null;
+  hora: number | null;
+  therapistId: string;
+}
+
+// mapeos para serviceId interno
 const priceToServiceId: Record<string, string> = {
   price_1RJd0OFV5ZpZiouCasDGf28F: "svc_water_1",
-  // … agrega el mapeo real …
+  price_1RMBAKFV5ZpZiouCCnrjam5N: "svc_water_4",
+  price_1RMBFKFV5ZpZiouCJ1vHKREU: "svc_water_8",
+  price_1RMBIaFV5ZpZiouC8l6QjW2N: "svc_water_12",
 };
 
 const therapistList = [
@@ -30,57 +44,79 @@ const therapistList = [
   { id: "ther_5", name: "Gisela" },
 ];
 
-interface Props {
-  type: string;
-  sessions: number;
-  priceId: string;
-}
-
-interface Slot { date: Date | null; hora: number | null; therapistId: string; }
-
-export default function ReservarPaquete({ type, sessions, priceId }: Props) {
-  const router = useRouter();
+export default function ReservarPaquete({
+  sessions,
+  priceId,
+  title,
+}: Props) {
   const { data: session, status } = useSession();
   const [slots, setSlots] = useState<Slot[]>(
-    Array.from({ length: sessions }, () => ({ date: null, hora: null, therapistId: "" }))
+    Array.from({ length: sessions }, () => ({
+      date: null,
+      hora: null,
+      therapistId: "",
+    }))
   );
   const [current, setCurrent] = useState(0);
   const [error, setError] = useState("");
 
-  const now = new Date();
-  const maxDate = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
-
   useEffect(() => {
-    if (status === "unauthenticated") router.replace("/login");
-  }, [status, router]);
+    if (status === "unauthenticated") window.location.replace("/login");
+  }, [status]);
+
+  if (status === "loading" || !session)
+    return <Spinner className="m-5" animation="border" />;
+
+  // Fechas: hoy … +30 días
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const maxDate = new Date(today);
+  maxDate.setDate(maxDate.getDate() + 30);
 
   const thisSlot = slots[current];
-  const done = slots.filter(s => s.date && s.hora !== null && s.therapistId).length;
+  const doneCount = slots.filter(
+    (s) => s.date && s.hora !== null && s.therapistId
+  ).length;
 
   const updateSlot = (data: Partial<Slot>) =>
-    setSlots(s => {
-      const nxt = [...s];
-      nxt[current] = { ...nxt[current], ...data };
-      return nxt;
+    setSlots((prev) => {
+      const next = [...prev];
+      next[current] = { ...next[current], ...data };
+      return next;
     });
 
-  const next = () => {
-    if (!thisSlot.therapistId) return setError("Selecciona un terapeuta");
-    if (!thisSlot.date || thisSlot.hora === null) return setError("Elige fecha y hora");
+  const nextStep = () => {
+    if (!thisSlot.therapistId) {
+      setError("Selecciona un terapeuta");
+      return;
+    }
+    if (!thisSlot.date || thisSlot.hora === null) {
+      setError("Elige fecha y hora");
+      return;
+    }
     setError("");
-    setCurrent(c => Math.min(c + 1, sessions - 1));
+    setCurrent((c) => Math.min(c + 1, sessions - 1));
   };
 
   const confirmAll = async () => {
-    const dates = slots.map(s => s.date!.toISOString());
-    const hours = slots.map(s => `${s.hora}:00`);
-    const therapistIds = slots.map(s => s.therapistId);
+    // metadata con el título real
+    const dates = slots.map((s) => s.date!.toISOString());
+    const hoursArr = slots.map((s) => `${s.hora}:00`);
+    const therapistIds = slots.map((s) => s.therapistId);
+    const therapistNames = therapistIds.map(
+      (tid) => therapistList.find((t) => t.id === tid)!.name
+    );
+    const serviceId = priceToServiceId[priceId];
+    const serviceName = title; // 🚀 aquí usando el title real
+
     const metadata = {
-      userId: session!.user!.id,
-      serviceId: priceToServiceId[priceId],
+      userId: session.user.id,
+      serviceId,
+      serviceName,
       dates: JSON.stringify(dates),
-      hours: JSON.stringify(hours),
+      hours: JSON.stringify(hoursArr),
       therapistIds: JSON.stringify(therapistIds),
+      therapistNames: JSON.stringify(therapistNames),
     };
 
     const res = await fetch("/api/stripe/checkout", {
@@ -93,63 +129,96 @@ export default function ReservarPaquete({ type, sessions, priceId }: Props) {
     stripe?.redirectToCheckout({ sessionId });
   };
 
-  if (status === "loading" || !session) return <Spinner className="m-5" animation="border" />;
+  // Horarios: Lun–Vie 9–18, Sáb 9–15, Dom inhabilitado
+  const isSunday = (d: Date) => d.getDay() === 0;
+  const isSaturday = (d: Date) => d.getDay() === 6;
+  const weekdayHours = Array.from({ length: 10 }, (_, i) => 9 + i);
+  const saturdayHours = [9, 10, 11, 12, 13, 14];
+  let availableHours: number[] = [];
+  if (thisSlot.date) {
+    const base = isSaturday(thisSlot.date) ? saturdayHours : weekdayHours;
+    const isToday = thisSlot.date.toDateString() === new Date().toDateString();
+    const nowHour = new Date().getHours();
+    availableHours = base.filter((h) => (isToday ? h > nowHour : true));
+  }
 
   return (
     <Container className="py-5">
       <h2 className="dashboard-header">
-        {done < sessions ? `Sesión ${current+1} de ${sessions}` : "Resumen"}
+        {doneCount < sessions
+          ? `Sesión ${current + 1} de ${sessions}`
+          : "Resumen"}
       </h2>
       {error && <Alert variant="danger">{error}</Alert>}
 
-      {done < sessions ? (
+      {doneCount < sessions ? (
         <>
           <Form.Group className="mb-3">
             <Form.Label>Terapeuta</Form.Label>
             <Form.Select
               value={thisSlot.therapistId}
-              onChange={e => updateSlot({ therapistId: e.target.value })}
+              onChange={(e) => updateSlot({ therapistId: e.target.value })}
             >
               <option value="">Selecciona un terapeuta</option>
-              {therapistList.map(t => (
-                <option key={t.id} value={t.id}>{t.name}</option>
+              {therapistList.map((t) => (
+                <option key={t.id} value={t.id}>
+                  {t.name}
+                </option>
               ))}
             </Form.Select>
           </Form.Group>
 
           <Calendar
-            onClickDay={d => (d>=now&&d<=maxDate)&&updateSlot({ date: d, hora: null })}
-            value={thisSlot.date||now}
-            minDate={now} maxDate={maxDate}
+            onChange={(d) =>
+              updateSlot({
+                date: Array.isArray(d) ? d[0] : d,
+                hora: null,
+              })
+            }
+            value={thisSlot.date || today}
+            minDate={today}
+            maxDate={maxDate}
+            tileDisabled={({ date, view }) => view === "month" && isSunday(date)}
           />
+
           {thisSlot.date && (
             <div className="mt-3">
               <strong>Hora:</strong>{" "}
-              {[10,11,12,13,14,15,16,17,18].map(h => (
+              {availableHours.map((h) => (
                 <Button
                   key={h}
-                  variant={thisSlot.hora===h?"primary":"outline-primary"}
-                  className="me-1 mb-2 slot-btn"
+                  variant={thisSlot.hora === h ? "primary" : "outline-primary"}
+                  className="me-1 mb-2"
                   onClick={() => updateSlot({ hora: h })}
-                >{h}:00</Button>
+                >
+                  {h}:00
+                </Button>
               ))}
             </div>
           )}
 
           <div className="mt-4 d-flex justify-content-between">
-            {current>0 && <Button variant="link" onClick={()=>setCurrent(c=>c-1)}>← Anterior</Button>}
-            <Button className="btn-orange" onClick={next}>
-              {current < sessions-1 ? "Siguiente" : "Finalizar"}
+            {current > 0 && (
+              <Button variant="link" onClick={() => setCurrent((c) => c - 1)}>
+                ← Anterior
+              </Button>
+            )}
+            <Button className="btn-orange" onClick={nextStep}>
+              {current < sessions - 1 ? "Siguiente" : "Finalizar"}
             </Button>
           </div>
         </>
       ) : (
         <>
           <ListGroup className="mb-4">
-            {slots.map((s,i)=>(
+            {slots.map((s, i) => (
               <ListGroup.Item key={i}>
-                Sesión {i+1}: {new Date(s.date!).toLocaleDateString()} a las {s.hora}:00 — {
-                  therapistList.find(t => t.id===s.therapistId)?.name
+                Sesión {i + 1}:{" "}
+                {new Date(s.date!).toLocaleDateString()} a las{" "}
+                {s.hora}:00 —{" "}
+                {
+                  therapistList.find((t) => t.id === s.therapistId)!
+                    .name
                 }
               </ListGroup.Item>
             ))}

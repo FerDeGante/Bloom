@@ -71,25 +71,27 @@ model Reservation {
   serviceId   String
   therapistId String
   date        DateTime
-
+createdAt    DateTime  @default(now())
   user      User      @relation(fields: [userId], references: [id])
   service   Service   @relation(fields: [serviceId], references: [id])
   therapist Therapist @relation(fields: [therapistId], references: [id])
 }
 
 model Package {
-  id           String        @id @default(cuid())
-  name         String
-  sessions     Int
-  price        Int
-  inscription  Int
-  userPackages UserPackage[]
+  id             String        @id @default(cuid())
+  stripePriceId  String        @unique
+  name           String
+  sessions       Int
+  price          Int
+  inscription    Int
+  userPackages   UserPackage[]
 }
 
 model UserPackage {
-  id     String  @id @default(cuid())
+  id     String   @id @default(cuid())
   userId String
   pkgId  String
-  user   User    @relation(fields: [userId], references: [id])
-  pkg    Package @relation(fields: [pkgId], references: [id])
+  user   User     @relation(fields: [userId], references: [id])
+  pkg    Package  @relation(fields: [pkgId], references: [id])
+  @@unique([userId, pkgId])
 }

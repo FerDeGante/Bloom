@@ -472,97 +472,10 @@ __turbopack_context__.s({
     "__N_SSP": (()=>__N_SSP),
     "default": (()=>Success)
 });
-var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/react/jsx-dev-runtime.js [client] (ecmascript)");
-var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$link$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/link.js [client] (ecmascript)");
-;
-;
 var __N_SSP = true;
-function Success({ items }) {
-    return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-        className: "text-center py-5",
-        children: [
-            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h1", {
-                children: "¡Gracias por tu pago!"
-            }, void 0, false, {
-                fileName: "[project]/src/pages/success.tsx",
-                lineNumber: 131,
-                columnNumber: 7
-            }, this),
-            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                children: "Ahora puedes agregar cada sesión a tu Google Calendar:"
-            }, void 0, false, {
-                fileName: "[project]/src/pages/success.tsx",
-                lineNumber: 132,
-                columnNumber: 7
-            }, this),
-            items.map((item, idx)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                    className: "mb-4",
-                    children: [
-                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                            children: [
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("strong", {
-                                    children: [
-                                        "Sesión ",
-                                        idx + 1,
-                                        ":"
-                                    ]
-                                }, void 0, true, {
-                                    fileName: "[project]/src/pages/success.tsx",
-                                    lineNumber: 137,
-                                    columnNumber: 13
-                                }, this),
-                                " ",
-                                item.label,
-                                " — ",
-                                item.therapistName
-                            ]
-                        }, void 0, true, {
-                            fileName: "[project]/src/pages/success.tsx",
-                            lineNumber: 136,
-                            columnNumber: 11
-                        }, this),
-                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("a", {
-                            href: item.calLink,
-                            target: "_blank",
-                            rel: "noopener noreferrer",
-                            className: "btn btn-orange me-2 mb-2",
-                            children: [
-                                "➕ Agregar sesión al Calendario ",
-                                idx + 1
-                            ]
-                        }, void 0, true, {
-                            fileName: "[project]/src/pages/success.tsx",
-                            lineNumber: 139,
-                            columnNumber: 11
-                        }, this)
-                    ]
-                }, idx, true, {
-                    fileName: "[project]/src/pages/success.tsx",
-                    lineNumber: 135,
-                    columnNumber: 9
-                }, this)),
-            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$link$2e$js__$5b$client$5d$__$28$ecmascript$29$__["default"], {
-                href: "/dashboard?tab=historial",
-                legacyBehavior: true,
-                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                    className: "btn btn-orange",
-                    children: "Ver Historial"
-                }, void 0, false, {
-                    fileName: "[project]/src/pages/success.tsx",
-                    lineNumber: 151,
-                    columnNumber: 9
-                }, this)
-            }, void 0, false, {
-                fileName: "[project]/src/pages/success.tsx",
-                lineNumber: 150,
-                columnNumber: 7
-            }, this)
-        ]
-    }, void 0, true, {
-        fileName: "[project]/src/pages/success.tsx",
-        lineNumber: 130,
-        columnNumber: 5
-    }, this);
+function Success() {
+    // nunca se renderiza: solo redirige
+    return null;
 }
 _c = Success;
 var _c;
@@ -575,7 +488,7 @@ if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelper
 
 var { g: global, __dirname, m: module, e: exports } = __turbopack_context__;
 {
-const PAGE_PATH = "/reservas";
+const PAGE_PATH = "/success";
 (window.__NEXT_P = window.__NEXT_P || []).push([
     PAGE_PATH,
     ()=>{

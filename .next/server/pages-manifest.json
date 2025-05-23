@@ -2,6 +2,11 @@
   "/": "pages/index.js",
   "/_app": "pages/_app.js",
   "/_document": "pages/_document.js",
+  "/api/appointments/history": "pages/api/appointments/history.js",
   "/api/auth/[...nextauth]": "pages/api/auth/[...nextauth].js",
-  "/dashboard": "pages/dashboard.js"
+  "/api/dashboard/packages": "pages/api/dashboard/packages.js",
+  "/api/stripe/checkout": "pages/api/stripe/checkout.js",
+  "/dashboard": "pages/dashboard.js",
+  "/login": "pages/login.js",
+  "/success": "pages/success.js"
 }

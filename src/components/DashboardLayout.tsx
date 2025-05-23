@@ -1,7 +1,6 @@
-// File: src/components/DashboardLayout.tsx
 "use client";
 
-import { ReactNode, useState, useEffect } from "react";
+import React, { ReactNode, useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import ProtectedRoute from "./ProtectedRoute";
@@ -9,63 +8,82 @@ import Navbar from "./Navbar";
 import Footer from "./Footer";
 
 import AccountSection from "./dashboard/AccountSection";
-import PackagesSection from "./dashboard/PackagesSection";
+import PurchasedPackagesSection from "./dashboard/PurchasedPackagesSection";
 import HistorySection from "./dashboard/HistorySection";
 import ReservarPaquete from "./dashboard/ReservarPaquete";
+import PackagesSection from "./dashboard/PackagesSection";
 
 type TabKey = "mi-cuenta" | "mis-paquetes" | "historial" | "reservar";
 
 export default function DashboardLayout({ children }: { children?: ReactNode }) {
   const { data: session } = useSession();
   const router = useRouter();
-  const { view, type, sessions, priceId } = router.query;
-
-  const reservarQuery =
-    view === "reservar-paquete" &&
-    typeof type === "string" &&
-    typeof sessions === "string" &&
-    typeof priceId === "string";
+  const { tab: queryTab, view, type, sessions, priceId } =
+    router.query as Record<string, string>;
 
   const [tab, setTab] = useState<TabKey>(
-    reservarQuery ? "reservar" : "mis-paquetes"
+    (queryTab as TabKey) || "mis-paquetes"
   );
 
   useEffect(() => {
-    if (reservarQuery) {
-      setTab("reservar");
-    }
-  }, [reservarQuery]);
+    if (typeof queryTab === "string") setTab(queryTab as TabKey);
+  }, [queryTab]);
 
   const tabs: [TabKey, string][] = [
     ["mi-cuenta", "Mi cuenta"],
     ["mis-paquetes", "Mis paquetes"],
-    ["historial", "Historial"],
+    ["historial", "Mis reservaciones"],
     ["reservar", "Reservar"],
   ];
 
-  const handleTab = (key: TabKey) => {
-    setTab(key);
-    if (key !== "reservar") {
-      router.replace("/dashboard", undefined, { shallow: true });
+  function renderContent() {
+    // Flujo de "¡Lo quiero!"
+    if (
+      view === "reservar-paquete" &&
+      type &&
+      sessions &&
+      priceId
+    ) {
+      const num = parseInt(sessions, 10) || 0;
+      return <ReservarPaquete type={type} sessions={num} priceId={priceId} />;
     }
-  };
+
+    // Pestañas normales
+    switch (tab) {
+      case "mi-cuenta":
+        return <AccountSection />;
+      case "mis-paquetes":
+        return <PurchasedPackagesSection />;
+      case "historial":
+        return <HistorySection />;
+      case "reservar":
+        return <PackagesSection />;
+      default:
+        return <PurchasedPackagesSection />;
+    }
+  }
 
   return (
     <ProtectedRoute>
       <Navbar />
-
       <div className="dashboard-container py-4">
-        <div className="dashboard-header text-center mb-4">
-          <h2>Hola, {session?.user?.name || "Usuario"}</h2>
-        </div>
+        <h2 className="text-center mb-4">
+          Hola, {session?.user?.name || "Usuario"}
+        </h2>
 
         <ul className="nav nav-tabs justify-content-center mb-4">
           {tabs.map(([key, label]) => (
-            <li className="nav-item" key={key}>
+            <li key={key} className="nav-item">
               <button
-                type="button"
                 className={`nav-link ${tab === key ? "active" : ""}`}
-                onClick={() => handleTab(key)}
+                onClick={() => {
+                  // Cambia pestaña y limpia cualquier `view`
+                  router.push(
+                    { pathname: "/dashboard", query: { tab: key } },
+                    undefined,
+                    { shallow: true }
+                  );
+                }}
               >
                 {label}
               </button>
@@ -73,25 +91,8 @@ export default function DashboardLayout({ children }: { children?: ReactNode }) 
           ))}
         </ul>
 
-        {tab === "mi-cuenta" && <AccountSection />}
-
-        {tab === "mis-paquetes" && <PackagesSection />}
-
-        {tab === "historial" && <HistorySection />}
-
-        {tab === "reservar" &&
-          (reservarQuery ? (
-            <ReservarPaquete
-              type={type}
-              sessions={Number(sessions)}
-              priceId={priceId}
-            />
-          ) : (
-            <PackagesSection />
-          ))}
-
+        {renderContent()}
       </div>
-
       <Footer />
     </ProtectedRoute>
   );

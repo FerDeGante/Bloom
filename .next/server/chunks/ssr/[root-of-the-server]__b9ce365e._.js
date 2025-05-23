@@ -475,42 +475,42 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$Footer$
 ;
 function MyApp({ Component, pageProps: { session, ...pageProps } }) {
     const pathname = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$navigation$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["usePathname"])() || '';
-    // Si la ruta está bajo "/dashboard", NO envolvemos en el Navbar/Footer global
-    const isDashboard = pathname === '/dashboard' || pathname.startsWith('/dashboard/');
+    // Tratamos /dashboard/* y /success como “rutas de Dashboard”:
+    const isDashboard = pathname === '/dashboard' || pathname.startsWith('/dashboard/') || pathname === '/success';
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$externals$5d2f$next$2d$auth$2f$react__$5b$external$5d$__$28$next$2d$auth$2f$react$2c$__cjs$29$__["SessionProvider"], {
         session: session,
-        children: isDashboard ? // El propio Component (DashboardPage) se encargará de su Navbar/Footer
+        children: isDashboard ? // El componente se encarga de su propio Navbar/Footer
         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(Component, {
             ...pageProps
         }, void 0, false, {
             fileName: "[project]/src/pages/_app.tsx",
-            lineNumber: 25,
+            lineNumber: 27,
             columnNumber: 9
-        }, this) : // Resto de rutas usan el Navbar/Footer global
+        }, this) : // Resto de rutas usan Navbar/Footer global
         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["Fragment"], {
             children: [
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$Navbar$2e$tsx__$5b$ssr$5d$__$28$ecmascript$29$__["default"], {}, void 0, false, {
                     fileName: "[project]/src/pages/_app.tsx",
-                    lineNumber: 29,
+                    lineNumber: 31,
                     columnNumber: 11
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(Component, {
                     ...pageProps
                 }, void 0, false, {
                     fileName: "[project]/src/pages/_app.tsx",
-                    lineNumber: 30,
+                    lineNumber: 32,
                     columnNumber: 11
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$Footer$2e$tsx__$5b$ssr$5d$__$28$ecmascript$29$__["default"], {}, void 0, false, {
                     fileName: "[project]/src/pages/_app.tsx",
-                    lineNumber: 31,
+                    lineNumber: 33,
                     columnNumber: 11
                 }, this)
             ]
         }, void 0, true)
     }, void 0, false, {
         fileName: "[project]/src/pages/_app.tsx",
-        lineNumber: 22,
+        lineNumber: 24,
         columnNumber: 5
     }, this);
 }
