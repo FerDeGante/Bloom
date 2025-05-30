@@ -4,8 +4,10 @@ import { getSession } from "next-auth/react";
 import prisma from "@/lib/prisma";
 
 export interface UserPackageResponse {
-  id: string;
+  id: string;               // ← identificador único de la compra
+  pkgId: string;
   pkgName: string;
+  priceId: string;
   sessionsRemaining: number;
   expiresAt: string;
 }
@@ -24,21 +26,27 @@ export default async function handler(
     return res.status(401).json({ error: "Unauthorized" });
   }
 
+  // traemos todas las compras del usuario, más recientes primero
   const ups = await prisma.userPackage.findMany({
     where: { userId: session.user.id },
     include: { pkg: true },
+    orderBy: { createdAt: "desc" },
   });
 
   const data: UserPackageResponse[] = ups.map((u) => {
-    const expires = new Date();
-    expires.setDate(expires.getDate() + u.pkg.inscription);
+    // fecha de vencimiento: 30 días después de la compra
+    const exp = new Date(u.createdAt);
+    exp.setDate(exp.getDate() + u.pkg.inscription);
+
     return {
       id: u.id,
+      pkgId: u.pkg.id,
       pkgName: u.pkg.name,
-      sessionsRemaining: u.pkg.sessions,
-      expiresAt: expires.toISOString(),
+      priceId: u.pkg.stripePriceId,
+      sessionsRemaining: u.sessionsRemaining,
+      expiresAt: exp.toISOString(),
     };
   });
 
-  res.status(200).json(data);
+  return res.status(200).json(data);
 }

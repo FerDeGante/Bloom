@@ -1,79 +1,97 @@
-// src/components/dashboard/PurchasedPackagesSection.tsx
 "use client";
 
-import React, { useState, useEffect } from "react";
-import Image from "next/image";
-import { Container, Alert, ListGroup, Button, Spinner } from "react-bootstrap";
+import React, { useEffect, useState } from "react";
+import {
+  Container,
+  Row,
+  Col,
+  Card,
+  Button,
+  Spinner,
+  Alert,
+} from "react-bootstrap";
 import { useRouter } from "next/router";
-
-interface UserPkg {
-  id: string;
-  pkgName: string;
-  sessionsRemaining: number;
-  expiresAt: string;
-}
+import type { UserPackageResponse } from "@/pages/api/dashboard/packages";
 
 export default function PurchasedPackagesSection() {
-  const [pkgs, setPkgs] = useState<UserPkg[] | null>(null);
+  const [packages, setPackages] = useState<UserPackageResponse[]>([]);
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
     fetch("/api/dashboard/packages")
-      .then((res) => res.json())
-      .then((data: UserPkg[]) => setPkgs(data))
-      .catch(() => setPkgs([]));
+      .then((r) => r.json())
+      .then((data: UserPackageResponse[]) => setPackages(data))
+      .catch(console.error)
+      .finally(() => setLoading(false));
   }, []);
 
-  if (pkgs === null) return <Spinner className="m-5" animation="border" />;
+  // Al hacer clic, vamos al flujo de agendar 1 sesión
+  const handleSchedule = (pkg: UserPackageResponse) => {
+    router.push(
+      {
+        pathname: "/dashboard",
+        query: {
+          view: "reservar-paquete",
+          type: pkg.pkgId,    // coincide con el prop `type` de ReservarPaquete
+          sessions: 1,        // siempre 1 sesión
+          priceId: pkg.priceId,
+        },
+      },
+      undefined,
+      { shallow: true }
+    );
+  };
 
-  if (pkgs.length === 0) {
+  if (loading)
+    return <Spinner className="m-5" animation="border" />;
+
+  if (packages.length === 0) {
     return (
-      <Container className="py-4 text-center">
-        <div className="mb-3">
-          <Image
-            src="/images/no_tienes_paquetes_vigentes.png"
-            alt="No tienes paquetes vigentes"
-            width={200}
-            height={200}
-            className="no-paquetes-img"
-          />
-        </div>
-        <Alert variant="info">No tienes paquetes vigentes.</Alert>
+      <Alert variant="info" className="text-center">
+        No tienes paquetes vigentes.
         <Button
-          onClick={() => router.push("/dashboard?tab=reservar")}
           variant="primary"
+          className="ms-3"
+          onClick={() =>
+            router.push("/dashboard?tab=reservar", undefined, {
+              shallow: true,
+            })
+          }
         >
           Comprar paquete
         </Button>
-      </Container>
+      </Alert>
     );
   }
 
   return (
     <Container className="py-4">
-      <h4 className="mb-3">Mis paquetes</h4>
-      <ListGroup>
-        {pkgs.map((p) => (
-          <ListGroup.Item
-            key={p.id}
-            className="d-flex justify-content-between align-items-center"
-          >
-            <div>
-              <strong>{p.pkgName}</strong>
-              <br />
-              Sesiones restantes: {p.sessionsRemaining}
-              <br />
-              Vence: {new Date(p.expiresAt).toLocaleDateString()}
-            </div>
-            <Button
-              variant="success"
-              onClick={() => router.push("/dashboard?tab=reservar")}
-            >
-              Comprar paquete
-            </Button>
-          </ListGroup.Item>
+      <h3 className="mb-4 text-center">Mis paquetes vigentes</h3>
+      <Row className="g-4">
+        {packages.map((pkg) => (
+          <Col key={pkg.id} md={4}>
+            <Card>
+              <Card.Body>
+                <Card.Title>{pkg.pkgName}</Card.Title>
+                <Card.Text>
+                  Sesiones restantes: {pkg.sessionsRemaining}
+                </Card.Text>
+                <Card.Text>
+                  Vence:{" "}
+                  {new Date(pkg.expiresAt).toLocaleDateString()}
+                </Card.Text>
+                <Button
+                  className="btn-orange"
+                  onClick={() => handleSchedule(pkg)}
+                >
+                  Agendar sesión
+                </Button>
+              </Card.Body>
+            </Card>
+          </Col>
         ))}
-      </ListGroup>
+      </Row>
     </Container>
   );
 }

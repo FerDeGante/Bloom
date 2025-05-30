@@ -75,7 +75,6 @@ async function handler(req, res) {
             error: "Unauthorized"
         });
     }
-    // Traemos todas las reservas del usuario, con sus relaciones
     const reservations = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$api$5d$__$28$ecmascript$29$__["default"].reservation.findMany({
         where: {
             userId: session.user.id
@@ -88,14 +87,13 @@ async function handler(req, res) {
             date: "desc"
         }
     });
-    // Mapeamos al formato que usa HistorySection
     const data = reservations.map((r)=>({
             id: r.id,
             date: r.date.toISOString(),
             serviceName: r.service.name,
             therapistName: r.therapist.name
         }));
-    return res.status(200).json(data);
+    res.status(200).json(data);
 }
 }}),
 "[project]/node_modules/next/dist/esm/server/route-modules/pages-api/module.compiled.js [api] (ecmascript)": (function(__turbopack_context__) {

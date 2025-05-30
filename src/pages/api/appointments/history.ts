@@ -24,17 +24,12 @@ export default async function handler(
     return res.status(401).json({ error: "Unauthorized" });
   }
 
-  // Traemos todas las reservas del usuario, con sus relaciones
   const reservations = await prisma.reservation.findMany({
     where: { userId: session.user.id },
-    include: {
-      service: true,
-      therapist: true,
-    },
+    include: { service: true, therapist: true },
     orderBy: { date: "desc" },
   });
 
-  // Mapeamos al formato que usa HistorySection
   const data: HistoryItem[] = reservations.map((r) => ({
     id: r.id,
     date: r.date.toISOString(),
@@ -42,5 +37,5 @@ export default async function handler(
     therapistName: r.therapist.name,
   }));
 
-  return res.status(200).json(data);
+  res.status(200).json(data);
 }

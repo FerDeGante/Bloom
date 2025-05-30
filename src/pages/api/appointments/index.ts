@@ -1,4 +1,3 @@
-// src/pages/api/appointments/index.ts
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "../auth/[...nextauth]";
@@ -16,10 +15,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       include: { service: true, therapist: true },
       orderBy: { date: "desc" },
     });
-    return res.status(200).json({ reservations });
+
+    const mapped = reservations.map((r) => ({
+      id: r.id,
+      date: r.date.toISOString(),
+      serviceName: r.service.name,        // ✅ Correcto
+      therapistName: r.therapist.name,    // ✅ Correcto
+    }));
+
+    return res.status(200).json({ reservations: mapped });
   }
 
   res.setHeader("Allow", ["GET"]);
   return res.status(405).end(`Method ${req.method} Not Allowed`);
 }
-

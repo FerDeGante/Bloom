@@ -680,7 +680,7 @@ function Navbar() {
         lineNumber: 31,
         columnNumber: 5
     }, this);
-}
+} // quiero que eliminemos "agendar" del navbar y lo cambiemos por "reservas" y que el icono sea un calendario
 _s(Navbar, "ZgYoWSvxp7G4HUs4GFqQont03jU=", false, function() {
     return [
         __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2d$auth$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useSession"],

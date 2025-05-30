@@ -78,20 +78,22 @@ createdAt    DateTime  @default(now())
 }
 
 model Package {
-  id             String        @id @default(cuid())
-  stripePriceId  String        @unique
-  name           String
-  sessions       Int
-  price          Int
-  inscription    Int
-  userPackages   UserPackage[]
+  id            String       @id @default(cuid())
+  stripePriceId String        @unique @map("stripe_price_id")
+  name          String
+  sessions      Int
+  price         Int
+  inscription   Int
+  userPackages  UserPackage[]
 }
 
 model UserPackage {
-  id     String   @id @default(cuid())
-  userId String
-  pkgId  String
-  user   User     @relation(fields: [userId], references: [id])
-  pkg    Package  @relation(fields: [pkgId], references: [id])
-  @@unique([userId, pkgId])
+  id                String   @id @default(cuid())
+  userId            String
+  pkgId             String
+  sessionsRemaining Int
+  createdAt         DateTime @default(now())
+  user              User     @relation(fields: [userId], references: [id])
+  pkg               Package  @relation(fields: [pkgId], references: [id])
+
 }

@@ -19,6 +19,6 @@
       "@/*": ["src/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "src/components/ProtectedRoute.jsx", "src/pages/dashboard/index.jsx", "src/pages/dashboard/packages.jsx"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "src/components/ProtectedRoute.jsx", "src/pages/dashboard/index.jsx", "src/pages/dashboard/packages.jsx", "prisma/seed.js"],
   "exclude": ["node_modules"]
 }

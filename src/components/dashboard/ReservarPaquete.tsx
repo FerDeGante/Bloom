@@ -1,8 +1,8 @@
-// src/components/dashboard/ReservarPaquete.tsx
 "use client";
 
 import React, { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/router";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import {
@@ -15,25 +15,40 @@ import {
 } from "react-bootstrap";
 import { loadStripe } from "@stripe/stripe-js";
 
-interface Props {
-  type: string;
-  sessions: number;
-  priceId: string;
-  title: string;   // 📌 recibimos el título
-}
-
 interface Slot {
   date: Date | null;
   hora: number | null;
   therapistId: string;
 }
 
-// mapeos para serviceId interno
 const priceToServiceId: Record<string, string> = {
+ // Agua
   price_1RJd0OFV5ZpZiouCasDGf28F: "svc_water_1",
   price_1RMBAKFV5ZpZiouCCnrjam5N: "svc_water_4",
   price_1RMBFKFV5ZpZiouCJ1vHKREU: "svc_water_8",
   price_1RMBIaFV5ZpZiouC8l6QjW2N: "svc_water_12",
+
+  // Piso
+  price_1RJd1jFV5ZpZiouC1xXvllVc: "svc_floor_1",
+  price_1RP6S2FV5ZpZiouC6cVpXQsJ: "svc_floor_4",
+  price_1RP6TaFV5ZpZiouCoG5G58S3: "svc_floor_12",
+  price_1RP6SsFV5ZpZiouCtbg4A7OE: "svc_floor_8", 
+
+  // Fisioterapia
+  price_1RJd3WFV5ZpZiouC9PDzHjKU: "svc_fisio_1",
+  price_1RP6WwFV5ZpZiouCN3m0luq3: "svc_fisio_5",
+  price_1RP6W9FV5ZpZiouCBXnZwxLW: "svc_fisio_10",
+
+  // Otros
+  price_1ROMxFFV5ZpZiouCdkM2KoHF: "svc_post_vacuna",
+  price_1RJd2fFV5ZpZiouCsaJNkUTO: "svc_quiropractica",
+  price_1RJd4JFV5ZpZiouCPjcpX3Xn: "svc_masajes",
+  price_1RQaDGFV5ZpZiouCdNjxrjVk: "svc_cosmetologia",
+  price_1RJd57FV5ZpZiouCpcrKNvJV: "svc_lesiones",
+  price_1RJd6EFV5ZpZiouCYwD4J3I8: "svc_prep_fisica",
+  price_1RJd7qFV5ZpZiouCbj6HrFJF: "svc_nutricion",
+  price_1RJd9HFV5ZpZiouClVlCujAm: "svc_medicina_rehab",
+
 };
 
 const therapistList = [
@@ -44,14 +59,15 @@ const therapistList = [
   { id: "ther_5", name: "Gisela" },
 ];
 
-export default function ReservarPaquete({
-  sessions,
-  priceId,
-  title,
-}: Props) {
+export default function ReservarPaquete() {
   const { data: session, status } = useSession();
+  const router = useRouter();
+  const { priceId, title, sessions } = router.query;
+
+  const sessionCount = parseInt(sessions as string, 10);
+
   const [slots, setSlots] = useState<Slot[]>(
-    Array.from({ length: sessions }, () => ({
+    Array.from({ length: sessionCount || 1 }, () => ({
       date: null,
       hora: null,
       therapistId: "",
@@ -64,10 +80,16 @@ export default function ReservarPaquete({
     if (status === "unauthenticated") window.location.replace("/login");
   }, [status]);
 
-  if (status === "loading" || !session)
+  if (
+    status === "loading" ||
+    !session ||
+    !priceId ||
+    !title ||
+    isNaN(sessionCount)
+  ) {
     return <Spinner className="m-5" animation="border" />;
+  }
 
-  // Fechas: hoy … +30 días
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   const maxDate = new Date(today);
@@ -86,28 +108,23 @@ export default function ReservarPaquete({
     });
 
   const nextStep = () => {
-    if (!thisSlot.therapistId) {
-      setError("Selecciona un terapeuta");
-      return;
-    }
-    if (!thisSlot.date || thisSlot.hora === null) {
-      setError("Elige fecha y hora");
-      return;
-    }
+    if (!thisSlot.therapistId) return setError("Selecciona un terapeuta");
+    if (!thisSlot.date || thisSlot.hora === null)
+      return setError("Elige fecha y hora");
+
     setError("");
-    setCurrent((c) => Math.min(c + 1, sessions - 1));
+    setCurrent((c) => Math.min(c + 1, sessionCount - 1));
   };
 
   const confirmAll = async () => {
-    // metadata con el título real
     const dates = slots.map((s) => s.date!.toISOString());
     const hoursArr = slots.map((s) => `${s.hora}:00`);
     const therapistIds = slots.map((s) => s.therapistId);
     const therapistNames = therapistIds.map(
       (tid) => therapistList.find((t) => t.id === tid)!.name
     );
-    const serviceId = priceToServiceId[priceId];
-    const serviceName = title; // 🚀 aquí usando el title real
+    const serviceId = priceToServiceId[priceId as string];
+    const serviceName = title as string;
 
     const metadata = {
       userId: session.user.id,
@@ -119,6 +136,8 @@ export default function ReservarPaquete({
       therapistNames: JSON.stringify(therapistNames),
     };
 
+    console.log("🔎 Enviando metadata a Stripe:", metadata);
+
     const res = await fetch("/api/stripe/checkout", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -129,7 +148,6 @@ export default function ReservarPaquete({
     stripe?.redirectToCheckout({ sessionId });
   };
 
-  // Horarios: Lun–Vie 9–18, Sáb 9–15, Dom inhabilitado
   const isSunday = (d: Date) => d.getDay() === 0;
   const isSaturday = (d: Date) => d.getDay() === 6;
   const weekdayHours = Array.from({ length: 10 }, (_, i) => 9 + i);
@@ -145,13 +163,13 @@ export default function ReservarPaquete({
   return (
     <Container className="py-5">
       <h2 className="dashboard-header">
-        {doneCount < sessions
-          ? `Sesión ${current + 1} de ${sessions}`
+        {doneCount < sessionCount
+          ? `Sesión ${current + 1} de ${sessionCount}`
           : "Resumen"}
       </h2>
       {error && <Alert variant="danger">{error}</Alert>}
 
-      {doneCount < sessions ? (
+      {doneCount < sessionCount ? (
         <>
           <Form.Group className="mb-3">
             <Form.Label>Terapeuta</Form.Label>
@@ -204,7 +222,7 @@ export default function ReservarPaquete({
               </Button>
             )}
             <Button className="btn-orange" onClick={nextStep}>
-              {current < sessions - 1 ? "Siguiente" : "Finalizar"}
+              {current < sessionCount - 1 ? "Siguiente" : "Finalizar"}
             </Button>
           </div>
         </>
@@ -214,12 +232,8 @@ export default function ReservarPaquete({
             {slots.map((s, i) => (
               <ListGroup.Item key={i}>
                 Sesión {i + 1}:{" "}
-                {new Date(s.date!).toLocaleDateString()} a las{" "}
-                {s.hora}:00 —{" "}
-                {
-                  therapistList.find((t) => t.id === s.therapistId)!
-                    .name
-                }
+                {new Date(s.date!).toLocaleDateString()} a las {s.hora}:00 —{" "}
+                {therapistList.find((t) => t.id === s.therapistId)!.name}
               </ListGroup.Item>
             ))}
           </ListGroup>

@@ -1,3 +1,4 @@
+// src/components/DashboardLayout.tsx
 "use client";
 
 import React, { ReactNode, useState, useEffect } from "react";
@@ -18,8 +19,13 @@ type TabKey = "mi-cuenta" | "mis-paquetes" | "historial" | "reservar";
 export default function DashboardLayout({ children }: { children?: ReactNode }) {
   const { data: session } = useSession();
   const router = useRouter();
-  const { tab: queryTab, view, type, sessions, priceId } =
-    router.query as Record<string, string>;
+  const {
+    tab: queryTab,
+    view,
+    type,       // <–– aquí lo llamamos “type”
+    sessions,
+    priceId,
+  } = router.query as Record<string, string>;
 
   const [tab, setTab] = useState<TabKey>(
     (queryTab as TabKey) || "mis-paquetes"
@@ -37,18 +43,14 @@ export default function DashboardLayout({ children }: { children?: ReactNode }) 
   ];
 
   function renderContent() {
-    // Flujo de "¡Lo quiero!"
-    if (
-      view === "reservar-paquete" &&
-      type &&
-      sessions &&
-      priceId
-    ) {
+    // 1) Flujo "Agendar sesión" desde Mis paquetes
+    if (view === "reservar-paquete" && type && sessions && priceId) {
       const num = parseInt(sessions, 10) || 0;
+      // PASAMOS AQUÍ la prop `type`, NO `pkgKey`
       return <ReservarPaquete type={type} sessions={num} priceId={priceId} />;
     }
 
-    // Pestañas normales
+    // 2) Pestañas normales
     switch (tab) {
       case "mi-cuenta":
         return <AccountSection />;
@@ -70,27 +72,24 @@ export default function DashboardLayout({ children }: { children?: ReactNode }) 
         <h2 className="text-center mb-4">
           Hola, {session?.user?.name || "Usuario"}
         </h2>
-
         <ul className="nav nav-tabs justify-content-center mb-4">
           {tabs.map(([key, label]) => (
             <li key={key} className="nav-item">
               <button
                 className={`nav-link ${tab === key ? "active" : ""}`}
-                onClick={() => {
-                  // Cambia pestaña y limpia cualquier `view`
+                onClick={() =>
                   router.push(
                     { pathname: "/dashboard", query: { tab: key } },
                     undefined,
                     { shallow: true }
-                  );
-                }}
+                  )
+                }
               >
                 {label}
               </button>
             </li>
           ))}
         </ul>
-
         {renderContent()}
       </div>
       <Footer />

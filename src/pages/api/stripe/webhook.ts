@@ -1,4 +1,3 @@
-// src/pages/api/stripe/webhook.ts
 import { buffer } from "micro";
 import type { NextApiRequest, NextApiResponse } from "next";
 import Stripe from "stripe";
@@ -16,6 +15,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     res.setHeader("Allow", "POST");
     return res.status(405).end("Only POST");
   }
+
   const raw = await buffer(req);
   const sig = req.headers["stripe-signature"]!;
 
@@ -23,7 +23,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   try {
     event = stripe.webhooks.constructEvent(raw, sig, endpointSecret);
   } catch (e: any) {
-    console.error("Webhook sig failed:", e.message);
+    console.error("❌ Webhook signature verification failed:", e.message);
     return res.status(400).send(`Webhook Error: ${e.message}`);
   }
 
@@ -40,14 +40,28 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const therapistIds   = JSON.parse((m.therapistIds as string) || "[]") as string[];
     const therapistNames = JSON.parse((m.therapistNames as string) || "[]") as string[];
 
-    // 1) Upsert Service
+    console.log("📥 Webhook metadata received:", {
+      userId,
+      priceId,
+      serviceId,
+      serviceName,
+      dates,
+      hours,
+    });
+
+    if (!userId || !priceId || !serviceId || !serviceName || dates.length === 0) {
+      console.error("❌ Faltan datos obligatorios en el metadata");
+      return res.status(400).json({ error: "Faltan datos en metadata" });
+    }
+
+    // 1) Upsert del servicio
     await prisma.service.upsert({
       where: { id: serviceId },
       update: { name: serviceName },
       create: { id: serviceId, name: serviceName },
     });
 
-    // 2) Upsert Therapists
+    // 2) Upsert de terapeutas
     for (let i = 0; i < therapistIds.length; i++) {
       await prisma.therapist.upsert({
         where: { id: therapistIds[i] },
@@ -56,17 +70,46 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       });
     }
 
-    // 3) Upsert UserPackage
-    const pkg = await prisma.package.findUnique({ where: { stripePriceId: priceId } });
-    if (pkg) {
-      await prisma.userPackage.upsert({
-        where: { userId_pkgId: { userId, pkgId: pkg.id } },
-        update: {},
-        create: { userId, pkgId: pkg.id },
-      });
-    }
+    // 3) Buscar paquete
+    const pkg = await prisma.package.findUnique({
+      where: { stripePriceId: priceId },
+    });
 
-    // 4) Crear Reservations
+    if (!pkg) {
+      console.error("❌ Paquete no encontrado para priceId:", priceId);
+      return res.status(400).json({ error: "Paquete no encontrado" });
+    }
+const existingPkg = await prisma.userPackage.findFirst({
+  where: {
+    userId,
+    pkgId: pkg.id,
+    createdAt: {
+      gte: new Date(Date.now() - pkg.inscription * 86400 * 1000), // dentro de su vigencia
+    },
+  },
+});
+
+if (existingPkg) {
+  console.warn("⚠️ Usuario ya tiene un paquete activo de este tipo. No se duplicará.");
+} else {
+  await prisma.userPackage.create({
+    data: {
+      userId,
+      pkgId: pkg.id,
+      sessionsRemaining: pkg.sessions,
+    },
+  });
+}
+    // 4) Crear UserPackage
+    await prisma.userPackage.create({
+      data: {
+        userId,
+        pkgId: pkg.id,
+        sessionsRemaining: pkg.sessions,
+      },
+    });
+
+    // 5) Crear reservaciones
     const recs = dates.map((d, i) => {
       const [h = "0"] = (hours[i] || "0").split(":");
       const dt = new Date(d);
@@ -78,9 +121,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         date: dt,
       };
     });
+
     if (recs.length) {
       await prisma.reservation.createMany({ data: recs, skipDuplicates: true });
     }
+
+    console.log("✅ Webhook procesado exitosamente.");
   }
 
   res.status(200).json({ received: true });

@@ -258,7 +258,7 @@ function Navbar() {
         lineNumber: 31,
         columnNumber: 5
     }, this);
-}
+} // quiero que eliminemos "agendar" del navbar y lo cambiemos por "reservas" y que el icono sea un calendario
 }}),
 "[project]/src/components/Footer.tsx [ssr] (ecmascript)": ((__turbopack_context__) => {
 "use strict";
