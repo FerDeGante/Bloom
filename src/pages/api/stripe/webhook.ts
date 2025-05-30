@@ -79,35 +79,29 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       console.error("❌ Paquete no encontrado para priceId:", priceId);
       return res.status(400).json({ error: "Paquete no encontrado" });
     }
-const existingPkg = await prisma.userPackage.findFirst({
-  where: {
-    userId,
-    pkgId: pkg.id,
-    createdAt: {
-      gte: new Date(Date.now() - pkg.inscription * 86400 * 1000), // dentro de su vigencia
-    },
-  },
-});
-
-if (existingPkg) {
-  console.warn("⚠️ Usuario ya tiene un paquete activo de este tipo. No se duplicará.");
-} else {
-  await prisma.userPackage.create({
-    data: {
-      userId,
-      pkgId: pkg.id,
-      sessionsRemaining: pkg.sessions,
-    },
-  });
-}
-    // 4) Crear UserPackage
-    await prisma.userPackage.create({
-      data: {
+    const existingPkg = await prisma.userPackage.findFirst({
+      where: {
         userId,
         pkgId: pkg.id,
-        sessionsRemaining: pkg.sessions,
+        createdAt: {
+          gte: new Date(Date.now() - pkg.inscription * 86400 * 1000), // dentro de su vigencia
+        },
       },
     });
+
+    if (existingPkg) {
+      console.warn(
+        "⚠️ Usuario ya tiene un paquete activo de este tipo. No se duplicará."
+      );
+    } else {
+      await prisma.userPackage.create({
+        data: {
+          userId,
+          pkgId: pkg.id,
+          sessionsRemaining: pkg.sessions,
+        },
+      });
+    }
 
     // 5) Crear reservaciones
     const recs = dates.map((d, i) => {

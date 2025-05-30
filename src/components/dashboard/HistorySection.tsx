@@ -11,7 +11,7 @@ import {
 } from "react-bootstrap";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
-import { FaEdit } from "react-icons/fa";
+import { FaEdit, FaTrash } from "react-icons/fa";
 
 interface HistoryItem {
   id: string;
@@ -27,6 +27,7 @@ export default function HistorySection() {
   const [editSlot, setEditSlot] = useState<HistoryItem | null>(null);
   const [newDate, setNewDate] = useState<Date | null>(null);
   const [newHour, setNewHour] = useState<number | null>(null);
+  const [message, setMessage] = useState<string | null>(null);
 
   useEffect(() => {
     fetch("/api/appointments/history")
@@ -62,13 +63,26 @@ export default function HistorySection() {
           : r
       )
     );
+    setMessage("Reservación actualizada");
     setShowModal(false);
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm("¿Cancelar reservación?")) return;
+    await fetch(`/api/appointments/${id}`, { method: "DELETE" });
+    setRows((current) => current.filter((r) => r.id !== id));
+    setMessage("Reservación cancelada");
   };
 
   if (loading) return <Spinner className="m-5" animation="border" />;
 
   return (
     <>
+      {message && (
+        <div className="alert alert-success text-center" role="alert">
+          {message}
+        </div>
+      )}
       <Table hover responsive className="dashboard-table">
         <thead>
           <tr>
@@ -76,6 +90,7 @@ export default function HistorySection() {
             <th>Terapeuta</th>
             <th>Fecha y hora</th>
             <th>Editar</th>
+            <th>Cancelar</th>
           </tr>
         </thead>
         <tbody>
@@ -104,6 +119,19 @@ export default function HistorySection() {
                     >
                       <Button variant="link" onClick={() => handleEdit(r)}>
                         <FaEdit size={18} />
+                      </Button>
+                    </OverlayTrigger>
+                  </td>
+                  <td>
+                    <OverlayTrigger
+                      placement="top"
+                      overlay={<Tooltip>Cancelar</Tooltip>}
+                    >
+                      <Button
+                        variant="link"
+                        onClick={() => handleDelete(r.id)}
+                      >
+                        <FaTrash size={18} />
                       </Button>
                     </OverlayTrigger>
                   </td>
