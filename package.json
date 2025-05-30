@@ -37,6 +37,7 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@netlify/plugin-nextjs": "^5.11.2",
     "@types/bcrypt": "^5.0.2",
     "eslint": "^9",
     "eslint-config-next": "15.3.0",

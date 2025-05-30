@@ -1,4 +1,3 @@
-// src/components/DashboardLayout.tsx
 "use client";
 
 import React, { ReactNode, useState, useEffect } from "react";
@@ -22,7 +21,7 @@ export default function DashboardLayout({ children }: { children?: ReactNode }) 
   const {
     tab: queryTab,
     view,
-    type,       // <–– aquí lo llamamos “type”
+    pkgKey,      // lo que se pasa ahora
     sessions,
     priceId,
   } = router.query as Record<string, string>;
@@ -43,11 +42,16 @@ export default function DashboardLayout({ children }: { children?: ReactNode }) 
   ];
 
   function renderContent() {
-    // 1) Flujo "Agendar sesión" desde Mis paquetes
-    if (view === "reservar-paquete" && type && sessions && priceId) {
+    // 1) Cuando venimos de "Agendar sesión" de Mis paquetes
+    if (view === "reservar-paquete" && pkgKey && sessions && priceId) {
       const num = parseInt(sessions, 10) || 0;
-      // PASAMOS AQUÍ la prop `type`, NO `pkgKey`
-      return <ReservarPaquete type={type} sessions={num} priceId={priceId} />;
+      return (
+        <ReservarPaquete
+          pkgKey={pkgKey}
+          sessions={num}
+          priceId={priceId}
+        />
+      );
     }
 
     // 2) Pestañas normales
