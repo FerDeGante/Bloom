@@ -1,9 +1,0 @@
-__turbopack_load_page_chunks__("/dashboard/packages", [
-  "static/chunks/node_modules_@stripe_stripe-js_lib_index_mjs_a4cc861f._.js",
-  "static/chunks/node_modules_next_a166bb8c._.js",
-  "static/chunks/node_modules_react-dom_82bb97c6._.js",
-  "static/chunks/node_modules_8764e743._.js",
-  "static/chunks/[root-of-the-server]__712244ab._.js",
-  "static/chunks/src_pages_dashboard_packages_tsx_5771e187._.js",
-  "static/chunks/src_pages_dashboard_packages_tsx_e63c6012._.js"
-])

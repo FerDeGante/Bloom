@@ -63,14 +63,10 @@ export const getServerSideProps: GetServerSideProps<SuccessProps> = async ({ que
   }
 
   // 4) Upsert UserPackage (si compró un paquete)
-  const pkg = await prisma.package.findUnique({
-    where: { stripePriceId: priceId },
-  });
+  const pkg = await prisma.package.findUnique({ where: { stripePriceId: priceId } });
   if (pkg) {
-    await prisma.userPackage.upsert({
-      where: { userId_pkgId: { userId, pkgId: pkg.id } },
-      update: {},
-      create: {
+    await prisma.userPackage.create({
+      data: {
         userId,
         pkgId: pkg.id,
         sessionsRemaining: pkg.sessions,
