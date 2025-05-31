@@ -41,8 +41,8 @@ export default function PurchasedPackagesSection() {
         pathname: "/dashboard",
         query: {
           view: "reservar-paquete",
-          type: pkg.pkgId,    // coincide con el prop `type` de ReservarPaquete
-          sessions: 1,        // siempre 1 sesión
+          pkgKey: pkg.pkgId, // coincide con el prop `pkgKey` de ReservarPaquete
+          sessions: 1, // siempre 1 sesión
           priceId: pkg.priceId,
         },
       },

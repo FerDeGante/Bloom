@@ -101,7 +101,7 @@ export const paquetes: PackageDef[] = [
     price: 2250,
     description: "Dos sesiones semanales 👶 en piso.",
     image: "/images/estimulacion_piso_animado.jpeg",
-    priceId: "price_1RMBIaFV5ZpZiouC8l6QjW2N",
+    priceId: "price_1RP6SsFV5ZpZiouCtbg4A7OE",
     category: "piso",
   },
   {

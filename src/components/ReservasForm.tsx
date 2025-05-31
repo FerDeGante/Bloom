@@ -85,9 +85,9 @@ export default function ReservasForm() {
   const handleConfirm = async () => {
     const svc = servicios.find((s) => s.slug === servicio)!;
     const stripeBody = {
-      userId: session?.user?.id,
-      lineItems: [{ price: svc.priceId, quantity: 1 }],
+      priceId: svc.priceId,
       metadata: {
+        userId: session?.user?.id ?? "",
         servicio,
         terapeuta,
         date: fecha!.toISOString(),
