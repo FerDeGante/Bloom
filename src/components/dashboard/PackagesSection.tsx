@@ -16,7 +16,7 @@ export default function PackagesSection() {
         pathname: "/dashboard",
         query: {
           view: "reservar-paquete",
-          type: pkg.id,
+          pkgKey: pkg.id,
           sessions: pkg.sessions,
           priceId: pkg.priceId,
           title: pkg.title,

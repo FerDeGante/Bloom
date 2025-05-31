@@ -14,7 +14,7 @@ async function main() {
     { id: 'agua_12',        stripePriceId: 'price_1RMBIaFV5ZpZiouC8l6QjW2N',   name: 'Estimulación en agua (12×mes)',              sessions: 12, price: 2500, inscription: 30 },
     { id: 'piso_1',         stripePriceId: 'price_1RJd1jFV5ZpZiouC1xXvllVc',   name: 'Estimulación temprana en piso',              sessions: 1,  price: 500,  inscription: 30 },
     { id: 'piso_4',         stripePriceId: 'price_1RP6S2FV5ZpZiouC6cVpXQsJ',   name: 'Estimulación en piso (4×mes)',               sessions: 4,  price: 1400, inscription: 30 },
-    { id: 'piso_8',         stripePriceId: ' price_1RP6SsFV5ZpZiouCtbg4A7OE',   name: 'Estimulación en piso (8×mes)',               sessions: 8,  price: 2250, inscription: 30 },
+    { id: 'piso_8',         stripePriceId: 'price_1RP6SsFV5ZpZiouCtbg4A7OE',   name: 'Estimulación en piso (8×mes)',               sessions: 8,  price: 2250, inscription: 30 },
     { id: 'piso_12',        stripePriceId: 'price_1RP6TaFV5ZpZiouCoG5G58S3',   name: 'Estimulación en piso (12×mes)',              sessions: 12, price: 2500, inscription: 30 },
     { id: 'fisio_1',        stripePriceId: 'price_1RJd3WFV5ZpZiouC9PDzHjKU',   name: 'Fisioterapia (1 sesión)',                     sessions: 1,  price: 500,  inscription: 30 },
     { id: 'fisio_5',        stripePriceId: 'price_1RP6WwFV5ZpZiouCN3m0luq3',   name: 'Fisioterapia (5 sesiones)',                   sessions: 5,  price: 2000, inscription: 30 },
