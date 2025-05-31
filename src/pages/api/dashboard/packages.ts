@@ -10,6 +10,7 @@ export interface UserPackageResponse {
   priceId: string;
   sessionsRemaining: number;
   expiresAt: string;
+  createdAt: string;
 }
 
 export default async function handler(
@@ -45,6 +46,7 @@ export default async function handler(
       priceId: u.pkg.stripePriceId,
       sessionsRemaining: u.sessionsRemaining,
       expiresAt: exp.toISOString(),
+      createdAt: u.createdAt.toISOString(),
     };
   });
 

@@ -8,10 +8,12 @@ import {
   Button,
   OverlayTrigger,
   Tooltip,
+  Toast,
+  ToastContainer,
 } from "react-bootstrap";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
-import { FaEdit } from "react-icons/fa";
+import { FaEdit, FaTrash, FaCalendarPlus } from "react-icons/fa";
 
 interface HistoryItem {
   id: string;
@@ -27,6 +29,7 @@ export default function HistorySection() {
   const [editSlot, setEditSlot] = useState<HistoryItem | null>(null);
   const [newDate, setNewDate] = useState<Date | null>(null);
   const [newHour, setNewHour] = useState<number | null>(null);
+  const [toastMsg, setToastMsg] = useState<string | null>(null);
 
   useEffect(() => {
     fetch("/api/appointments/history")
@@ -63,6 +66,26 @@ export default function HistorySection() {
       )
     );
     setShowModal(false);
+    setToastMsg("Reservación actualizada");
+  };
+
+  const handleDelete = async (id: string) => {
+    await fetch(`/api/appointments/${id}`, { method: "DELETE" });
+    setRows((current) => current.filter((r) => r.id !== id));
+    setToastMsg("Reservación cancelada");
+  };
+
+  const calLink = (item: HistoryItem) => {
+    const start = new Date(item.date);
+    const end = new Date(start.getTime() + 3600 * 1000);
+    const fmt = (x: Date) => x.toISOString().replace(/[-:]|\.\d{3}/g, "");
+    return (
+      "https://www.google.com/calendar/render?action=TEMPLATE" +
+      `&text=${encodeURIComponent(item.serviceName)}` +
+      `&dates=${fmt(start)}/${fmt(end)}` +
+      `&details=${encodeURIComponent(item.serviceName)}` +
+      `&location=${encodeURIComponent(item.serviceName)}`
+    );
   };
 
   if (loading) return <Spinner className="m-5" animation="border" />;
@@ -76,12 +99,14 @@ export default function HistorySection() {
             <th>Terapeuta</th>
             <th>Fecha y hora</th>
             <th>Editar</th>
+            <th>Calendario</th>
+            <th>Cancelar</th>
           </tr>
         </thead>
         <tbody>
           {rows.length === 0 ? (
             <tr>
-              <td colSpan={4} className="text-center">
+              <td colSpan={6} className="text-center">
                 — No hay reservaciones —
               </td>
             </tr>
@@ -106,6 +131,16 @@ export default function HistorySection() {
                         <FaEdit size={18} />
                       </Button>
                     </OverlayTrigger>
+                  </td>
+                  <td>
+                    <a href={calLink(r)} target="_blank" rel="noopener noreferrer">
+                      <FaCalendarPlus />
+                    </a>
+                  </td>
+                  <td>
+                    <Button variant="link" onClick={() => handleDelete(r.id)}>
+                      <FaTrash />
+                    </Button>
                   </td>
                 </tr>
               );
@@ -160,6 +195,17 @@ export default function HistorySection() {
           </Button>
         </Modal.Footer>
       </Modal>
+      <ToastContainer position="top-end" className="p-3">
+        <Toast
+          bg="success"
+          onClose={() => setToastMsg(null)}
+          show={!!toastMsg}
+          delay={3000}
+          autohide
+        >
+          <Toast.Body className="text-white">{toastMsg}</Toast.Body>
+        </Toast>
+      </ToastContainer>
     </>
   );
 }

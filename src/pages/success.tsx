@@ -4,6 +4,7 @@ import Stripe from "stripe";
 import Link from "next/link";
 import DashboardLayout from "@/components/DashboardLayout";
 import prisma from "@/lib/prisma";
+import { Alert } from "react-bootstrap";
 
 interface SessionItem {
   calLink: string;
@@ -120,6 +121,7 @@ export default function Success({ items }: SuccessProps) {
     <DashboardLayout>
       <div className="text-center py-5">
         <h1>¡Gracias por tu pago!</h1>
+        <Alert variant="success">¡Sesión agendada!</Alert>
         <p>Agrega tus sesiones al calendario:</p>
         <div className="d-flex flex-wrap justify-content-center gap-3 my-4">
           {items.length === 0 && <p>No hay sesiones para agregar.</p>}

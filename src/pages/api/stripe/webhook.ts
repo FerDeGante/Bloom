@@ -90,7 +90,9 @@ const existingPkg = await prisma.userPackage.findFirst({
 });
 
 if (existingPkg) {
-  console.warn("⚠️ Usuario ya tiene un paquete activo de este tipo. No se duplicará.");
+  console.warn(
+    "⚠️ Usuario ya tiene un paquete activo de este tipo. No se duplicará."
+  );
 } else {
   await prisma.userPackage.create({
     data: {
@@ -100,14 +102,6 @@ if (existingPkg) {
     },
   });
 }
-    // 4) Crear UserPackage
-    await prisma.userPackage.create({
-      data: {
-        userId,
-        pkgId: pkg.id,
-        sessionsRemaining: pkg.sessions,
-      },
-    });
 
     // 5) Crear reservaciones
     const recs = dates.map((d, i) => {
