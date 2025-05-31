@@ -21,7 +21,15 @@ export default function PurchasedPackagesSection() {
   useEffect(() => {
     fetch("/api/dashboard/packages")
       .then((r) => r.json())
-      .then((data: UserPackageResponse[]) => setPackages(data))
+      .then((data: UserPackageResponse[]) =>
+        setPackages(
+          data.sort(
+            (a, b) =>
+              new Date(a.expiresAt).getTime() -
+              new Date(b.expiresAt).getTime()
+          )
+        )
+      )
       .catch(console.error)
       .finally(() => setLoading(false));
   }, []);
@@ -75,11 +83,13 @@ export default function PurchasedPackagesSection() {
               <Card.Body>
                 <Card.Title>{pkg.pkgName}</Card.Title>
                 <Card.Text>
-                  Sesiones restantes: {pkg.sessionsRemaining}
+                  Comprado: {new Date(pkg.createdAt).toLocaleDateString()}
                 </Card.Text>
                 <Card.Text>
-                  Vence:{" "}
-                  {new Date(pkg.expiresAt).toLocaleDateString()}
+                  Vence: {new Date(pkg.expiresAt).toLocaleDateString()}
+                </Card.Text>
+                <Card.Text>
+                  Sesiones restantes: {pkg.sessionsRemaining}
                 </Card.Text>
                 <Button
                   className="btn-orange"
