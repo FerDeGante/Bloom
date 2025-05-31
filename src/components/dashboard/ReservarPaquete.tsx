@@ -182,7 +182,50 @@ export default function ReservarPaquete({
 
       {doneCount < sessionCount ? (
         <>
-          {/* … selector de terapeuta, calendario, horas … */}
+          <Form.Group className="mb-3">
+            <Form.Label>Terapeuta</Form.Label>
+            <Form.Select
+              value={thisSlot.therapistId}
+              onChange={(e) => updateSlot({ therapistId: e.target.value })}
+            >
+              <option value="">Selecciona un terapeuta</option>
+              {therapistList.map((t) => (
+                <option key={t.id} value={t.id}>
+                  {t.name}
+                </option>
+              ))}
+            </Form.Select>
+          </Form.Group>
+
+          <Calendar
+            onChange={(d) =>
+              updateSlot({
+                date: Array.isArray(d) ? d[0] : d,
+                hora: null,
+              })
+            }
+            value={thisSlot.date || today}
+            minDate={today}
+            maxDate={maxDate}
+            tileDisabled={({ date, view }) => view === "month" && isSunday(date)}
+          />
+
+          {thisSlot.date && (
+            <div className="mt-3">
+              <strong>Hora:</strong>{" "}
+              {availableHours.map((h) => (
+                <Button
+                  key={h}
+                  variant={thisSlot.hora === h ? "primary" : "outline-primary"}
+                  className="me-1 mb-2"
+                  onClick={() => updateSlot({ hora: h })}
+                >
+                  {h}:00
+                </Button>
+              ))}
+            </div>
+          )}
+
           <div className="mt-4 d-flex justify-content-between">
             {current > 0 && (
               <Button variant="link" onClick={() => setCurrent((c) => c - 1)}>
