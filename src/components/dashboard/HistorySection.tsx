@@ -8,10 +8,11 @@ import {
   Button,
   OverlayTrigger,
   Tooltip,
+  Toast,
 } from "react-bootstrap";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
-import { FaEdit } from "react-icons/fa";
+import { FaEdit, FaTrash } from "react-icons/fa";
 
 interface HistoryItem {
   id: string;
@@ -27,6 +28,8 @@ export default function HistorySection() {
   const [editSlot, setEditSlot] = useState<HistoryItem | null>(null);
   const [newDate, setNewDate] = useState<Date | null>(null);
   const [newHour, setNewHour] = useState<number | null>(null);
+  const [toastMsg, setToastMsg] = useState<string>("");
+  const [showToast, setShowToast] = useState(false);
 
   useEffect(() => {
     fetch("/api/appointments/history")
@@ -63,6 +66,16 @@ export default function HistorySection() {
       )
     );
     setShowModal(false);
+    setToastMsg("Reservación actualizada");
+    setShowToast(true);
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm("¿Eliminar esta reservación?")) return;
+    await fetch(`/api/appointments/${id}`, { method: "DELETE" });
+    setRows((cur) => cur.filter((r) => r.id !== id));
+    setToastMsg("Reservación cancelada");
+    setShowToast(true);
   };
 
   if (loading) return <Spinner className="m-5" animation="border" />;
@@ -76,12 +89,13 @@ export default function HistorySection() {
             <th>Terapeuta</th>
             <th>Fecha y hora</th>
             <th>Editar</th>
+            <th>Eliminar</th>
           </tr>
         </thead>
         <tbody>
           {rows.length === 0 ? (
             <tr>
-              <td colSpan={4} className="text-center">
+              <td colSpan={5} className="text-center">
                 — No hay reservaciones —
               </td>
             </tr>
@@ -106,6 +120,11 @@ export default function HistorySection() {
                         <FaEdit size={18} />
                       </Button>
                     </OverlayTrigger>
+                  </td>
+                  <td>
+                    <Button variant="link" onClick={() => handleDelete(r.id)}>
+                      <FaTrash size={18} />
+                    </Button>
                   </td>
                 </tr>
               );
@@ -160,6 +179,15 @@ export default function HistorySection() {
           </Button>
         </Modal.Footer>
       </Modal>
+      <Toast
+        onClose={() => setShowToast(false)}
+        show={showToast}
+        delay={3000}
+        autohide
+        className="position-fixed bottom-0 end-0 m-3"
+      >
+        <Toast.Body>{toastMsg}</Toast.Body>
+      </Toast>
     </>
   );
 }

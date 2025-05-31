@@ -3,6 +3,7 @@ import { GetServerSideProps } from "next";
 import Stripe from "stripe";
 import Link from "next/link";
 import DashboardLayout from "@/components/DashboardLayout";
+import { Alert } from "react-bootstrap";
 import prisma from "@/lib/prisma";
 
 interface SessionItem {
@@ -123,6 +124,7 @@ export default function Success({ items }: SuccessProps) {
   return (
     <DashboardLayout>
       <div className="text-center py-5">
+        <Alert variant="success">¡Sesión agendada!</Alert>
         <h1>¡Gracias por tu pago!</h1>
         <p>Agrega tus sesiones al calendario:</p>
         <div className="d-flex flex-wrap justify-content-center gap-3 my-4">
