@@ -1,6 +1,6 @@
 // src/pages/login.tsx
 import { useState }              from "react";
-import { signIn }                 from "next-auth/react";
+import { signIn, getSession }     from "next-auth/react";
 import Head                       from "next/head";
 import Image                      from "next/image";
 import Link                       from "next/link";
@@ -20,18 +20,19 @@ export default function LoginPage() {
       redirect: false,
       email,
       password,
-      callbackUrl: `${window.location.origin}/dashboard?tab=reservar`,
     });
 
     setLoading(false);
 
     if (res?.error) {
       setError(res.error);
-    } else if (res?.url) {
-      // aquí forzamos la navegación definitiva
-      window.location.href = res.url;
     } else {
-      setError("Ocurrió un error inesperado");
+      const session = await getSession();
+      const target =
+        session?.user?.role === "ADMIN"
+          ? "/admin"
+          : "/dashboard?tab=reservar";
+      window.location.href = target;
     }
   };
 
