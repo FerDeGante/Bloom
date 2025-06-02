@@ -1,0 +1,43 @@
+import type { NextApiRequest, NextApiResponse } from "next";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "../auth/[...nextauth]";
+import prisma from "@/lib/prisma";
+
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  const session = await getServerSession(req, res, authOptions);
+  if (!session?.user?.id) return res.status(401).json({ error: "Unauthorized" });
+  const admin = await prisma.user.findUnique({ where: { id: session.user.id } });
+  if (admin?.role !== "ADMIN") return res.status(403).json({ error: "Forbidden" });
+
+  const { from, to } = req.query as { from?: string; to?: string };
+  if (!from || !to) return res.status(400).json({ error: "Invalid range" });
+
+  const fromDate = new Date(from);
+  const toDate = new Date(to);
+  toDate.setHours(23, 59, 59, 999);
+
+  const rows = await prisma.reservation.findMany({
+    where: { date: { gte: fromDate, lte: toDate } },
+    include: { user: true, service: true, therapist: true },
+    orderBy: { date: "asc" },
+  });
+
+  const totals: Record<string, number> = {};
+  rows.forEach((r) => {
+    const day = r.date.toISOString().split("T")[0];
+    totals[day] = (totals[day] || 0) + 0;
+  });
+
+  const totalByDay = Object.entries(totals).map(([date, amount]) => ({ date, amount }));
+  const details = rows.map((r) => ({
+    id: r.id,
+    date: r.date.toISOString(),
+    clientName: r.user.name,
+    serviceName: r.service.name,
+    therapistName: r.therapist.name,
+    amount: 0,
+    paymentMethod: r.paymentMethod,
+  }));
+
+  res.status(200).json({ totalByDay, details });
+}
