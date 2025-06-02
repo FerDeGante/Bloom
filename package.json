@@ -42,6 +42,8 @@
     "@netlify/plugin-nextjs": "^5.11.2",
     "@types/bcrypt": "^5.0.2",
     "@types/node": "^22.15.29",
+    "@types/react": "^18.2.42",
+    "@types/react-dom": "^18.2.17",
     "eslint": "^9",
     "eslint-config-next": "15.3.0",
     "eslint-plugin-next": "^0.0.0",

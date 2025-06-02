@@ -68,7 +68,7 @@ export default function ReservasForm() {
         ? base.filter((h) => h > now.getHours())
         : base;
     setAvailableHours(filtered);
-  }, [fecha]);
+  }, [fecha, horasSabado, horasSemana]);
 
   // 3) Paso 1 → validación y siguiente
   const handleNext = (e: FormEvent) => {
