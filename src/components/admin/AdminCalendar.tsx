@@ -69,7 +69,13 @@ export default function AdminCalendar() {
   return (
     <div>
       <h3 className="mb-3">Calendario</h3>
-      <Calendar value={date} onChange={(d) => setDate(Array.isArray(d) ? d[0] : d)} />
+      <Calendar value={date} onChange={(d) => {
+        if (Array.isArray(d)) {
+          if (d[0]) setDate(d[0]);
+        } else if (d) {
+          setDate(d);
+        }
+      }} />
       <ListGroup className="my-3">
         {reservations.map((r) => (
           <ListGroup.Item key={r.id}>
