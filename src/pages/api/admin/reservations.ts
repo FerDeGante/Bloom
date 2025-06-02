@@ -4,7 +4,8 @@ import { authOptions } from "../auth/[...nextauth]";
 import prisma from "@/lib/prisma";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const session = await getServerSession(req, res, authOptions);
+  try {
+    const session = await getServerSession(req, res, authOptions);
   if (!session?.user?.id) return res.status(401).json({ error: "Unauthorized" });
 
   const user = await prisma.user.findUnique({ where: { id: session.user.id } });
@@ -66,4 +67,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   res.setHeader("Allow", ["GET", "POST"]);
   res.status(405).end();
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal server error" });
+  }
 }

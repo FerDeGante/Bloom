@@ -10,7 +10,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (user?.role !== "ADMIN") return res.status(403).json({ error: "Forbidden" });
 
   if (req.method === "GET") {
-    const list = await prisma.therapist.findMany();
+    const { search = "" } = req.query as { search?: string };
+    const list = await prisma.therapist.findMany({
+      where: {
+        name: { contains: search, mode: "insensitive" },
+      },
+      orderBy: { name: "asc" },
+    });
     return res.status(200).json(list);
   }
 
