@@ -11,6 +11,7 @@ model User {
   id        String    @id @default(cuid())
   email     String    @unique
   name      String?
+  phone     String?
   password  String
   role      String    @default("CLIENTE")
 
@@ -62,19 +63,26 @@ model Service {
 model Therapist {
   id           String        @id @default(cuid())
   name         String
+  specialty    String?
+  isActive     Boolean       @default(true)
   reservations Reservation[]
 }
 
 model Reservation {
-  id          String    @id @default(cuid())
-  userId      String
-  serviceId   String
-  therapistId String
-  date        DateTime
-createdAt    DateTime  @default(now())
-  user      User      @relation(fields: [userId], references: [id])
-  service   Service   @relation(fields: [serviceId], references: [id])
-  therapist Therapist @relation(fields: [therapistId], references: [id])
+  id            String    @id @default(cuid())
+  userId        String
+  serviceId     String
+  therapistId   String
+  date          DateTime
+  createdAt     DateTime @default(now())
+  paymentMethod String   @default("stripe")
+  paidAt        DateTime?
+
+  user       User      @relation(fields: [userId], references: [id])
+  service    Service   @relation(fields: [serviceId], references: [id])
+  therapist  Therapist @relation(fields: [therapistId], references: [id])
+  @@index([date])
+
 }
 
 model Package {
@@ -93,7 +101,9 @@ model UserPackage {
   pkgId             String
   sessionsRemaining Int
   createdAt         DateTime @default(now())
+  paymentSource     String   @default("stripe")
   user              User     @relation(fields: [userId], references: [id])
   pkg               Package  @relation(fields: [pkgId], references: [id])
+  @@index([userId])
 
 }
