@@ -4,17 +4,23 @@ import { authOptions } from "../../../auth/[...nextauth]";
 import prisma from "@/lib/prisma";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  // 1) Verificar sesión y rol ADMIN
   const session = await getServerSession(req, res, authOptions);
-  if (!session?.user?.id) return res.status(401).json({ error: "Unauthorized" });
-
+  if (!session?.user?.id) {
+    return res.status(401).json({ error: "Unauthorized" });
+  }
   const admin = await prisma.user.findUnique({ where: { id: session.user.id } });
-  if (admin?.role !== "ADMIN") return res.status(403).json({ error: "Forbidden" });
+  if (admin?.role !== "ADMIN") {
+    return res.status(403).json({ error: "Forbidden" });
+  }
 
-  const { userId } = req.query as { userId: string };
+  // 2) Extraer “id” (anteriormente era userId, pero aquí el folder se llama [id])
+  const { id } = req.query as { id: string };
 
   if (req.method === "GET") {
+    // Obtener todos los paquetes de ese cliente
     const ups = await prisma.userPackage.findMany({
-      where: { userId },
+      where: { userId: id },
       include: { pkg: true },
     });
     const data = ups.map((u) => ({
@@ -29,12 +35,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   if (req.method === "POST") {
+    // Crear un nuevo “UserPackage” en efectivo o con fuente de pago
     const { pkgId, paymentSource } = req.body as { pkgId: string; paymentSource: string };
     const pkg = await prisma.package.findUnique({ where: { id: pkgId } });
-    if (!pkg) return res.status(404).json({ error: "Paquete no encontrado" });
+    if (!pkg) {
+      return res.status(404).json({ error: "Paquete no encontrado" });
+    }
+
     const userPackage = await prisma.userPackage.create({
       data: {
-        userId,
+        userId: id,
         pkgId,
         sessionsRemaining: pkg.sessions,
         paymentSource: paymentSource || "efectivo",
