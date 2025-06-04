@@ -40,7 +40,7 @@ export default function ManualReservationSection() {
 
   return (
     <div>
-      <h3 className="mb-3">Generar reservación</h3>
+      <h3 className="mb-3">Generar reservación manual</h3>
       {message && <Alert variant="success">{message}</Alert>}
       {error && <Alert variant="danger">{error}</Alert>}
       <Form>
