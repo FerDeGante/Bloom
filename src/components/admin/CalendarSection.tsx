@@ -13,7 +13,7 @@ interface Reservation {
   serviceName: string;
 }
 
-export default function AdminCalendar() {
+export default function CalendarSection() {
   const [date, setDate] = useState<Date>(new Date());
   const [reservations, setReservations] = useState<Reservation[]>([]);
   const [userEmail, setUserEmail] = useState("");

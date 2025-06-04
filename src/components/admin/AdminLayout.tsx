@@ -9,21 +9,24 @@ import {
   FaUsers,
   FaUserMd,
   FaCalendarAlt,
+  FaCalendarPlus,
   FaChartBar,
   FaCog,
 } from "react-icons/fa";
-import AdminCalendar from "./AdminCalendar";
+import CalendarSection from "./CalendarSection";
+import ManualReservationSection from "./ManualReservationSection";
 import ClientsSection from "./ClientsSection";
 import TherapistsSection from "./TherapistsSection";
 
 export default function AdminLayout() {
-  const [section, setSection] = useState("reservations");
+  const [section, setSection] = useState("manual");
   const { data: session } = useSession();
 
   const sections: { key: string; label: string; icon: JSX.Element }[] = [
     { key: "clients", label: "Clientes", icon: <FaUsers className="me-2" /> },
     { key: "therapists", label: "Terapeutas", icon: <FaUserMd className="me-2" /> },
-    { key: "reservations", label: "Reservaciones", icon: <FaCalendarAlt className="me-2" /> },
+    { key: "manual", label: "Generar reservación", icon: <FaCalendarPlus className="me-2" /> },
+    { key: "calendar", label: "Calendario", icon: <FaCalendarAlt className="me-2" /> },
     { key: "reports", label: "Reportes", icon: <FaChartBar className="me-2" /> },
     { key: "settings", label: "Configuración", icon: <FaCog className="me-2" /> },
   ];
@@ -34,8 +37,10 @@ export default function AdminLayout() {
         return <ClientsSection />;
       case "therapists":
         return <TherapistsSection />;
-      case "reservations":
-        return <AdminCalendar />;
+      case "manual":
+        return <ManualReservationSection />;
+      case "calendar":
+        return <CalendarSection />;
       case "reports":
         return <p>Reportes</p>;
       default:
