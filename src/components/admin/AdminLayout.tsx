@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import Navbar from "../Navbar";
 import Footer from "../Footer";
 import { Container, Row, Col, Nav, Dropdown } from "react-bootstrap";
@@ -22,7 +22,7 @@ export default function AdminLayout() {
   const [section, setSection] = useState("manual");
   const { data: session } = useSession();
 
-  const sections: { key: string; label: string; icon: JSX.Element }[] = [
+  const sections: { key: string; label: string; icon: React.ReactElement }[] = [
     { key: "clients", label: "Clientes", icon: <FaUsers className="me-2" /> },
     { key: "therapists", label: "Terapeutas", icon: <FaUserMd className="me-2" /> },
     { key: "manual", label: "Generar reservación", icon: <FaCalendarPlus className="me-2" /> },
