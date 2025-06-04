@@ -14,15 +14,17 @@ export default function MyApp({
 }: AppProps) {
   const pathname = usePathname() || ''
 
-  // Tratamos /dashboard/* y /success como “rutas de Dashboard”:
-  const isDashboard =
+  // Tratamos /dashboard/*, /admin/* y /success como rutas con layout propio
+  const isDashboardOrAdmin =
     pathname === '/dashboard' ||
     pathname.startsWith('/dashboard/') ||
-    pathname === '/success'
+    pathname === '/success' ||
+    pathname === '/admin' ||
+    pathname.startsWith('/admin/')
 
   return (
     <SessionProvider session={session}>
-      {isDashboard ? (
+      {isDashboardOrAdmin ? (
         // El componente se encarga de su propio Navbar/Footer
         <Component {...pageProps} />
       ) : (

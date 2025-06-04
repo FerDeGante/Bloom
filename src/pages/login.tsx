@@ -25,7 +25,11 @@ export default function LoginPage() {
     setLoading(false);
 
     if (res?.error) {
-      setError(res.error);
+      const msg =
+        res.error === 'CredentialsSignin'
+          ? 'Error: correo o contraseña incorrectos.'
+          : res.error;
+      setError(msg);
     } else {
       const session = await getSession();
       const target =
