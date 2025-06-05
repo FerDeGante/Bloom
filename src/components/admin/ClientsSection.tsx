@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Table, Button, Form, Modal } from "react-bootstrap";
+import { Table, Button, Form, Modal, Toast, ToastContainer } from "react-bootstrap";
+import { FaPen, FaTrash } from "react-icons/fa";
 
 interface Client {
   id: string;
@@ -14,10 +15,16 @@ export default function ClientsSection() {
   const [list, setList] = useState<Client[]>([]);
   const [search, setSearch] = useState("");
   const [show, setShow] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState({ name: "", email: "", phone: "", password: "" });
+  const [toastMsg, setToastMsg] = useState<string | null>(null);
 
   const load = async (q = "") => {
     const res = await fetch(`/api/admin/clients?search=${encodeURIComponent(q)}`);
+    if (res.status === 401) {
+      window.location.href = "/login";
+      return;
+    }
     if (res.ok) setList(await res.json());
   };
 
@@ -25,15 +32,48 @@ export default function ClientsSection() {
     load(search);
   }, [search]);
 
-  const createClient = async () => {
-    const res = await fetch("/api/admin/clients", {
-      method: "POST",
+  const saveClient = async () => {
+    const method = editingId ? "PUT" : "POST";
+    const url = editingId ? `/api/admin/clients/${editingId}` : "/api/admin/clients";
+    const res = await fetch(url, {
+      method,
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(form),
     });
+    if (res.status === 401) {
+      window.location.href = "/login";
+      return;
+    }
     if (res.ok) {
       setShow(false);
+      setEditingId(null);
       setForm({ name: "", email: "", phone: "", password: "" });
+      load();
+      setToastMsg(editingId ? "Cliente actualizado" : "Cliente creado");
+    }
+  };
+
+  const startCreate = () => {
+    setEditingId(null);
+    setForm({ name: "", email: "", phone: "", password: "" });
+    setShow(true);
+  };
+
+  const startEdit = (c: Client) => {
+    setEditingId(c.id);
+    setForm({ name: c.name || "", email: c.email, phone: c.phone || "", password: "" });
+    setShow(true);
+  };
+
+  const deleteClient = async (id: string) => {
+    if (!confirm("¿Eliminar este cliente?")) return;
+    const res = await fetch(`/api/admin/clients/${id}`, { method: "DELETE" });
+    if (res.status === 401) {
+      window.location.href = "/login";
+      return;
+    }
+    if (res.ok) {
+      setToastMsg("Cliente eliminado");
       load();
     }
   };
@@ -47,7 +87,7 @@ export default function ClientsSection() {
           onChange={(e) => setSearch(e.target.value)}
           style={{ maxWidth: 200 }}
         />
-        <Button onClick={() => setShow(true)}>+ Nuevo Cliente</Button>
+        <Button onClick={startCreate}>+ Nuevo Cliente</Button>
       </div>
       <Table bordered hover size="sm">
         <thead>
@@ -56,6 +96,7 @@ export default function ClientsSection() {
             <th>Correo</th>
             <th>Teléfono</th>
             <th>Rol</th>
+            <th>Acciones</th>
           </tr>
         </thead>
         <tbody>
@@ -65,13 +106,21 @@ export default function ClientsSection() {
               <td>{c.email}</td>
               <td>{c.phone}</td>
               <td>{c.role}</td>
+              <td>
+                <Button size="sm" variant="light" className="me-1" onClick={() => startEdit(c)}>
+                  <FaPen />
+                </Button>
+                <Button size="sm" variant="light" onClick={() => deleteClient(c.id)}>
+                  <FaTrash />
+                </Button>
+              </td>
             </tr>
           ))}
         </tbody>
       </Table>
       <Modal show={show} onHide={() => setShow(false)}>
         <Modal.Header closeButton>
-          <Modal.Title>Nuevo Cliente</Modal.Title>
+          <Modal.Title>{editingId ? "Editar Cliente" : "Nuevo Cliente"}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form>
@@ -94,9 +143,14 @@ export default function ClientsSection() {
           </Form>
         </Modal.Body>
         <Modal.Footer>
-          <Button onClick={createClient}>Guardar</Button>
+          <Button onClick={saveClient}>Guardar</Button>
         </Modal.Footer>
       </Modal>
+      <ToastContainer position="bottom-end" className="p-3">
+        <Toast bg="success" onClose={() => setToastMsg(null)} show={!!toastMsg} delay={3000} autohide>
+          <Toast.Body className="text-white">{toastMsg}</Toast.Body>
+        </Toast>
+      </ToastContainer>
     </div>
   );
 }

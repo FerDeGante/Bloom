@@ -11,7 +11,6 @@ import {
   FaCalendarAlt,
   FaCalendarPlus,
   FaChartBar,
-  FaCog,
 } from "react-icons/fa";
 import CalendarSection from "./CalendarSection";
 import ManualReservationSection from "./ManualReservationSection";
@@ -22,13 +21,33 @@ export default function AdminLayout() {
   const [section, setSection] = useState("manual");
   const { data: session } = useSession();
 
+  const iconProps = { style: { color: "#0d6efd" } } as const;
   const sections: { key: string; label: string; icon: React.ReactElement }[] = [
-    { key: "clients", label: "Clientes", icon: <FaUsers className="me-2" /> },
-    { key: "therapists", label: "Terapeutas", icon: <FaUserMd className="me-2" /> },
-    { key: "manual", label: "Generar reservación", icon: <FaCalendarPlus className="me-2" /> },
-    { key: "calendar", label: "Calendario", icon: <FaCalendarAlt className="me-2" /> },
-    { key: "reports", label: "Reportes", icon: <FaChartBar className="me-2" /> },
-    { key: "settings", label: "Configuración", icon: <FaCog className="me-2" /> },
+    {
+      key: "clients",
+      label: "Clientes",
+      icon: <FaUsers className="me-2" {...iconProps} />,
+    },
+    {
+      key: "therapists",
+      label: "Terapeutas",
+      icon: <FaUserMd className="me-2" {...iconProps} />,
+    },
+    {
+      key: "manual",
+      label: "Generar reservación",
+      icon: <FaCalendarPlus className="me-2" {...iconProps} />,
+    },
+    {
+      key: "calendar",
+      label: "Calendario",
+      icon: <FaCalendarAlt className="me-2" {...iconProps} />,
+    },
+    {
+      key: "reports",
+      label: "Reportes",
+      icon: <FaChartBar className="me-2" {...iconProps} />,
+    },
   ];
 
   function renderContent() {
@@ -76,7 +95,11 @@ export default function AdminLayout() {
                   key={s.key}
                   active={section === s.key}
                   onClick={() => setSection(s.key)}
-                  className="d-flex align-items-center"
+                  className="d-flex align-items-center text-primary"
+                  style={{
+                    backgroundColor: section === s.key ? "#e7f1ff" : undefined,
+                    transition: "background-color 0.2s",
+                  }}
                 >
                   {s.icon}
                   {s.label}
