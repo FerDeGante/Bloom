@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Table, Button, Form, Modal } from "react-bootstrap";
+import { Table, Button, Form, Modal, Toast, ToastContainer } from "react-bootstrap";
+import { FaPen, FaTrash } from "react-icons/fa";
 
 interface Therapist {
   id: string;
@@ -13,10 +14,16 @@ export default function TherapistsSection() {
   const [list, setList] = useState<Therapist[]>([]);
   const [search, setSearch] = useState("");
   const [show, setShow] = useState(false);
-  const [form, setForm] = useState({ name: "", specialty: "" });
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [form, setForm] = useState({ name: "", specialty: "", isActive: true });
+  const [toastMsg, setToastMsg] = useState<string | null>(null);
 
   const load = async (q = "") => {
     const res = await fetch(`/api/admin/therapists?search=${encodeURIComponent(q)}`);
+    if (res.status === 401) {
+      window.location.href = "/login";
+      return;
+    }
     if (res.ok) setList(await res.json());
   };
 
@@ -24,15 +31,48 @@ export default function TherapistsSection() {
     load(search);
   }, [search]);
 
-  const createTherapist = async () => {
-    const res = await fetch("/api/admin/therapists", {
-      method: "POST",
+  const saveTherapist = async () => {
+    const method = editingId ? "PUT" : "POST";
+    const url = editingId ? `/api/admin/therapists/${editingId}` : "/api/admin/therapists";
+    const res = await fetch(url, {
+      method,
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(form),
     });
+    if (res.status === 401) {
+      window.location.href = "/login";
+      return;
+    }
     if (res.ok) {
       setShow(false);
-      setForm({ name: "", specialty: "" });
+      setEditingId(null);
+      setForm({ name: "", specialty: "", isActive: true });
+      load();
+      setToastMsg(editingId ? "Terapeuta actualizado" : "Terapeuta creado");
+    }
+  };
+
+  const startCreate = () => {
+    setEditingId(null);
+    setForm({ name: "", specialty: "", isActive: true });
+    setShow(true);
+  };
+
+  const startEdit = (t: Therapist) => {
+    setEditingId(t.id);
+    setForm({ name: t.name, specialty: t.specialty || "", isActive: t.isActive });
+    setShow(true);
+  };
+
+  const deleteTherapist = async (id: string) => {
+    if (!confirm("¿Eliminar este terapeuta?")) return;
+    const res = await fetch(`/api/admin/therapists/${id}`, { method: "DELETE" });
+    if (res.status === 401) {
+      window.location.href = "/login";
+      return;
+    }
+    if (res.ok) {
+      setToastMsg("Terapeuta eliminado");
       load();
     }
   };
@@ -46,7 +86,7 @@ export default function TherapistsSection() {
           onChange={(e) => setSearch(e.target.value)}
           style={{ maxWidth: 200 }}
         />
-        <Button onClick={() => setShow(true)}>+ Nuevo Terapeuta</Button>
+        <Button onClick={startCreate}>+ Nuevo Terapeuta</Button>
       </div>
       <Table bordered hover size="sm">
         <thead>
@@ -54,6 +94,7 @@ export default function TherapistsSection() {
             <th>Nombre</th>
             <th>Especialidad</th>
             <th>Estado</th>
+            <th>Acciones</th>
           </tr>
         </thead>
         <tbody>
@@ -62,13 +103,21 @@ export default function TherapistsSection() {
               <td>{t.name}</td>
               <td>{t.specialty}</td>
               <td>{t.isActive ? "Activo" : "Inactivo"}</td>
+              <td>
+                <Button size="sm" variant="light" className="me-1" onClick={() => startEdit(t)}>
+                  <FaPen />
+                </Button>
+                <Button size="sm" variant="light" onClick={() => deleteTherapist(t.id)}>
+                  <FaTrash />
+                </Button>
+              </td>
             </tr>
           ))}
         </tbody>
       </Table>
       <Modal show={show} onHide={() => setShow(false)}>
         <Modal.Header closeButton>
-          <Modal.Title>Nuevo Terapeuta</Modal.Title>
+          <Modal.Title>{editingId ? "Editar Terapeuta" : "Nuevo Terapeuta"}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form>
@@ -80,12 +129,26 @@ export default function TherapistsSection() {
               <Form.Label>Especialidad</Form.Label>
               <Form.Control value={form.specialty} onChange={(e) => setForm({ ...form, specialty: e.target.value })} />
             </Form.Group>
+            <Form.Group className="mb-2">
+              <Form.Check
+                type="switch"
+                id="therapist-active"
+                label="Activo"
+                checked={form.isActive}
+                onChange={(e) => setForm({ ...form, isActive: e.target.checked })}
+              />
+            </Form.Group>
           </Form>
         </Modal.Body>
         <Modal.Footer>
-          <Button onClick={createTherapist}>Guardar</Button>
+          <Button onClick={saveTherapist}>Guardar</Button>
         </Modal.Footer>
       </Modal>
+      <ToastContainer position="bottom-end" className="p-3">
+        <Toast bg="success" onClose={() => setToastMsg(null)} show={!!toastMsg} delay={3000} autohide>
+          <Toast.Body className="text-white">{toastMsg}</Toast.Body>
+        </Toast>
+      </ToastContainer>
     </div>
   );
 }
