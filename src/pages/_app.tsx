@@ -4,6 +4,7 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 import type { AppProps } from 'next/app'
 import { usePathname } from 'next/navigation'
 import { SessionProvider } from 'next-auth/react'
+import "@/styles/globals.css"
 
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'

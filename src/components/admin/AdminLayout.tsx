@@ -1,3 +1,4 @@
+// src/components/admin/AdminLayout.tsx
 "use client";
 
 import React, { useState } from "react";
@@ -16,6 +17,7 @@ import CalendarSection from "./CalendarSection";
 import ManualReservationSection from "./ManualReservationSection";
 import ClientsSection from "./ClientsSection";
 import TherapistsSection from "./TherapistsSection";
+import ReportsSection from "./ReportsSection"; // <- importamos el nuevo componente
 
 export default function AdminLayout() {
   const [section, setSection] = useState("manual");
@@ -61,7 +63,7 @@ export default function AdminLayout() {
       case "calendar":
         return <CalendarSection />;
       case "reports":
-        return <p>Reportes</p>;
+        return <ReportsSection />; // <- aquí mostramos ReportsSection
       default:
         return <p>Sección {section}</p>;
     }

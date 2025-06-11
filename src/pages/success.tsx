@@ -17,11 +17,10 @@ interface SuccessProps {
 export const getServerSideProps: GetServerSideProps<SuccessProps> = async ({ query }) => {
   const sessionId = query.session_id as string;
   if (!sessionId) {
-    // Si no hay session_id, redirigimos de vuelta al dashboard/reservar
     return { redirect: { destination: "/dashboard?tab=reservar", permanent: false } };
   }
 
-  // 0) Instanciamos Stripe con tu secret key
+  // 0) Instanciamos Stripe
   const stripe = new Stripe(process.env.STRIPE_SECRET!, {
     apiVersion: "2025-04-30.basil",
   });
@@ -31,21 +30,20 @@ export const getServerSideProps: GetServerSideProps<SuccessProps> = async ({ que
     checkout = await stripe.checkout.sessions.retrieve(sessionId);
   } catch (err: any) {
     console.error("Error fetching Stripe session:", err);
-    // En caso de fallo, redirigimos también
     return { redirect: { destination: "/dashboard?tab=reservar", permanent: false } };
   }
 
   const m = checkout.metadata || {};
 
-  // 1) Extraemos de metadata toda la info
-  const userId        = m.userId! as string;
-  const serviceId     = m.serviceId! as string;
-  const priceId       = m.priceId! as string;
-  const serviceName   = m.serviceName! as string;
-  const dates         = JSON.parse((m.dates as string)  || "[]") as string[];
-  const hours         = JSON.parse((m.hours as string)  || "[]") as string[];
-  const therapistIds  = JSON.parse((m.therapistIds as string)  || "[]") as string[];
-  const therapistNames= JSON.parse((m.therapistNames as string)  || "[]") as string[];
+  // 1) Extraemos metadata
+  const userId         = m.userId! as string;
+  const serviceId      = m.serviceId! as string;
+  const priceId        = m.priceId! as string;
+  const serviceName    = m.serviceName! as string;
+  const dates          = JSON.parse((m.dates  as string)  || "[]") as string[];
+  const hours          = JSON.parse((m.hours  as string)  || "[]") as string[];
+  const therapistIds   = JSON.parse((m.therapistIds  as string) || "[]") as string[];
+  const therapistNames = JSON.parse((m.therapistNames  as string) || "[]") as string[];
 
   // 2) Upsert Service
   await prisma.service.upsert({
@@ -63,19 +61,41 @@ export const getServerSideProps: GetServerSideProps<SuccessProps> = async ({ que
     });
   }
 
-  // 4) Upsert UserPackage (si compró un paquete)
+  // 4) Crear o actualizar UserPackage (manual, no upsert compuesta) y capturar su ID
   const pkg = await prisma.package.findUnique({ where: { stripePriceId: priceId } });
+  let userPackageId: string | null = null;
+
   if (pkg) {
-    await prisma.userPackage.create({
-      data: {
-        userId,
-        pkgId: pkg.id,
-        sessionsRemaining: pkg.sessions,
-      },
+    // ¿Ya existe un UserPackage para este userId + pkg.id?
+    const existingUP = await prisma.userPackage.findFirst({
+      where: { userId: userId, pkgId: pkg.id },
     });
+
+    if (existingUP) {
+      // Actualizamos sesiones restantes
+      const updatedUP = await prisma.userPackage.update({
+        where: { id: existingUP.id },
+        data: { sessionsRemaining: pkg.sessions },
+      });
+      userPackageId = updatedUP.id;
+    } else {
+      // Lo creamos
+      const createdUP = await prisma.userPackage.create({
+        data: {
+          userId,
+          pkgId: pkg.id,
+          sessionsRemaining: pkg.sessions,
+        },
+      });
+      userPackageId = createdUP.id;
+    }
+  } else {
+    // Si no hay paquete (servicio suelto), podrías decidir no crear reservas o asignar algún valor por defecto.
+    // Por ahora salimos, para evitar violar la FK userPackageId.
+    return { redirect: { destination: "/dashboard?tab=reservar", permanent: false } };
   }
 
-  // 5) Crear Reservations
+  // 5) Crear Reservations (incluyendo userPackageId)
   const recs = dates.map((d, i) => {
     const dt = new Date(d);
     const [h = "0"] = (hours[i] || "0").split(":");
@@ -85,9 +105,11 @@ export const getServerSideProps: GetServerSideProps<SuccessProps> = async ({ que
       serviceId,
       therapistId: therapistIds[i],
       date: dt,
+      userPackageId,
     };
   });
-  if (recs.length) {
+
+  if (recs.length > 0) {
     await prisma.reservation.createMany({
       data: recs,
       skipDuplicates: true,
@@ -97,7 +119,7 @@ export const getServerSideProps: GetServerSideProps<SuccessProps> = async ({ que
   // 6) Generar enlaces de Google Calendar
   const items: SessionItem[] = recs.map((r) => {
     const start = r.date;
-    const end = new Date(start.getTime() + 3600 * 1000);
+    const end = new Date(start.getTime() + 60 * 60 * 1000);
     const fmt = (x: Date) => x.toISOString().replace(/[-:]|\.\d{3}/g, "");
     return {
       calLink:

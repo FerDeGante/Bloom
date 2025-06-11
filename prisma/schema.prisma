@@ -69,20 +69,23 @@ model Therapist {
 }
 
 model Reservation {
-  id            String    @id @default(cuid())
+  id            String        @id @default(cuid())
   userId        String
   serviceId     String
   therapistId   String
+  userPackageId String       
+
   date          DateTime
-  createdAt     DateTime @default(now())
-  paymentMethod String   @default("stripe")
+  createdAt     DateTime      @default(now())
+  paymentMethod String        @default("stripe")
   paidAt        DateTime?
 
-  user       User      @relation(fields: [userId], references: [id])
-  service    Service   @relation(fields: [serviceId], references: [id])
-  therapist  Therapist @relation(fields: [therapistId], references: [id])
-  @@index([date])
+  user       User           @relation(fields: [userId], references: [id])
+  service    Service        @relation(fields: [serviceId], references: [id])
+  therapist  Therapist      @relation(fields: [therapistId], references: [id])
+  userPackage UserPackage  @relation(fields: [userPackageId], references: [id])
 
+  @@index([userPackageId])
 }
 
 model Package {
@@ -104,6 +107,7 @@ model UserPackage {
   paymentSource     String   @default("stripe")
   user              User     @relation(fields: [userId], references: [id])
   pkg               Package  @relation(fields: [pkgId], references: [id])
+  reservations Reservation[]
   @@index([userId])
 
 }
