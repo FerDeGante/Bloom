@@ -1,3 +1,4 @@
+// src/pages/api/stripe/webhook.ts
 import { buffer } from "micro";
 import type { NextApiRequest, NextApiResponse } from "next";
 import Stripe from "stripe";
@@ -41,12 +42,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const therapistNames = JSON.parse((m.therapistNames as string) || "[]") as string[];
 
     console.log("📥 Webhook metadata received:", {
-      userId,
-      priceId,
-      serviceId,
-      serviceName,
-      dates,
-      hours,
+      userId, priceId, serviceId, serviceName, dates, hours, therapistIds
     });
 
     if (!userId || !priceId || !serviceId || !serviceName || dates.length === 0) {
@@ -74,50 +70,55 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const pkg = await prisma.package.findUnique({
       where: { stripePriceId: priceId },
     });
-
     if (!pkg) {
       console.error("❌ Paquete no encontrado para priceId:", priceId);
       return res.status(400).json({ error: "Paquete no encontrado" });
     }
-const existingPkg = await prisma.userPackage.findFirst({
-  where: {
-    userId,
-    pkgId: pkg.id,
-    createdAt: {
-      gte: new Date(Date.now() - pkg.inscription * 86400 * 1000), // dentro de su vigencia
-    },
-  },
-});
 
-if (existingPkg) {
-  console.warn(
-    "⚠️ Usuario ya tiene un paquete activo de este tipo. No se duplicará."
-  );
-} else {
-  await prisma.userPackage.create({
-    data: {
-      userId,
-      pkgId: pkg.id,
-      sessionsRemaining: pkg.sessions,
-    },
-  });
-}
+    // 4) Upsert de userPackage
+    const existingPkg = await prisma.userPackage.findFirst({
+      where: {
+        userId,
+        pkgId: pkg.id,
+        createdAt: {
+          gte: new Date(Date.now() - pkg.inscription * 86400 * 1000),
+        },
+      },
+    });
 
-    // 5) Crear reservaciones
+    let userPkg = existingPkg;
+    if (!existingPkg) {
+      userPkg = await prisma.userPackage.create({
+        data: {
+          userId,
+          pkgId: pkg.id,
+          sessionsRemaining: pkg.sessions,
+        },
+      });
+    } else {
+      console.warn("⚠️ Usuario ya tiene un paquete activo de este tipo. No se duplicará.");
+    }
+
+    // 5) Crear reservaciones: cada rec data debe incluir userPackageId
     const recs = dates.map((d, i) => {
       const [h = "0"] = (hours[i] || "0").split(":");
       const dt = new Date(d);
       dt.setHours(parseInt(h, 10), 0, 0, 0);
       return {
         userId,
+        userPackageId: userPkg!.id,   // <-- agregado
         serviceId,
         therapistId: therapistIds[i],
         date: dt,
+        paymentMethod: "stripe",      // o el método que uses
       };
     });
 
     if (recs.length) {
-      await prisma.reservation.createMany({ data: recs, skipDuplicates: true });
+      await prisma.reservation.createMany({
+        data: recs,
+        skipDuplicates: true,
+      });
     }
 
     console.log("✅ Webhook procesado exitosamente.");

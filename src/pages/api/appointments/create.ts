@@ -1,28 +1,44 @@
-// ✅ Archivo: src/pages/api/appointments/create.ts
+// src/pages/api/appointments/create.ts
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getServerSession } from "next-auth/next";
-import { authOptions } from "../auth/[...nextauth]";
-import prisma from "@/lib/prisma";
+import { authOptions }      from "../auth/[...nextauth]";
+import prisma               from "@/lib/prisma";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method !== "POST") return res.status(405).end();
-  const session = await getServerSession(req, res, authOptions);
-  if (!session?.user?.id) return res.status(401).end();
+  // 1) Solo soportamos POST
+  if (req.method !== "POST") {
+    res.setHeader("Allow", ["POST"]);
+    return res.status(405).end("Method Not Allowed");
+  }
 
+  // 2) Autenticación
+  const session = await getServerSession(req, res, authOptions);
+  if (!session?.user?.id) {
+    return res.status(401).end("Unauthorized");
+  }
+
+  // 3) Lectura y validación del body
   const { servicio, terapeuta, date, hour } = req.body as {
-    servicio: string;
+    servicio:  string;
     terapeuta: string;
-    date: string;
-    hour: string;
+    date:      string; // "YYYY-MM-DD"
+    hour:      string; // "HH:mm"
   };
 
+  if (!servicio || !terapeuta || !date || !hour) {
+    return res.status(400).json({ error: "Faltan campos requeridos" });
+  }
+
+  // 4) Búsqueda de servicio y terapeuta
   const svc = await prisma.service.findUnique({ where: { id: servicio } });
   const ther = await prisma.therapist.findFirst({ where: { name: terapeuta } });
-  if (!svc || !ther) return res.status(400).json({ error: "Servicio o terapeuta inválido" });
+  if (!svc || !ther) {
+    return res.status(400).json({ error: "Servicio o terapeuta inválido" });
+  }
 
   const datetime = new Date(`${date}T${hour}:00`);
 
-  // ✅ Buscar paquete activo (vigente y con sesiones disponibles)
+  // 5) Obtener paquete activo del usuario
   const userPkg = await prisma.userPackage.findFirst({
     where: {
       userId: session.user.id,
@@ -31,51 +47,58 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     include: { pkg: true },
     orderBy: { createdAt: "desc" },
   });
+  if (!userPkg) {
+    return res.status(400).json({ error: "No tienes paquetes activos" });
+  }
 
-  if (!userPkg) return res.status(400).json({ error: "No tienes paquetes activos" });
-
+  // 6) Validar expiración del paquete
   const expires = new Date(userPkg.createdAt);
   expires.setDate(expires.getDate() + userPkg.pkg.inscription);
-  if (datetime > expires) return res.status(400).json({ error: "Tu paquete ha expirado" });
+  if (datetime > expires) {
+    return res.status(400).json({ error: "Tu paquete ha expirado" });
+  }
 
-  // ✅ Candado por semana: no más de X sesiones por semana
-  const sesionesPorSemana = userPkg.pkg.sessions / 4; // 4 semanas en promedio por mes
+  // 7) Restricción de sesiones por semana
+  const sesionesPorSemana = userPkg.pkg.sessions / 4;
   const startOfWeek = new Date(datetime);
   startOfWeek.setDate(datetime.getDate() - datetime.getDay());
   startOfWeek.setHours(0, 0, 0, 0);
-
   const endOfWeek = new Date(startOfWeek);
   endOfWeek.setDate(startOfWeek.getDate() + 7);
 
   const citasEstaSemana = await prisma.reservation.count({
     where: {
       userId: session.user.id,
-      date: {
-        gte: startOfWeek,
-        lt: endOfWeek,
-      },
+      date: { gte: startOfWeek, lt: endOfWeek },
     },
   });
-
   if (citasEstaSemana >= sesionesPorSemana) {
-    return res.status(400).json({ error: `Tu paquete solo permite ${sesionesPorSemana} sesiones por semana.` });
+    return res
+      .status(400)
+      .json({ error: `Solo puedes ${sesionesPorSemana} sesiones por semana.` });
   }
 
-  // ✅ Crear reservación y restar sesión
-  await prisma.$transaction([
-    prisma.reservation.create({
-      data: {
-        userId: session.user.id,
-        serviceId: svc.id,
-        therapistId: ther.id,
-        date: datetime,
-      },
-    }),
-    prisma.userPackage.update({
-      where: { id: userPkg.id },
-      data: { sessionsRemaining: { decrement: 1 } },
-    }),
-  ]);
-
-  res.status(200).json({ ok: true });
+  // 8) Crear reserva y decrementar sesionesRemaining
+  try {
+    await prisma.$transaction([
+      prisma.reservation.create({
+        data: {
+          userId:        session.user.id,
+          serviceId:     svc.id,
+          therapistId:   ther.id,
+          date:          datetime,
+          userPackageId: userPkg.id,         // <--- Agregado
+          paymentMethod: "stripe",           // o "en sucursal", según tu flujo
+        },
+      }),
+      prisma.userPackage.update({
+        where: { id: userPkg.id },
+        data: { sessionsRemaining: { decrement: 1 } },
+      }),
+    ]);
+    return res.status(200).json({ ok: true });
+  } catch (err) {
+    console.error("Error creando cita:", err);
+    return res.status(500).json({ error: "Error interno al crear la cita." });
+  }
 }
