@@ -4,75 +4,86 @@ import { getServerSession } from "next-auth/next";
 import { authOptions }      from "../auth/[...nextauth]";
 import prisma               from "@/lib/prisma";
 
-// 1) Definimos explícitamente los campos que esperamos en el body
-interface ReservationPayload {
-  userId:        string;
-  userPackageId: string;
-  serviceId:     string;   // <-- agregado
-  therapistId:   string;
-  date:          string;   // ISO string
-  paymentMethod: string;
-}
-
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  // 2) Sólo ADMIN puede
+  // 1) Asegurar sesión + rol ADMIN
   const session = await getServerSession(req, res, authOptions);
   if (!session?.user?.id) {
     return res.status(401).json({ error: "Unauthorized" });
   }
-  const admin = await prisma.user.findUnique({ where: { id: session.user.id } });
-  if (admin?.role !== "ADMIN") {
+  const user = await prisma.user.findUnique({ where: { id: session.user.id } });
+  if (user?.role !== "ADMIN") {
     return res.status(403).json({ error: "Forbidden" });
   }
 
-  // 3) Solo POST para crear reserva
-  if (req.method !== "POST") {
-    res.setHeader("Allow", ["POST"]);
-    return res.status(405).json({ error: "Method Not Allowed" });
-  }
+  // 2) GET /api/admin/reservations?date=YYYY-MM-DD
+  if (req.method === "GET") {
+    const { date } = req.query as { date?: string };
+    if (!date) {
+      return res.status(400).json({ error: "Se requiere fecha (YYYY-MM-DD)" });
+    }
+    // rango día completo
+    const from = new Date(date);
+    from.setHours(0, 0, 0, 0);
+    const to = new Date(date);
+    to.setHours(23, 59, 59, 999);
 
-  // 4) Forzamos el tipo del body
-  const {
-    userId,
-    userPackageId,
-    serviceId,       // <-- aquí lo leemos
-    therapistId,
-    date,
-    paymentMethod,
-  } = req.body as ReservationPayload;
-
-  // 5) Validamos que todos los campos estén presentes
-  if (
-    !userId ||
-    !userPackageId ||
-    !serviceId ||      // <-- validamos también serviceId
-    !therapistId ||
-    !date ||
-    !paymentMethod
-  ) {
-    return res
-      .status(400)
-      .json({ error: "Faltan campos requeridos para crear la reserva." });
-  }
-
-  try {
-    // 6) Creamos la reserva con serviceId incluido
-    const reservation = await prisma.reservation.create({
-      data: {
-        userId,
-        userPackageId,
-        serviceId,       // <-- aquí lo pasamos a Prisma
-        therapistId,
-        date: new Date(date),
-        paymentMethod,
-      },
+    const existing: {
+      id: string;
+      date: Date;
+      therapistId: string;
+      serviceId: string;
+      userPackageId: string;
+    }[] = await prisma.reservation.findMany({
+      where: { date: { gte: from, lte: to } },
+      select: { id: true, date: true, therapistId: true, serviceId: true, userPackageId: true },
     });
 
-    return res.status(201).json(reservation);
-  } catch (e) {
-    console.error("Error creando reserva:", e);
-    return res
-      .status(500)
-      .json({ error: "Error interno al crear la reservación." });
+    return res.status(200).json(existing);
   }
+
+  // 3) POST /api/admin/reservations  → crear nueva reserva
+  if (req.method === "POST") {
+    const { userId, userPackageId, serviceId, therapistId, date, paymentMethod } =
+      req.body as {
+        userId: string;
+        userPackageId: string;
+        serviceId: string;
+        therapistId: string;
+        date: string;            // ISO
+        paymentMethod: string;
+      };
+
+    if (
+      !userId ||
+      !userPackageId ||
+      !serviceId ||
+      !therapistId ||
+      !date ||
+      !paymentMethod
+    ) {
+      return res.status(400)
+        .json({ error: "Faltan campos: userId, userPackageId, serviceId, therapistId, date o paymentMethod." });
+    }
+
+    try {
+      const r = await prisma.reservation.create({
+        data: {
+          userId,
+          userPackageId,
+          serviceId,
+          therapistId,
+          date: new Date(date),
+          paymentMethod,
+        },
+      });
+      return res.status(201).json(r);
+    } catch (e) {
+      console.error("Error creando reserva:", e);
+      return res.status(500).json({ error: "Error interno al crear la reserva." });
+    }
+  }
+
+  // 4) Métodos no soportados
+  res.setHeader("Allow", ["GET", "POST"]);
+  return res.status(405).end("Method Not Allowed");
 }
