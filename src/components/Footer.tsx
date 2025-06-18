@@ -16,6 +16,12 @@ export default function Footer() {
             className="footer-logo"
           />
           <span>© 2025 Bloom Fisio – Todos los derechos reservados.</span>
+          <p>
+          Creado por{" "}
+          <a href="https://de-gante.com/" target="_blank" rel="noopener noreferrer" className="footer-link">
+            De Gante®
+          </a>.
+        </p>
         </div>
 
         {/* Centro: ubicación + teléfono + Instagram */}

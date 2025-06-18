@@ -73,7 +73,7 @@ model Reservation {
   userId        String
   serviceId     String
   therapistId   String
-  userPackageId String       
+  userPackageId String?       
 
   date          DateTime
   createdAt     DateTime      @default(now())
@@ -83,7 +83,7 @@ model Reservation {
   user       User           @relation(fields: [userId], references: [id])
   service    Service        @relation(fields: [serviceId], references: [id])
   therapist  Therapist      @relation(fields: [therapistId], references: [id])
-  userPackage UserPackage  @relation(fields: [userPackageId], references: [id])
+  userPackage UserPackage? @relation(fields: [userPackageId], references: [id], onDelete: Cascade)
 
   @@index([userPackageId])
 }

@@ -1,4 +1,3 @@
-// src/components/admin/CalendarSection.tsx
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -6,82 +5,80 @@ import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import { Spinner } from "react-bootstrap";
 
-// Cada reserva que devuelve el endpoint ya incluye número de sesión y total de sesiones
 export interface Reservation {
   id: string;
-  date: string;         // ISO string
+  date: string;
   userName: string;
   serviceName: string;
   therapistName: string;
-  paymentMethod: string; // "en sucursal" o "stripe"
-  sessionNumber: number; // p.ej. 2
-  totalSessions: number; // p.ej. 4
+  paymentMethod: string;
+  sessionNumber: number;
+  totalSessions: number;
 }
 
 export default function CalendarSection() {
-  // 1) Fecha seleccionada en el calendario
-  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-  // 2) Punto de partida del mes que muestra el calendario
+  const [selectedDate, setSelectedDate]       = useState<Date>(new Date());
   const [activeStartDate, setActiveStartDate] = useState<Date>(new Date());
-  // 3) Días marcados (YYYY-MM-DD) que tienen al menos 1 reserva
-  const [reservedDates, setReservedDates] = useState<string[]>([]);
-  // 4) Reservas del día seleccionado
-  const [reservations, setReservations] = useState<Reservation[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string>("");
+  const [reservedDates, setReservedDates]     = useState<string[]>([]);
+  const [reservations, setReservations]       = useState<Reservation[]>([]);
+  const [loading, setLoading]                 = useState(false);
+  const [error, setError]                     = useState<string>("");
 
-  // — Cada vez que cambie el mes que se ve en el calendario, recargamos los días con reservas —
+  // 1) Traer días reservados al cambiar de mes
   useEffect(() => {
-    (async () => {
-      const year  = activeStartDate.getFullYear();
-      const month = activeStartDate.getMonth(); // 0-based
-      const first = new Date(year, month, 1).toISOString();
-      const last  = new Date(year, month + 1, 0).toISOString();
+    const y = activeStartDate.getFullYear();
+    const m = activeStartDate.getMonth();
+    const first = new Date(y, m, 1).toISOString();
+    const last  = new Date(y, m + 1, 0).toISOString();
 
-      try {
-        const res = await fetch(`/api/admin/reservations?start=${first}&end=${last}`);
-        if (!res.ok) throw new Error(res.statusText);
-        const data: Reservation[] = await res.json();
-        // Extraemos días únicos
-        const days = Array.from(new Set(data.map(r => r.date.slice(0, 10))));
+    fetch(`/api/admin/reservations?start=${first}&end=${last}`, {
+      credentials: "include",
+    })
+      .then(async (res) => {
+        if (!res.ok) throw new Error(await res.text());
+        return res.json() as Promise<Reservation[]>;
+      })
+      .then((data) => {
+        const days = Array.from(new Set(data.map((r) => r.date.slice(0, 10))));
         setReservedDates(days);
-      } catch (e) {
+      })
+      .catch((e) => {
         console.error("Error cargando días reservados:", e);
         setReservedDates([]);
-      }
-    })();
+      });
   }, [activeStartDate]);
 
-  // — Cada vez que cambie el día seleccionado, recargamos sus reservas —
+  // 2) Traer detalle al cambiar de día
   useEffect(() => {
-    (async () => {
-      setLoading(true);
-      setError("");
-      setReservations([]);
+    setLoading(true);
+    setError("");
+    setReservations([]);
 
-      const Y  = selectedDate.getFullYear();
-      const Mo = String(selectedDate.getMonth() + 1).padStart(2, "0");
-      const D  = String(selectedDate.getDate()).padStart(2, "0");
+    const Y  = selectedDate.getFullYear();
+    const Mo = String(selectedDate.getMonth() + 1).padStart(2, "0");
+    const D  = String(selectedDate.getDate()).padStart(2, "0");
+    const url = `/api/admin/reservations?date=${Y}-${Mo}-${D}`;
 
-      try {
-        const res = await fetch(`/api/admin/reservations?date=${Y}-${Mo}-${D}`);
+    fetch(url, { credentials: "include" })
+      .then(async (res) => {
         if (!res.ok) {
-          const err = await res.json();
-          throw new Error(err.error || res.statusText);
+          const txt = await res.text();
+          throw new Error(txt || res.statusText);
         }
-        const dayData: Reservation[] = await res.json();
+        return res.json() as Promise<Reservation[]>;
+      })
+      .then((dayData) => {
         setReservations(dayData);
-      } catch (e: any) {
+      })
+      .catch((e: any) => {
+        console.error("Error cargando reservaciones:", e);
         setError(e.message || "Error cargando reservaciones.");
-      } finally {
-        setLoading(false);
-      }
-    })();
+      })
+      .finally(() => setLoading(false));
   }, [selectedDate]);
 
   return (
     <div className="d-flex">
-      {/* —— Calendario de mes con puntos en días reservados —— */}
       <div className="me-4">
         <Calendar
           value={selectedDate}
@@ -97,14 +94,13 @@ export default function CalendarSection() {
             }
           }}
           tileClassName={({ date, view }) =>
-            view === "month" && reservedDates.includes(date.toISOString().slice(0,10))
+            view === "month" &&
+            reservedDates.includes(date.toISOString().slice(0, 10))
               ? "has-reservation"
               : undefined
           }
         />
       </div>
-
-      {/* —— Reservas del día seleccionado —— */}
       <div className="flex-grow-1">
         <h3 className="mb-3 text-primary">
           Reservaciones para {selectedDate.toLocaleDateString("es-ES")}

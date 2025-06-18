@@ -1,41 +1,40 @@
 // src/pages/_app.tsx
-import '../styles/globals.css'
-import 'bootstrap/dist/css/bootstrap.min.css'
-import type { AppProps } from 'next/app'
-import { usePathname } from 'next/navigation'
-import { SessionProvider } from 'next-auth/react'
-import "@/styles/globals.css"
+import "../styles/globals.css";
+import "bootstrap/dist/css/bootstrap.min.css";
+import type { AppProps } from "next/app";
+import { useRouter } from "next/router";
+import { SessionProvider } from "next-auth/react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import "chart.js/auto";
 
-import Navbar from '@/components/Navbar'
-import Footer from '@/components/Footer'
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
+
+// Creamos el QueryClient una sola vez
+const queryClient = new QueryClient();
 
 export default function MyApp({
   Component,
   pageProps: { session, ...pageProps },
 }: AppProps) {
-  const pathname = usePathname() || ''
+  const { pathname } = useRouter();
 
-  // Tratamos /dashboard/*, /admin/* y /success como rutas con layout propio
+  // Rutas que tienen su propio layout (dashboard, admin, success)
   const isDashboardOrAdmin =
-    pathname === '/dashboard' ||
-    pathname.startsWith('/dashboard/') ||
-    pathname === '/success' ||
-    pathname === '/admin' ||
-    pathname.startsWith('/admin/')
+    pathname === "/dashboard" ||
+    pathname.startsWith("/dashboard/") ||
+    pathname === "/success" ||
+    pathname === "/admin" ||
+    pathname.startsWith("/admin/");
 
   return (
     <SessionProvider session={session}>
-      {isDashboardOrAdmin ? (
-        // El componente se encarga de su propio Navbar/Footer
+      <QueryClientProvider client={queryClient}>
+        {/* Navbar / Footer sólo en rutas públicas */}
+        {!isDashboardOrAdmin && <Navbar />}
         <Component {...pageProps} />
-      ) : (
-        // Resto de rutas usan Navbar/Footer global
-        <>
-          <Navbar />
-          <Component {...pageProps} />
-          <Footer />
-        </>
-      )}
+        {!isDashboardOrAdmin && <Footer />}
+      </QueryClientProvider>
     </SessionProvider>
-  )
+  );
 }

@@ -31,8 +31,9 @@ const Home: NextPage = () => {
       {/* El Navbar/Footer global lo inyecta _app.tsx */}
 
       {/* Hero vacío para mostrar la imagen completa */}
-      <header className="hero d-flex align-items-center justify-content-center">
-        {/* la imagen de fondo se centra y ocupa todo */}
+      <header className="hero">
+       <div className="hero-content d-flex align-items-center justify-content-center">
+         </div>
       </header>
 
       {/* Subhero: texto y botón */}

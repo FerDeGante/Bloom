@@ -1,6 +1,4 @@
-// src/components/admin/AdminLayout.tsx
 "use client";
-
 import React, { useState } from "react";
 import Navbar from "../Navbar";
 import Footer from "../Footer";
@@ -13,59 +11,34 @@ import {
   FaCalendarPlus,
   FaChartBar,
 } from "react-icons/fa";
-import CalendarSection from "./CalendarSection";
-import ManualReservationSection from "./ManualReservationSection";
+
 import ClientsSection from "./ClientsSection";
 import TherapistsSection from "./TherapistsSection";
-import ReportsSection from "./ReportsSection"; // <- importamos el nuevo componente
+import ManualReservationSection from "./ManualReservationSection";
+import CalendarSection from "./CalendarSection";
+import StatsSection from "./StatsSection"; // <- import StatsSection
 
 export default function AdminLayout() {
-  const [section, setSection] = useState("manual");
+  const [section, setSection] = useState<"clients"|"therapists"|"manual"|"calendar"|"reports">("manual");
   const { data: session } = useSession();
 
-  const iconProps = { style: { color: "#0d6efd" } } as const;
-  const sections: { key: string; label: string; icon: React.ReactElement }[] = [
-    {
-      key: "clients",
-      label: "Clientes",
-      icon: <FaUsers className="me-2" {...iconProps} />,
-    },
-    {
-      key: "therapists",
-      label: "Terapeutas",
-      icon: <FaUserMd className="me-2" {...iconProps} />,
-    },
-    {
-      key: "manual",
-      label: "Generar reservación",
-      icon: <FaCalendarPlus className="me-2" {...iconProps} />,
-    },
-    {
-      key: "calendar",
-      label: "Calendario",
-      icon: <FaCalendarAlt className="me-2" {...iconProps} />,
-    },
-    {
-      key: "reports",
-      label: "Reportes",
-      icon: <FaChartBar className="me-2" {...iconProps} />,
-    },
-  ];
+  const iconProps = { style: { color: "#60bac2" } } as const;
+  const sections = [
+    { key: "clients",   label: "Clientes",           icon: <FaUsers    {...iconProps} /> },
+    { key: "therapists",label: "Terapeutas",        icon: <FaUserMd   {...iconProps} /> },
+    { key: "manual",    label: "Generar reservación",icon: <FaCalendarPlus {...iconProps} /> },
+    { key: "calendar",  label: "Calendario",        icon: <FaCalendarAlt {...iconProps} /> },
+    { key: "reports",   label: "Reportes",          icon: <FaChartBar {...iconProps} /> },
+  ] as const;
 
   function renderContent() {
     switch (section) {
-      case "clients":
-        return <ClientsSection />;
-      case "therapists":
-        return <TherapistsSection />;
-      case "manual":
-        return <ManualReservationSection />;
-      case "calendar":
-        return <CalendarSection />;
-      case "reports":
-        return <ReportsSection />; // <- aquí mostramos ReportsSection
-      default:
-        return <p>Sección {section}</p>;
+      case "clients":     return <ClientsSection />;
+      case "therapists":  return <TherapistsSection />;
+      case "manual":      return <ManualReservationSection />;
+      case "calendar":    return <CalendarSection />;
+      case "reports":     return <StatsSection />;   // <- aquí
+      default:            return null;
     }
   }
 
@@ -90,7 +63,7 @@ export default function AdminLayout() {
           </Col>
         </Row>
         <Row>
-          <Col md={2} className="mb-3">
+          <Col md={2}>
             <Nav className="flex-column">
               {sections.map((s) => (
                 <Nav.Link
@@ -98,13 +71,10 @@ export default function AdminLayout() {
                   active={section === s.key}
                   onClick={() => setSection(s.key)}
                   className="d-flex align-items-center text-primary"
-                  style={{
-                    backgroundColor: section === s.key ? "#e7f1ff" : undefined,
-                    transition: "background-color 0.2s",
-                  }}
+                  style={{ backgroundColor: section === s.key ? "#e7f1ff" : undefined }}
                 >
                   {s.icon}
-                  {s.label}
+                  <span className="ms-2">{s.label}</span>
                 </Nav.Link>
               ))}
             </Nav>
