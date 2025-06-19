@@ -10,8 +10,8 @@ export interface Reservation {
   id: string;
   date: string;
   userName: string;
-  serviceName: string;
-  therapistName: string;
+  serviceName: string | null;
+  therapistName: string | null;
   paymentMethod: string;
   sessionNumber: number;
   totalSessions: number;
@@ -38,7 +38,9 @@ export default async function handler(
   }
 
   const { start, end, date } = req.query as {
-    start?: string; end?: string; date?: string;
+    start?: string;
+    end?: string;
+    date?: string;
   };
 
   // GET rango completo (calendario)
@@ -50,7 +52,11 @@ export default async function handler(
         date: { gte: from, lte: to },
         NOT:  { userPackageId: null },
       },
-      include: {
+      select: {
+        id:            true,
+        date:          true,
+        paymentMethod: true,
+        userPackageId: true,
         user:       { select: { name: true } },
         service:    { select: { name: true } },
         therapist:  { include: { user: { select: { name: true } } } },
@@ -76,8 +82,8 @@ export default async function handler(
           id:            r.id,
           date:          r.date.toISOString(),
           userName:      r.user.name ?? "—",
-          serviceName:   r.service.name,
-          therapistName: r.therapist.user.name ?? "—",  // <-- aquí también
+          serviceName:   r.service?.name ?? null,
+          therapistName: r.therapist?.user?.name ?? null,
           paymentMethod: r.paymentMethod,
           sessionNumber: idx + 1,
           totalSessions: total,
@@ -146,8 +152,8 @@ export default async function handler(
         id:            r.id,
         date:          r.date.toISOString(),
         userName:      me.name  ?? "—",
-        serviceName:   "", // el front re-fetchea para mostrar todo
-        therapistName: "", 
+        serviceName:   null,
+        therapistName: null,
         paymentMethod: r.paymentMethod,
         sessionNumber: 0,
         totalSessions: 0,
