@@ -26,10 +26,12 @@ export default async function handler(
   // 1) Auth & rol ADMIN
   const session = await getServerSession(req, res, authOptions);
   if (!session?.user?.id) {
+    await prisma.$disconnect();
     return res.status(401).json({ error: "Unauthorized" });
   }
   const me = await prisma.user.findUnique({ where: { id: session.user.id } });
   if (me?.role !== "ADMIN") {
+    await prisma.$disconnect();
     return res.status(403).json({ error: "Forbidden" });
   }
 
@@ -86,7 +88,9 @@ export default async function handler(
       });
     }
 
-    return res.status(200).json(result);
+    const r = res.status(200).json(result);
+    await prisma.$disconnect();
+    return r;
   }
 
   // 3) GET día único → sólo fechas ISO
@@ -104,7 +108,9 @@ export default async function handler(
     const calendarData: CalendarReservation[] = existing.map((r) => ({
       date: r.date.toISOString(),
     }));
-    return res.status(200).json(calendarData);
+    const r = res.status(200).json(calendarData);
+    await prisma.$disconnect();
+    return r;
   }
 
   // 4) POST → crear nueva reserva manual
@@ -157,14 +163,20 @@ export default async function handler(
         sessionNumber: 0,
         totalSessions: 0,
       };
-      return res.status(201).json(created);
+      const response = res.status(201).json(created);
+      await prisma.$disconnect();
+      return response;
     } catch (e) {
       console.error("Error creando reserva:", e);
-      return res.status(500).json({ error: "Error interno al crear la reserva." });
+      const errorResponse = res.status(500).json({ error: "Error interno al crear la reserva." });
+      await prisma.$disconnect();
+      return errorResponse;
     }
   }
 
   // 5) Otros métodos no permitidos
   res.setHeader("Allow", ["GET", "POST"]);
-  return res.status(405).end("Method Not Allowed");
+  const notAllowed = res.status(405).end("Method Not Allowed");
+  await prisma.$disconnect();
+  return notAllowed;
 }

@@ -17,15 +17,19 @@ export default async function handler(
 ) {
   if (req.method !== "GET") {
     res.setHeader("Allow", ["GET"]);
-    return res.status(405).json({ error: "Method Not Allowed" });
+    const na = res.status(405).json({ error: "Method Not Allowed" });
+    await prisma.$disconnect();
+    return na;
   }
 
   const session = await getServerSession(req, res, authOptions);
   if (!session?.user?.id) {
+    await prisma.$disconnect();
     return res.status(401).json({ error: "Unauthorized" });
   }
   const me = await prisma.user.findUnique({ where: { id: session.user.id } });
   if (me?.role !== "ADMIN") {
+    await prisma.$disconnect();
     return res.status(403).json({ error: "Forbidden" });
   }
 
@@ -52,11 +56,15 @@ export default async function handler(
       return { month, revenue: Math.floor(Math.random() * 5000) };
     }).reverse();
 
-    return res
+    const ok = res
       .status(200)
       .json({ activeMembers, packagesSoldThisMonth, reservationsThisMonth, monthlyRevenue });
+    await prisma.$disconnect();
+    return ok;
   } catch (e) {
     console.error("Error en /api/admin/stats:", e);
-    return res.status(500).json({ error: "Error interno generando estadísticas" });
+    const errRes = res.status(500).json({ error: "Error interno generando estadísticas" });
+    await prisma.$disconnect();
+    return errRes;
   }
 }

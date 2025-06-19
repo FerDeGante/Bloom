@@ -6,6 +6,7 @@ import prisma from "@/lib/prisma";
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const session = await getServerSession(req, res, authOptions);
   if (!session?.user?.id) {
+    await prisma.$disconnect();
     return res.status(401).json({ error: "Unauthorized" });
   }
 
@@ -23,9 +24,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       therapistName: r.therapist.name,    // ✅ Correcto
     }));
 
-    return res.status(200).json({ reservations: mapped });
+    const ok = res.status(200).json({ reservations: mapped });
+    await prisma.$disconnect();
+    return ok;
   }
 
   res.setHeader("Allow", ["GET"]);
-  return res.status(405).end(`Method ${req.method} Not Allowed`);
+  const na = res.status(405).end(`Method ${req.method} Not Allowed`);
+  await prisma.$disconnect();
+  return na;
 }

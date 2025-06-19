@@ -16,11 +16,14 @@ export default async function handler(
 ) {
   if (req.method !== "GET") {
     res.setHeader("Allow", "GET");
-    return res.status(405).json({ error: "Method not allowed" });
+    const na = res.status(405).json({ error: "Method not allowed" });
+    await prisma.$disconnect();
+    return na;
   }
 
   const session = await getSession({ req });
   if (!session?.user?.id) {
+    await prisma.$disconnect();
     return res.status(401).json({ error: "Unauthorized" });
   }
 
@@ -37,5 +40,7 @@ export default async function handler(
     therapistName: r.therapist.name,
   }));
 
-  res.status(200).json(data);
+  const ok = res.status(200).json(data);
+  await prisma.$disconnect();
+  return ok;
 }

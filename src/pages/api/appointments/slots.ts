@@ -18,5 +18,7 @@ export default async function handler(
     },
   });
   const hours = taken.map((r) => new Date(r.date).getHours());
-  res.json(hours);
+  const ok = res.json(hours);
+  await prisma.$disconnect();
+  return ok;
 }

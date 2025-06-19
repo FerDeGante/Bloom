@@ -13,17 +13,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     : req.query.date;
 
   if (req.method !== "GET" || !therapistId || !date) {
+    await prisma.$disconnect();
     return res.status(400).json({ error: "Missing params" });
   }
 
-  // Buscamos reservas para ese terapeuta y día
+  // Buscamos reservas para ese terapeuta y día (horario local)
+  const start = new Date(`${date}T00:00:00`);
+  const end   = new Date(start);
+  end.setDate(end.getDate() + 1);
+
   const reservas = await prisma.reservation.findMany({
     where: {
       therapistId,
-      date: {
-        gte: new Date(`${date}T00:00:00.000Z`),
-        lt:  new Date(`${date}T23:59:59.999Z`),
-      },
+      date: { gte: start, lt: end },
     },
   });
 
@@ -42,4 +44,5 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   // Devolvemos ["09:00","10:00",...]
   const result = libres.map(h => String(h).padStart(2,"0") + ":00");
   res.status(200).json(result);
+  await prisma.$disconnect();
 }
