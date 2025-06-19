@@ -19,6 +19,7 @@ model User {
   sessions     Session[]
   reservations Reservation[]
   packages     UserPackage[]
+  therapist    Therapist? 
 }
 
 model Account {
@@ -62,7 +63,8 @@ model Service {
 
 model Therapist {
   id           String        @id @default(cuid())
-  name         String
+  userId       String        @unique
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   specialty    String?
   isActive     Boolean       @default(true)
   reservations Reservation[]

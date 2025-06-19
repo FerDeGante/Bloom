@@ -4,9 +4,7 @@ import { getServerSession }               from "next-auth/next";
 import { authOptions }                    from "../auth/[...nextauth]";
 import prisma                             from "@/lib/prisma";
 
-export interface CalendarReservation {
-  date: string;
-}
+export interface CalendarReservation { date: string; }
 
 export interface Reservation {
   id: string;
@@ -21,7 +19,6 @@ export interface Reservation {
 
 export default async function handler(
   req: NextApiRequest,
-  // incluimos también `Reservation` en el tipo de respuesta
   res: NextApiResponse<
     | Reservation
     | Reservation[]
@@ -29,7 +26,6 @@ export default async function handler(
     | { error: string }
   >
 ) {
-  // 1) Auth & rol ADMIN
   const session = await getServerSession(req, res, authOptions);
   if (!session?.user?.id) {
     await prisma.$disconnect();
@@ -42,35 +38,33 @@ export default async function handler(
   }
 
   const { start, end, date } = req.query as {
-    start?: string;
-    end?: string;
-    date?: string;
+    start?: string; end?: string; date?: string;
   };
 
-  // 2) GET rango completo (para el calendario)
+  // GET rango completo (calendario)
   if (req.method === "GET" && start && end) {
     const from = new Date(start);
     const to   = new Date(end);
-
     const rows = await prisma.reservation.findMany({
       where: {
         date: { gte: from, lte: to },
-        NOT: { userPackageId: null },
+        NOT:  { userPackageId: null },
       },
       include: {
         user:       { select: { name: true } },
         service:    { select: { name: true } },
-        therapist:  { select: { name: true } },
+        therapist:  { include: { user: { select: { name: true } } } },
         userPackage:{ include: { pkg: { select: { sessions: true } } } },
       },
       orderBy: { date: "asc" },
     });
 
+    // agrupar por paquete
     const byPkg: Record<string, typeof rows> = {};
     for (const r of rows) {
-      if (!r.userPackageId) continue;
-      byPkg[r.userPackageId] ||= [];
-      byPkg[r.userPackageId].push(r);
+      const pkgId = r.userPackageId!;
+      byPkg[pkgId] = byPkg[pkgId] || [];
+      byPkg[pkgId].push(r);
     }
 
     const result: Reservation[] = [];
@@ -83,7 +77,7 @@ export default async function handler(
           date:          r.date.toISOString(),
           userName:      r.user.name ?? "—",
           serviceName:   r.service.name,
-          therapistName: r.therapist.name,
+          therapistName: r.therapist.user.name ?? "—",  // <-- aquí también
           paymentMethod: r.paymentMethod,
           sessionNumber: idx + 1,
           totalSessions: total,
@@ -91,32 +85,30 @@ export default async function handler(
       });
     }
 
-    const out = res.status(200).json(result);
     await prisma.$disconnect();
-    return out;
+    return res.status(200).json(result);
   }
 
-  // 3) GET día único → sólo fechas ISO
+  // GET día único → fechas ISO
   if (req.method === "GET" && date) {
-    const day = new Date(date);
-    day.setHours(0, 0, 0, 0);
-    const next = new Date(day);
-    next.setDate(day.getDate() + 1);
+    const day  = new Date(date);
+    day.setHours(0,0,0,0);
+    const next= new Date(day);
+    next.setDate(day.getDate()+1);
 
     const existing = await prisma.reservation.findMany({
       where: { date: { gte: day, lt: next } },
       select: { date: true },
     });
 
-    const calendarData: CalendarReservation[] = existing.map((r) => ({
+    const cal: CalendarReservation[] = existing.map(r=>({
       date: r.date.toISOString(),
     }));
-    const out = res.status(200).json(calendarData);
     await prisma.$disconnect();
-    return out;
+    return res.status(200).json(cal);
   }
 
-  // 4) POST → crear nueva reserva manual
+  // POST crear reserva manual
   if (req.method === "POST") {
     const {
       userId,
@@ -126,22 +118,15 @@ export default async function handler(
       date:    iso,
       paymentMethod,
     } = req.body as {
-      userId:         string;
-      userPackageId:  string;
-      serviceId:      string;
-      therapistId:    string;
-      date:           string;
-      paymentMethod:  string;
+      userId: string;
+      userPackageId: string;
+      serviceId: string;
+      therapistId: string;
+      date: string;
+      paymentMethod: string;
     };
 
-    if (
-      !userId ||
-      !userPackageId ||
-      !serviceId ||
-      !therapistId ||
-      !iso ||
-      !paymentMethod
-    ) {
+    if (!userId||!userPackageId||!serviceId||!therapistId||!iso||!paymentMethod) {
       await prisma.$disconnect();
       return res.status(400).json({ error: "Faltan campos obligatorios." });
     }
@@ -160,27 +145,24 @@ export default async function handler(
       const created: Reservation = {
         id:            r.id,
         date:          r.date.toISOString(),
-        userName:      session.user.name ?? "—",
-        serviceName:   "",
-        therapistName: "",
+        userName:      me.name  ?? "—",
+        serviceName:   "", // el front re-fetchea para mostrar todo
+        therapistName: "", 
         paymentMethod: r.paymentMethod,
         sessionNumber: 0,
         totalSessions: 0,
       };
-      const out = res.status(201).json(created);
       await prisma.$disconnect();
-      return out;
+      return res.status(201).json(created);
     } catch (e) {
-      console.error("Error creando reserva:", e);
+      console.error(e);
       await prisma.$disconnect();
-      return res
-        .status(500)
-        .json({ error: "Error interno al crear la reserva." });
+      return res.status(500).json({ error: "Error interno al crear la reserva." });
     }
   }
 
-  // 5) Métodos no permitidos
-  res.setHeader("Allow", ["GET", "POST"]);
+  // métodos no permitidos
+  res.setHeader("Allow", ["GET","POST"]);
   await prisma.$disconnect();
   return res.status(405).end("Method Not Allowed");
 }

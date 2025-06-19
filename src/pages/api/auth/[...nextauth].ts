@@ -1,9 +1,9 @@
 // src/pages/api/auth/[...nextauth].ts
 import NextAuth, { NextAuthOptions } from "next-auth";
-import CredentialsProvider from "next-auth/providers/credentials";
-import { PrismaAdapter }  from "@next-auth/prisma-adapter";
-import prisma              from "@/lib/prisma";      // revisa que prisma.ts importe correctamente
-import { compare }         from "bcrypt";
+import CredentialsProvider           from "next-auth/providers/credentials";
+import { PrismaAdapter }             from "@next-auth/prisma-adapter";
+import prisma                        from "@/lib/prisma";
+import { compare }                   from "bcrypt";
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
@@ -15,29 +15,33 @@ export const authOptions: NextAuthOptions = {
       name: "Email / Password",
       credentials: {
         email:    { label: "Correo",    type: "email"    },
-        password: { label: "Contraseña",type: "password" },
+        password: { label: "Contraseña", type: "password" },
       },
       async authorize(creds) {
         if (!creds?.email || !creds?.password) return null;
+        // Busca el usuario por email
         const user = await prisma.user.findUnique({ where: { email: creds.email } });
-        if (user && await compare(creds.password, user.password)) return user;
+        // Comprueba la contraseña
+        if (user && await compare(creds.password, user.password)) {
+          return user;
+        }
         return null;
       }
     })
   ],
   callbacks: {
+    // Se ejecuta al crear/actualizar el JWT
     async jwt({ token, user }) {
       if (user) {
-        token.id = user.id;
-        // include role in JWT token
-        token.role = (user as any).role;
+        token.id   = user.id;
+        token.role = (user as any).role;  // guardamos role: "ADMIN" | "CLIENTE" | "THERAPIST"
       }
       return token;
     },
+    // Se ejecuta cuando se devuelve `getSession()`
     async session({ session, token }) {
       if (session.user) {
-        session.user.id = token.id as string;
-        // expose role in session
+        session.user.id   = token.id as string;
         (session.user as any).role = token.role as string;
       }
       return session;

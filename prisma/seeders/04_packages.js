@@ -1,7 +1,8 @@
+// prisma/seeders/04_packages.js
 const { prisma } = require("../_utils");
 
 module.exports = async function seedPackages() {
-  const pkgs = [
+  const packagesData = [
     {
       id: "agua_1",
       stripePriceId: "price_1RJd0OFV5ZpZiouCasDGf28F",
@@ -155,55 +156,20 @@ module.exports = async function seedPackages() {
       inscription: 30,
     },
   ];
-  // Construir un UPSERT masivo con SQL para la tabla Package
-    const values = packagesData
-      .map(
-        (p) =>
-          `('${p.id}', '${p.stripePriceId}', '${p.name.replace(/'/g, "''")}', ${p.sessions}, ${p.price}, ${p.inscription})`
-      )
-      .join(", ");
-  
-    const rawUpsertSQL = `
-      INSERT INTO "Package" (id, stripe_price_id, name, sessions, price, inscription)
-      VALUES ${values}
-      ON CONFLICT (id) DO UPDATE
-        SET stripe_price_id = EXCLUDED.stripe_price_id,
-            name            = EXCLUDED.name,
-            sessions        = EXCLUDED.sessions,
-            price           = EXCLUDED.price,
-            inscription     = EXCLUDED.inscription;
-    `;
-  
-    await prisma.$executeRawUnsafe(rawUpsertSQL);
-    console.log(`🎉 Seed completado: ${packagesData.length} paquetes.`);
-  
-    // 5) Crear clientes de prueba
-    const clientsData = [
-      { email: "cliente1@ejemplo.com", name: "Cliente Uno", password: "cliente123" },
-      { email: "cliente2@ejemplo.com", name: "Cliente Dos", password: "cliente123" },
-    ];
-    for (const c of clientsData) {
-      const hashed = await bcrypt.hash(c.password, 10);
-      await prisma.user.upsert({
-        where: { email: c.email },
-        update: {},
-        create: {
-          email: c.email,
-          name: c.name,
-          password: hashed,
-          role: "CLIENTE",
-        },
-      });
-    }
-  
-    console.log("✅ Seed finalizado correctamente.");
-  }
-  
-  main()
-    .catch((e) => {
-      console.error(e);
-      process.exit(1);
-    })
-    .finally(async () => {
-      await prisma.$disconnect();
+
+  for (const pkg of packagesData) {
+    await prisma.package.upsert({
+      where: { id: pkg.id },
+      update: {
+        stripePriceId: pkg.stripePriceId,
+        name:          pkg.name,
+        sessions:      pkg.sessions,
+        price:         pkg.price,
+        inscription:   pkg.inscription,
+      },
+      create: pkg,
     });
+  }
+
+  console.log(`🎉 Seed completado: ${packagesData.length} paquetes.`);
+};
