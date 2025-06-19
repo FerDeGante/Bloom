@@ -26,10 +26,15 @@ export default async function handler(
   // 1) Auth & rol ADMIN
   const session = await getServerSession(req, res, authOptions);
   if (!session?.user?.id) {
+    await prisma.$disconnect();
     return res.status(401).json({ error: "Unauthorized" });
   }
   const me = await prisma.user.findUnique({ where: { id: session.user.id } });
-  if (me?.role !== "ADMIN") {
+  const role = me?.role;
+  const isAdmin = role === "ADMIN";
+  const isTherapist = role === "THERAPIST";
+  if (!isAdmin && !isTherapist) {
+    await prisma.$disconnect();
     return res.status(403).json({ error: "Forbidden" });
   }
 
@@ -41,6 +46,10 @@ export default async function handler(
 
   // 2) GET rango completo (para el calendario)
   if (req.method === "GET" && start && end) {
+    if (!isAdmin) {
+      await prisma.$disconnect();
+      return res.status(403).json({ error: "Forbidden" });
+    }
     const from = new Date(start);
     const to   = new Date(end);
 
@@ -86,11 +95,17 @@ export default async function handler(
       });
     }
 
-    return res.status(200).json(result);
+    const r = res.status(200).json(result);
+    await prisma.$disconnect();
+    return r;
   }
 
   // 3) GET día único → sólo fechas ISO
   if (req.method === "GET" && date) {
+    if (!isAdmin) {
+      await prisma.$disconnect();
+      return res.status(403).json({ error: "Forbidden" });
+    }
     const day = new Date(date);
     day.setHours(0, 0, 0, 0);
     const next = new Date(day);
@@ -104,7 +119,9 @@ export default async function handler(
     const calendarData: CalendarReservation[] = existing.map((r) => ({
       date: r.date.toISOString(),
     }));
-    return res.status(200).json(calendarData);
+    const r = res.status(200).json(calendarData);
+    await prisma.$disconnect();
+    return r;
   }
 
   // 4) POST → crear nueva reserva manual
@@ -136,6 +153,11 @@ export default async function handler(
       return res.status(400).json({ error: "Faltan campos obligatorios." });
     }
 
+    if (isTherapist && therapistId !== session.user.id) {
+      await prisma.$disconnect();
+      return res.status(403).json({ error: "Forbidden" });
+    }
+
     try {
       const r = await prisma.reservation.create({
         data: {
@@ -157,14 +179,20 @@ export default async function handler(
         sessionNumber: 0,
         totalSessions: 0,
       };
-      return res.status(201).json(created);
+      const response = res.status(201).json(created);
+      await prisma.$disconnect();
+      return response;
     } catch (e) {
       console.error("Error creando reserva:", e);
-      return res.status(500).json({ error: "Error interno al crear la reserva." });
+      const errorResponse = res.status(500).json({ error: "Error interno al crear la reserva." });
+      await prisma.$disconnect();
+      return errorResponse;
     }
   }
 
   // 5) Otros métodos no permitidos
   res.setHeader("Allow", ["GET", "POST"]);
-  return res.status(405).end("Method Not Allowed");
+  const notAllowed = res.status(405).end("Method Not Allowed");
+  await prisma.$disconnect();
+  return notAllowed;
 }

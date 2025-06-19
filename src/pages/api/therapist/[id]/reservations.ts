@@ -6,7 +6,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const { id } = req.query;
   if (req.method !== "GET") {
     res.setHeader("Allow", ["GET"]);
-    return res.status(405).end(`Method ${req.method} Not Allowed`);
+    const na = res.status(405).end(`Method ${req.method} Not Allowed`);
+    await prisma.$disconnect();
+    return na;
   }
 
   const reservations = await prisma.reservation.findMany({
@@ -14,5 +16,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     include: { service: true, user: true },
     orderBy: { date: "asc" },
   });
-  return res.status(200).json(reservations);
+  const ok = res.status(200).json(reservations);
+  await prisma.$disconnect();
+  return ok;
 }

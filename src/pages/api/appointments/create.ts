@@ -8,12 +8,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   // 1) Solo soportamos POST
   if (req.method !== "POST") {
     res.setHeader("Allow", ["POST"]);
-    return res.status(405).end("Method Not Allowed");
+    const na = res.status(405).end("Method Not Allowed");
+    await prisma.$disconnect();
+    return na;
   }
 
   // 2) Autenticación
   const session = await getServerSession(req, res, authOptions);
   if (!session?.user?.id) {
+    await prisma.$disconnect();
     return res.status(401).end("Unauthorized");
   }
 
@@ -26,6 +29,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   };
 
   if (!servicio || !terapeuta || !date || !hour) {
+    await prisma.$disconnect();
     return res.status(400).json({ error: "Faltan campos requeridos" });
   }
 
@@ -33,6 +37,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const svc = await prisma.service.findUnique({ where: { id: servicio } });
   const ther = await prisma.therapist.findFirst({ where: { name: terapeuta } });
   if (!svc || !ther) {
+    await prisma.$disconnect();
     return res.status(400).json({ error: "Servicio o terapeuta inválido" });
   }
 
@@ -48,6 +53,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     orderBy: { createdAt: "desc" },
   });
   if (!userPkg) {
+    await prisma.$disconnect();
     return res.status(400).json({ error: "No tienes paquetes activos" });
   }
 
@@ -55,6 +61,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const expires = new Date(userPkg.createdAt);
   expires.setDate(expires.getDate() + userPkg.pkg.inscription);
   if (datetime > expires) {
+    await prisma.$disconnect();
     return res.status(400).json({ error: "Tu paquete ha expirado" });
   }
 
@@ -73,6 +80,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     },
   });
   if (citasEstaSemana >= sesionesPorSemana) {
+    await prisma.$disconnect();
     return res
       .status(400)
       .json({ error: `Solo puedes ${sesionesPorSemana} sesiones por semana.` });
@@ -96,9 +104,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         data: { sessionsRemaining: { decrement: 1 } },
       }),
     ]);
-    return res.status(200).json({ ok: true });
+    const ok = res.status(200).json({ ok: true });
+    await prisma.$disconnect();
+    return ok;
   } catch (err) {
     console.error("Error creando cita:", err);
-    return res.status(500).json({ error: "Error interno al crear la cita." });
+    const errRes = res.status(500).json({ error: "Error interno al crear la cita." });
+    await prisma.$disconnect();
+    return errRes;
   }
 }

@@ -11,12 +11,14 @@ export default async function handler(
   const session = await getServerSession(req, res, authOptions);
 
   if (!session?.user?.id) {
+    await prisma.$disconnect();
     return res.status(401).json({ error: "Unauthorized" });
   }
 
   // Only allow modifying the user's own reservation
   const reservation = await prisma.reservation.findUnique({ where: { id } });
   if (!reservation || reservation.userId !== session.user.id) {
+    await prisma.$disconnect();
     return res.status(404).json({ error: "Reservation not found" });
   }
 
@@ -29,14 +31,20 @@ export default async function handler(
       where: { id },
       data: { date: new Date(date) },
     });
-    return res.status(200).json({ ok: true });
+    const ok = res.status(200).json({ ok: true });
+    await prisma.$disconnect();
+    return ok;
   }
 
   if (req.method === "DELETE") {
     await prisma.reservation.delete({ where: { id } });
-    return res.status(200).json({ ok: true });
+    const ok = res.status(200).json({ ok: true });
+    await prisma.$disconnect();
+    return ok;
   }
 
   res.setHeader("Allow", ["PUT", "DELETE"]);
-  return res.status(405).end(`Method ${req.method} Not Allowed`);
+  const na = res.status(405).end(`Method ${req.method} Not Allowed`);
+  await prisma.$disconnect();
+  return na;
 }
