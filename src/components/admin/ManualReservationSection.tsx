@@ -2,6 +2,7 @@
 "use client";
 
 import React, { useState, useEffect, useMemo, useRef } from "react";
+import { paquetes } from "@/lib/packages";
 import {
   Form,
   Button,
@@ -40,6 +41,41 @@ type Slot = {
 
 type PaymentMethod = "efectivo" | "transferencia";
 
+const priceToServiceId: Record<string, string> = {
+  // Agua
+  "price_1RJd0OFV5ZpZiouCasDGf28F": "svc_water_1",
+  "price_1RMBAKFV5ZpZiouCCnrjam5N": "svc_water_4",
+  "price_1RMBFKFV5ZpZiouCJ1vHKREU": "svc_water_8",
+  "price_1RMBIaFV5ZpZiouC8l6QjW2N": "svc_water_12",
+
+  // Piso
+  "price_1RJd1jFV5ZpZiouC1xXvllVc": "svc_floor_1",
+  "price_1RP6S2FV5ZpZiouC6cVpXQsJ": "svc_floor_4",
+  "price_1RP6TaFV5ZpZiouCoG5G58S3": "svc_floor_12",
+  "price_1RP6SsFV5ZpZiouCtbg4A7OE": "svc_floor_8",
+
+  // Fisioterapia
+  "price_1RJd3WFV5ZpZiouC9PDzHjKU": "svc_fisio_1",
+  "price_1RP6WwFV5ZpZiouCN3m0luq3": "svc_fisio_5",
+  "price_1RP6W9FV5ZpZiouCBXnZwxLW": "svc_fisio_10",
+
+  // Otros
+  "price_1ROMxFFV5ZpZiouCdkM2KoHF": "svc_post_vacuna",
+  "price_1RJd2fFV5ZpZiouCsaJNkUTO": "svc_quiropractica",
+  "price_1RJd4JFV5ZpZiouCPjcpX3Xn": "svc_masajes",
+  "price_1RQaDGFV5ZpZiouCdNjxrjVk": "svc_cosmetologia",
+  "price_1RJd57FV5ZpZiouCpcrKNvJV": "svc_lesiones",
+  "price_1RJd6EFV5ZpZiouCYwD4J3I8": "svc_prep_fisica",
+  "price_1RJd7qFV5ZpZiouCbj6HrFJF": "svc_nutricion",
+  "price_1RJd9HFV5ZpZiouClVlCujAm": "svc_medicina_rehab",
+};
+
+const pkgToServiceId = paquetes.reduce<Record<string, string>>((acc, p) => {
+  const sid = priceToServiceId[p.priceId];
+  if (sid) acc[p.id] = sid;
+  return acc;
+}, {});
+
 export default function ManualReservationSection() {
   // —— Listas maestras ——
   const [clients,    setClients]    = useState<Client[]>([]);
@@ -64,12 +100,12 @@ export default function ManualReservationSection() {
   // —— Cache en memoria: terapeuta+fecha → horas disponibles ——
   const availCache = useRef<Record<string,string[]>>({});
 
-  // —— Helper fetch con cookies y SIN CACHE ——
+  // —— Helper fetch con cookies ——
   const fetchJSON = (url: string, opts: RequestInit = {}) =>
     fetch(url, {
       credentials: "include",
       headers: { "Content-Type": "application/json" },
-      cache: "no-store",            // ⇐ clave: deshabilita cache
+      ...(url.includes("/availability") ? { cache: "no-store" } : {}),
       ...opts,
     });
 
@@ -199,13 +235,14 @@ export default function ManualReservationSection() {
   const handleConfirmPayment = async () => {
     setError(null);
     try {
+      const serviceId = pkgToServiceId[packageId] || packageId;
       await Promise.all(slots.map(s =>
         fetchJSON("/api/admin/reservations", {
           method: "POST",
           body: JSON.stringify({
             userId:        clientId,
             userPackageId: packageId,
-            serviceId:     packageId,
+            serviceId,
             therapistId:   s.therapistId,
             date:          new Date(`${s.date}T${s.time}:00`).toISOString(),
             paymentMethod,
