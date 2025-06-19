@@ -7,8 +7,9 @@ import prisma                                 from "@/lib/prisma";
 export interface HistoryItem {
   id: string;
   date: string;
-  serviceName: string;
-  therapistName: string;
+  serviceName: string | null;
+  therapistName: string | null;
+  userPackageId: string | null;
 }
 
 export default async function handler(
@@ -29,7 +30,10 @@ export default async function handler(
 
   const reservations = await prisma.reservation.findMany({
     where: { userId: session.user.id },
-    include: {
+    select: {
+      id:            true,
+      date:          true,
+      userPackageId: true,
       service:   { select: { name: true } },
       therapist: { include: { user: { select: { name: true } } } },
     },
@@ -39,8 +43,9 @@ export default async function handler(
   const data: HistoryItem[] = reservations.map((r) => ({
     id:            r.id,
     date:          r.date.toISOString(),
-    serviceName:   r.service.name,
-    therapistName: r.therapist.user.name ?? "—",   // <-- aquí aseguramos string
+    serviceName:   r.service?.name ?? null,
+    therapistName: r.therapist?.user?.name ?? null,
+    userPackageId: r.userPackageId,
   }));
 
   await prisma.$disconnect();
