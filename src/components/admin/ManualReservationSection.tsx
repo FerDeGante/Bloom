@@ -1,7 +1,7 @@
 // src/components/admin/ManualReservationSection.tsx
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import {
   Form,
   Button,
@@ -61,15 +61,19 @@ export default function ManualReservationSection() {
   const [showPayment,   setShowPayment]   = useState<boolean>(false);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("efectivo");
 
-  // —— Helper fetch con cookies ——
+  // —— Cache en memoria: terapeuta+fecha → horas disponibles ——
+  const availCache = useRef<Record<string,string[]>>({});
+
+  // —— Helper fetch con cookies y SIN CACHE ——
   const fetchJSON = (url: string, opts: RequestInit = {}) =>
     fetch(url, {
       credentials: "include",
       headers: { "Content-Type": "application/json" },
+      cache: "no-store",            // ⇐ clave: deshabilita cache
       ...opts,
     });
 
-  // —— 1) Carga inicial de datos ——
+  /** 1) Carga inicial de datos **/
   useEffect(() => {
     fetchJSON("/api/admin/clients")
       .then(r => r.ok ? r.json() : [])
@@ -87,7 +91,7 @@ export default function ManualReservationSection() {
       .catch(() => setError("Error cargando terapeutas"));
   }, []);
 
-  // —— 2) Cuando cambia paquete, regenerar X slots ——
+  /** 2) Cuando cambia paquete, regenerar X slots **/
   useEffect(() => {
     if (!packageId) {
       setSlots([]);
@@ -96,33 +100,40 @@ export default function ManualReservationSection() {
     const pkg = packages.find(p => p.id === packageId);
     const count = pkg?.sessions ?? 1;
     setSlots(
-      Array.from({ length: count }, () => ({
-        therapistId: "",
-        date: "",
-        time: "",
+      Array.from({ length: count }).map(() => ({
+        therapistId:    "",
+        date:           "",
+        time:           "",
         availableTimes: [],
-        loading: false,
+        loading:        false,
       }))
     );
   }, [packageId, packages]);
 
-  // —— 3) “Hoy” en local para filtrar horas pasadas ——
-  const todayLocal = React.useMemo(() => {
+  /** 3) “Hoy” en local para filtrar horas pasadas **/
+  const todayLocal = useMemo(() => {
     const d = new Date();
-    const yyyy = d.getFullYear();
-    const mm   = String(d.getMonth() + 1).padStart(2, "0");
-    const dd   = String(d.getDate()).padStart(2, "0");
-    return `${yyyy}-${mm}-${dd}`; // "YYYY-MM-DD"
+    return d.toISOString().slice(0,10); // "YYYY-MM-DD"
   }, []);
 
-  // —— 4) Cargar disponibilidad para un slot concreto ——
+  /** 4) Cargar disponibilidad para un slot concreto **/
   const loadTimes = async (idx: number) => {
     const s = slots[idx];
     if (!s.therapistId || !s.date) return;
 
+    const key = `${s.therapistId}::${s.date}`;
+    // 4a) Si ya lo teníamos en cache, úsalo al instante
+    if (availCache.current[key]) {
+      const copy = [...slots];
+      copy[idx].availableTimes = availCache.current[key];
+      copy[idx].time = availCache.current[key][0] ?? "";
+      setSlots(copy);
+      return;
+    }
+
+    // 4b) Cargar desde API
     const copy = [...slots];
     copy[idx].loading = true;
-    copy[idx].availableTimes = [];
     setSlots(copy);
 
     try {
@@ -130,22 +141,21 @@ export default function ManualReservationSection() {
         `/api/admin/therapists/${s.therapistId}/availability?date=${s.date}`
       );
       if (!res.ok) throw new Error("No hay horarios");
-
       let times: string[] = await res.json();
 
-      // filtrar horas pasadas si la fecha es hoyLocal
+      // filtrar horas pasadas si es hoy
       if (s.date === todayLocal) {
         const nowH = new Date().getHours();
-        times = times.filter(t => {
-          const h = parseInt(t.slice(0, 2), 10);
-          return h > nowH;
-        });
+        times = times.filter(t => parseInt(t.slice(0, 2), 10) > nowH);
       }
 
+      // guardar y actualizar UI
+      availCache.current[key] = times;
       copy[idx].loading = false;
       copy[idx].availableTimes = times;
       copy[idx].time = times[0] ?? "";
       setSlots(copy);
+
     } catch (e: any) {
       copy[idx].loading = false;
       setSlots(copy);
@@ -153,10 +163,10 @@ export default function ManualReservationSection() {
     }
   };
 
-  // —— 5) Handlers de cambio ——
+  /** 5) Handlers de cambio **/
   const onTherapistChange = (i: number, id: string) => {
     const c = [...slots];
-    c[i] = { therapistId: id, date: "", time: "", availableTimes: [], loading: false };
+    c[i] = { therapistId: id, date:"", time:"", availableTimes:[], loading:false };
     setSlots(c);
   };
 
@@ -164,7 +174,6 @@ export default function ManualReservationSection() {
     const c = [...slots];
     c[i].date = date;
     c[i].time = "";
-    c[i].availableTimes = [];
     setSlots(c);
     loadTimes(i);
   };
@@ -175,63 +184,43 @@ export default function ManualReservationSection() {
     setSlots(c);
   };
 
-  // —— 6) Validar y abrir wizard de pago ——
+  /** 6) Validar y abrir wizard de pago **/
   const handleProceedToPay = () => {
     setError(null);
     setSuccess(null);
     if (!clientId || !packageId || slots.some(s => !s.therapistId || !s.date || !s.time)) {
-      setError("Completa todos los campos de cada sesión antes de pagar.");
+      setError("Completa todos los campos antes de pagar.");
       return;
     }
     setShowPayment(true);
   };
 
-  // —— 7) Confirmar pago: crear reservas + pago ——
+  /** 7) Confirmar pago: crear reservas en paralelo **/
   const handleConfirmPayment = async () => {
     setError(null);
-
     try {
-      // 7.1 POST único con todas las sesiones
-      const createRes = await fetchJSON("/api/admin/reservations", {
-        method: "POST",
-        body: JSON.stringify({
-          clientId,
-          packageId,
-          sessions: slots.map(s => ({
-            therapistId: s.therapistId,
-            date: new Date(`${s.date}T${s.time}:00`).toISOString(),
-          })),
-        }),
-      });
-
-      if (createRes.status === 400) {
-        const { message } = await createRes.json();
-        throw new Error(message);
-      }
-      if (!createRes.ok) {
-        throw new Error("Error creando la reservación");
-      }
-
-      const { id: reservationId } = await createRes.json();
-
-      // 7.2 POST al endpoint de pago con reservationId
-      const payRes = await fetchJSON(
-        `/api/admin/reservations/${reservationId}/payment`,
-        {
+      await Promise.all(slots.map(s =>
+        fetchJSON("/api/admin/reservations", {
           method: "POST",
-          body: JSON.stringify({ method: paymentMethod }),
-        }
-      );
-      if (!payRes.ok) {
-        throw new Error("Error registrando el pago");
-      }
+          body: JSON.stringify({
+            userId:        clientId,
+            userPackageId: packageId,
+            serviceId:     packageId,
+            therapistId:   s.therapistId,
+            date:          new Date(`${s.date}T${s.time}:00`).toISOString(),
+            paymentMethod,
+          }),
+        }).then(r => {
+          if (!r.ok) throw new Error("Error creando una reserva");
+        })
+      ));
 
-      // 7.3 Reset + éxito
       setShowPayment(false);
-      setSuccess("Reservación creada y pago registrado correctamente.");
+      setSuccess("Reservaciones creadas correctamente.");
       setClientId("");
       setPackageId("");
       setSlots([]);
+
     } catch (e: any) {
       setError(e.message);
     }
@@ -244,7 +233,7 @@ export default function ManualReservationSection() {
       {success && <Alert variant="success">{success}</Alert>}
 
       <Form>
-        {/* Selección de cliente */}
+        {/* Cliente */}
         <Form.Group className="mb-3">
           <Form.Label>Cliente</Form.Label>
           <Form.Select value={clientId} onChange={e => setClientId(e.target.value)}>
@@ -257,24 +246,24 @@ export default function ManualReservationSection() {
           </Form.Select>
         </Form.Group>
 
-        {/* Selección de paquete */}
+        {/* Paquete */}
         <Form.Group className="mb-3">
           <Form.Label>Paquete</Form.Label>
           <Form.Select value={packageId} onChange={e => setPackageId(e.target.value)}>
             <option value="">-- Selecciona paquete --</option>
             {packages.map(p => (
               <option key={p.id} value={p.id}>
-                {p.name} ({p.sessions} sesión{p.sessions > 1 ? "es" : ""})
+                {p.name} ({p.sessions} sesión{p.sessions>1?"es":""})
               </option>
             ))}
           </Form.Select>
         </Form.Group>
 
         {/* Slots dinámicos */}
-        {slots.map((s, i) => (
+        {slots.map((s, i) =>
           <Accordion key={i} className="mb-2" defaultActiveKey="0">
             <Accordion.Item eventKey={String(i)}>
-              <Accordion.Header>Sesión {i + 1}</Accordion.Header>
+              <Accordion.Header>Sesión {i+1}</Accordion.Header>
               <Accordion.Body>
                 <Row>
                   <Col md={6}>
@@ -286,9 +275,7 @@ export default function ManualReservationSection() {
                       >
                         <option value="">-- Selecciona terapeuta --</option>
                         {therapists.map(t => (
-                          <option key={t.id} value={t.id}>
-                            {t.name}
-                          </option>
+                          <option key={t.id} value={t.id}>{t.name}</option>
                         ))}
                       </Form.Select>
                     </Form.Group>
@@ -317,9 +304,7 @@ export default function ManualReservationSection() {
                     >
                       <option value="">-- Selecciona hora --</option>
                       {s.availableTimes.map(t => (
-                        <option key={t} value={t}>
-                          {t}
-                        </option>
+                        <option key={t} value={t}>{t}</option>
                       ))}
                     </Form.Select>
                   ) : (
@@ -341,48 +326,38 @@ export default function ManualReservationSection() {
               </Accordion.Body>
             </Accordion.Item>
           </Accordion>
-        ))}
+        )}
 
         <Button
           className="mt-3"
           onClick={handleProceedToPay}
-          disabled={
-            !clientId ||
-            !packageId ||
-            slots.some(s => !s.therapistId || !s.date || !s.time)
-          }
+          disabled={!clientId || !packageId || slots.some(s => !s.therapistId || !s.date || !s.time)}
         >
           Pasar a pagar
         </Button>
       </Form>
 
-      {/* ——— Modal de pago ——— */}
+      {/* Modal de pago */}
       <Modal show={showPayment} onHide={() => setShowPayment(false)}>
-        <Modal.Header closeButton>
-          <Modal.Title>Confirmar pago</Modal.Title>
-        </Modal.Header>
+        <Modal.Header closeButton><Modal.Title>Confirmar pago</Modal.Title></Modal.Header>
         <Modal.Body>
           <h5>Resumen de reservaciones</h5>
           <ul>
             {slots.map((s, i) => (
               <li key={i}>
-                Sesión {i + 1}: {s.date} a las {s.time} con{" "}
+                Sesión {i+1}: {s.date} a las {s.time} con{" "}
                 {therapists.find(t => t.id === s.therapistId)?.name}
               </li>
             ))}
           </ul>
           <Form>
             <Form.Check
-              type="radio"
-              label="Efectivo"
-              name="pay"
+              type="radio" label="Efectivo" name="pay"
               checked={paymentMethod === "efectivo"}
               onChange={() => setPaymentMethod("efectivo")}
             />
             <Form.Check
-              type="radio"
-              label="Transferencia"
-              name="pay"
+              type="radio" label="Transferencia" name="pay"
               checked={paymentMethod === "transferencia"}
               onChange={() => setPaymentMethod("transferencia")}
             />

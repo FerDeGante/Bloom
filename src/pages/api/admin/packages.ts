@@ -4,8 +4,11 @@ import { getServerSession }         from "next-auth/next";
 import { authOptions }              from "../auth/[...nextauth]";
 import prisma                       from "@/lib/prisma";
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  // 1) verificación de sesión y rol ADMIN:
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse<{ id: string; name: string; sessions: number; }[] | { error: string }>
+) {
+  // 1) Verificación de sesión y rol ADMIN
   const session = await getServerSession(req, res, authOptions);
   if (!session?.user?.id) {
     await prisma.$disconnect();
@@ -17,8 +20,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(403).json({ error: "Forbidden" });
   }
 
+  // 2) GET /api/admin/packages → lista de paquetes
   if (req.method === "GET") {
-    // 2) devolvemos todos los paquetes con id, name y sessions
     const list = await prisma.package.findMany({
       orderBy: { name: "asc" },
       select: {
@@ -27,13 +30,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         sessions: true,
       },
     });
-    const ok = res.status(200).json(list);
     await prisma.$disconnect();
-    return ok;
+    return res.status(200).json(list);
   }
 
   res.setHeader("Allow", ["GET"]);
-  const na = res.status(405).end("Method Not Allowed");
   await prisma.$disconnect();
-  return na;
+  return res.status(405).end("Method Not Allowed");
 }
