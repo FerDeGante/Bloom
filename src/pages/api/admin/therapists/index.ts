@@ -10,7 +10,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(401).json({ error: "Unauthorized" });
   }
   const user = await prisma.user.findUnique({ where: { id: session.user.id } });
-  if (user?.role !== "ADMIN") {
+  const role = user?.role;
+  const isAdmin = role === "ADMIN";
+  const isTherapist = role === "THERAPIST";
+  if (!isAdmin && !isTherapist) {
     await prisma.$disconnect();
     return res.status(403).json({ error: "Forbidden" });
   }
@@ -29,6 +32,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   if (req.method === "POST") {
+    if (!isAdmin) {
+      await prisma.$disconnect();
+      return res.status(403).json({ error: "Forbidden" });
+    }
     const { name, specialty } = req.body as { name: string; specialty?: string };
     const ther = await prisma.therapist.create({ data: { name, specialty } });
     const ok = res.status(200).json(ther);

@@ -12,7 +12,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   const user = await prisma.user.findUnique({ where: { id: session.user.id } });
-  if (user?.role !== "ADMIN") {
+  const role = user?.role;
+  const isAdmin = role === "ADMIN";
+  const isTherapist = role === "THERAPIST";
+  if (!isAdmin && !isTherapist) {
     await prisma.$disconnect();
     return res.status(403).json({ error: "Forbidden" });
   }
@@ -35,6 +38,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   if (req.method === "POST") {
+    if (!isAdmin) {
+      await prisma.$disconnect();
+      return res.status(403).json({ error: "Forbidden" });
+    }
     const { name, email, phone, password } = req.body as {
       name: string;
       email: string;

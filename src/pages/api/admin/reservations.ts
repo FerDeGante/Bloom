@@ -30,7 +30,10 @@ export default async function handler(
     return res.status(401).json({ error: "Unauthorized" });
   }
   const me = await prisma.user.findUnique({ where: { id: session.user.id } });
-  if (me?.role !== "ADMIN") {
+  const role = me?.role;
+  const isAdmin = role === "ADMIN";
+  const isTherapist = role === "THERAPIST";
+  if (!isAdmin && !isTherapist) {
     await prisma.$disconnect();
     return res.status(403).json({ error: "Forbidden" });
   }
@@ -43,6 +46,10 @@ export default async function handler(
 
   // 2) GET rango completo (para el calendario)
   if (req.method === "GET" && start && end) {
+    if (!isAdmin) {
+      await prisma.$disconnect();
+      return res.status(403).json({ error: "Forbidden" });
+    }
     const from = new Date(start);
     const to   = new Date(end);
 
@@ -95,6 +102,10 @@ export default async function handler(
 
   // 3) GET día único → sólo fechas ISO
   if (req.method === "GET" && date) {
+    if (!isAdmin) {
+      await prisma.$disconnect();
+      return res.status(403).json({ error: "Forbidden" });
+    }
     const day = new Date(date);
     day.setHours(0, 0, 0, 0);
     const next = new Date(day);
@@ -140,6 +151,11 @@ export default async function handler(
       !paymentMethod
     ) {
       return res.status(400).json({ error: "Faltan campos obligatorios." });
+    }
+
+    if (isTherapist && therapistId !== session.user.id) {
+      await prisma.$disconnect();
+      return res.status(403).json({ error: "Forbidden" });
     }
 
     try {

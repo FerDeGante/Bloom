@@ -11,8 +11,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     await prisma.$disconnect();
     return res.status(401).json({ error: "Unauthorized" });
   }
-  const admin = await prisma.user.findUnique({ where: { id: session.user.id } });
-  if (admin?.role !== "ADMIN") {
+  const user = await prisma.user.findUnique({ where: { id: session.user.id } });
+  const role = user?.role;
+  const isAdmin = role === "ADMIN";
+  const isTherapist = role === "THERAPIST";
+  if (!isAdmin && !isTherapist) {
     await prisma.$disconnect();
     return res.status(403).json({ error: "Forbidden" });
   }
