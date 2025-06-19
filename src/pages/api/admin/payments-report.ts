@@ -5,12 +5,21 @@ import prisma from "@/lib/prisma";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const session = await getServerSession(req, res, authOptions);
-  if (!session?.user?.id) return res.status(401).json({ error: "Unauthorized" });
+  if (!session?.user?.id) {
+    await prisma.$disconnect();
+    return res.status(401).json({ error: "Unauthorized" });
+  }
   const user = await prisma.user.findUnique({ where: { id: session.user.id } });
-  if (user?.role !== "ADMIN") return res.status(403).json({ error: "Forbidden" });
+  if (user?.role !== "ADMIN") {
+    await prisma.$disconnect();
+    return res.status(403).json({ error: "Forbidden" });
+  }
 
   const { start, end } = req.query as { start?: string; end?: string };
-  if (!start || !end) return res.status(400).json({ error: "Invalid range" });
+  if (!start || !end) {
+    await prisma.$disconnect();
+    return res.status(400).json({ error: "Invalid range" });
+  }
 
   const startDate = new Date(start);
   const endDate = new Date(end);
@@ -43,5 +52,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     paymentMethod: t.paymentMethod,
   }));
 
-  res.status(200).json({ summary, transactions: data });
+  const ok = res.status(200).json({ summary, transactions: data });
+  await prisma.$disconnect();
+  return ok;
 }

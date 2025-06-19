@@ -9,11 +9,14 @@ export default async function handler(
   res: NextApiResponse
 ) {
   if (req.method !== "GET") {
-    return res.status(405).json({ error: "Método no permitido" });
+    const na = res.status(405).json({ error: "Método no permitido" });
+    await prisma.$disconnect();
+    return na;
   }
 
   const session = await getServerSession(req, res, authOptions);
   if (!session?.user?.id) {
+    await prisma.$disconnect();
     return res.status(401).json({ error: "No autorizado" });
   }
 
@@ -31,5 +34,7 @@ export default async function handler(
     inscription: up.pkg.inscription,
   }));
 
-  return res.status(200).json({ packages });
+  const ok = res.status(200).json({ packages });
+  await prisma.$disconnect();
+  return ok;
 }

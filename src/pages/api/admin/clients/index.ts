@@ -6,10 +6,16 @@ import bcrypt from "bcrypt";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const session = await getServerSession(req, res, authOptions);
-  if (!session?.user?.id) return res.status(401).json({ error: "Unauthorized" });
+  if (!session?.user?.id) {
+    await prisma.$disconnect();
+    return res.status(401).json({ error: "Unauthorized" });
+  }
 
   const user = await prisma.user.findUnique({ where: { id: session.user.id } });
-  if (user?.role !== "ADMIN") return res.status(403).json({ error: "Forbidden" });
+  if (user?.role !== "ADMIN") {
+    await prisma.$disconnect();
+    return res.status(403).json({ error: "Forbidden" });
+  }
 
   if (req.method === "GET") {
     const { search = "" } = req.query as { search?: string };
@@ -23,7 +29,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       },
       select: { id: true, name: true, email: true, phone: true, role: true },
     });
-    return res.status(200).json(clients);
+    const ok = res.status(200).json(clients);
+    await prisma.$disconnect();
+    return ok;
   }
 
   if (req.method === "POST") {
@@ -37,9 +45,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const client = await prisma.user.create({
       data: { name, email, phone, password: hashed, role: "CLIENTE" },
     });
-    return res.status(200).json(client);
+    const ok = res.status(200).json(client);
+    await prisma.$disconnect();
+    return ok;
   }
 
   res.setHeader("Allow", ["GET", "POST"]);
-  res.status(405).end();
+  const na = res.status(405).end();
+  await prisma.$disconnect();
+  return na;
 }

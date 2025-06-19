@@ -8,10 +8,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   // 1) Verificar sesión y rol ADMIN
   const session = await getServerSession(req, res, authOptions);
   if (!session?.user?.id) {
+    await prisma.$disconnect();
     return res.status(401).json({ error: "Unauthorized" });
   }
   const admin = await prisma.user.findUnique({ where: { id: session.user.id } });
   if (admin?.role !== "ADMIN") {
+    await prisma.$disconnect();
     return res.status(403).json({ error: "Forbidden" });
   }
 
@@ -31,15 +33,21 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       data.password = await bcrypt.hash(password, 10);
     }
     const client = await prisma.user.update({ where: { id }, data });
-    return res.status(200).json(client);
+    const ok = res.status(200).json(client);
+    await prisma.$disconnect();
+    return ok;
   }
 
   if (req.method === "DELETE") {
     // Eliminar cliente
     await prisma.user.delete({ where: { id } });
-    return res.status(200).json({ ok: true });
+    const ok = res.status(200).json({ ok: true });
+    await prisma.$disconnect();
+    return ok;
   }
 
   res.setHeader("Allow", ["PUT", "DELETE"]);
-  res.status(405).end();
+  const na = res.status(405).end();
+  await prisma.$disconnect();
+  return na;
 }
