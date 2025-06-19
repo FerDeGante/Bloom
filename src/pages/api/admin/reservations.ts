@@ -147,27 +147,51 @@ export default async function handler(
     }
 
     try {
-      const r = await prisma.reservation.create({
-        data: {
-          userId,
-          userPackageId,
-          serviceId,
-          therapistId,
-          date: new Date(iso),
-          paymentMethod,
+      const [created] = await prisma.$transaction([
+        prisma.reservation.create({
+          data: {
+            userId,
+            userPackageId,
+            serviceId,
+            therapistId,
+            date: new Date(iso),
+            paymentMethod,
+            paidAt: new Date(),
+          },
+        }),
+        prisma.userPackage.update({
+          where: { id: userPackageId },
+          data: { sessionsRemaining: { decrement: 1 } },
+        }),
+      ]);
+
+      const full = await prisma.reservation.findUnique({
+        where: { id: created.id },
+        include: {
+          user:       { select: { name: true } },
+          service:    { select: { name: true } },
+          therapist:  { select: { name: true } },
+          userPackage:{ include: { pkg: { select: { sessions: true } } } },
         },
       });
-      const created: Reservation = {
-        id:            r.id,
-        date:          r.date.toISOString(),
-        userName:      session.user.name ?? "—",
-        serviceName:   "",
-        therapistName: "",
-        paymentMethod: r.paymentMethod,
-        sessionNumber: 0,
-        totalSessions: 0,
+
+      if (!full) throw new Error("No se creó la reserva");
+
+      const countUsed =
+        (full.userPackage?.pkg.sessions || 1) -
+        (full.userPackage?.sessionsRemaining || 0);
+
+      const outRes: Reservation = {
+        id:            full.id,
+        date:          full.date.toISOString(),
+        userName:      full.user.name ?? "—",
+        serviceName:   full.service.name,
+        therapistName: full.therapist.name,
+        paymentMethod: full.paymentMethod,
+        sessionNumber: countUsed,
+        totalSessions: full.userPackage?.pkg.sessions || 1,
       };
-      const out = res.status(201).json(created);
+      const out = res.status(201).json(outRes);
       await prisma.$disconnect();
       return out;
     } catch (e) {

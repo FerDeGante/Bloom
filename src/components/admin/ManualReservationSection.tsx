@@ -21,9 +21,12 @@ interface Client {
 }
 
 interface Package {
-  id: string;
+  id: string;     // userPackageId
+  pkgId: string;  // original package id
   name: string;
   sessions: number;
+  price: number;
+  remaining: number;
 }
 
 interface Therapist {
@@ -100,6 +103,13 @@ export default function ManualReservationSection() {
   // —— Cache en memoria: terapeuta+fecha → horas disponibles ——
   const availCache = useRef<Record<string,string[]>>({});
 
+  // —— Paquete seleccionado ——
+  const selectedPkg = useMemo(
+    () => packages.find(p => p.id === packageId),
+    [packages, packageId]
+  );
+  const packagePrice = selectedPkg?.price ?? 0;
+
   // —— Helper fetch con cookies ——
   const fetchJSON = (url: string, opts: RequestInit = {}) =>
     fetch(url, {
@@ -116,16 +126,24 @@ export default function ManualReservationSection() {
       .then(setClients)
       .catch(() => setError("Error cargando clientes"));
 
-    fetchJSON("/api/admin/packages")
-      .then(r => r.ok ? r.json() : [])
-      .then(setPackages)
-      .catch(() => setError("Error cargando paquetes"));
-
     fetchJSON("/api/admin/therapists")
       .then(r => r.ok ? r.json() : [])
       .then(setTherapists)
       .catch(() => setError("Error cargando terapeutas"));
   }, []);
+
+  /** Cargar paquetes del usuario seleccionado */
+  useEffect(() => {
+    if (!clientId) {
+      setPackages([]);
+      setPackageId("");
+      return;
+    }
+    fetchJSON(`/api/admin/user-packages?userId=${clientId}`)
+      .then(r => r.ok ? r.json() : [])
+      .then(setPackages)
+      .catch(() => setError("Error cargando paquetes"));
+  }, [clientId]);
 
   /** 2) Cuando cambia paquete, regenerar X slots **/
   useEffect(() => {
@@ -134,7 +152,7 @@ export default function ManualReservationSection() {
       return;
     }
     const pkg = packages.find(p => p.id === packageId);
-    const count = pkg?.sessions ?? 1;
+    const count = Math.min(pkg?.remaining ?? 1, pkg?.sessions ?? 1);
     setSlots(
       Array.from({ length: count }).map(() => ({
         therapistId:    "",
@@ -235,7 +253,9 @@ export default function ManualReservationSection() {
   const handleConfirmPayment = async () => {
     setError(null);
     try {
-      const serviceId = pkgToServiceId[packageId] || packageId;
+      const serviceId = selectedPkg
+        ? pkgToServiceId[selectedPkg.pkgId] || selectedPkg.pkgId
+        : packageId;
       await Promise.all(slots.map(s =>
         fetchJSON("/api/admin/reservations", {
           method: "POST",
@@ -290,7 +310,7 @@ export default function ManualReservationSection() {
             <option value="">-- Selecciona paquete --</option>
             {packages.map(p => (
               <option key={p.id} value={p.id}>
-                {p.name} ({p.sessions} sesión{p.sessions>1?"es":""})
+                {p.name} — ${p.price} MXN (quedan {p.remaining})
               </option>
             ))}
           </Form.Select>
@@ -380,13 +400,14 @@ export default function ManualReservationSection() {
         <Modal.Body>
           <h5>Resumen de reservaciones</h5>
           <ul>
-            {slots.map((s, i) => (
-              <li key={i}>
-                Sesión {i+1}: {s.date} a las {s.time} con{" "}
-                {therapists.find(t => t.id === s.therapistId)?.name}
-              </li>
-            ))}
+          {slots.map((s, i) => (
+            <li key={i}>
+              Sesión {i+1}: {s.date} a las {s.time} con{" "}
+              {therapists.find(t => t.id === s.therapistId)?.name}
+            </li>
+          ))}
           </ul>
+          <p className="mt-2">Costo total: ${packagePrice}</p>
           <Form>
             <Form.Check
               type="radio" label="Efectivo" name="pay"

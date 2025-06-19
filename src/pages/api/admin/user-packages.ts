@@ -6,7 +6,17 @@ import prisma                             from "@/lib/prisma";
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<{ id: string; name: string; sessions: number; remaining: number }[] | { error: string }>
+  res: NextApiResponse<
+    | {
+        id: string
+        pkgId: string
+        name: string
+        sessions: number
+        price: number
+        remaining: number
+      }[]
+    | { error: string }
+  >
 ) {
   const session = await getServerSession(req, res, authOptions);
   if (!session?.user?.id) return res.status(401).json({ error: "Unauthorized" });
@@ -20,14 +30,18 @@ export default async function handler(
 
   const ups = await prisma.userPackage.findMany({
     where: { userId },
-    include: { pkg: { select: { name: true, sessions: true } } }
+    include: {
+      pkg: { select: { id: true, name: true, sessions: true, price: true } },
+    },
   });
 
   const out = ups.map(u => ({
     id:        u.id,
+    pkgId:     u.pkg.id,
     name:      u.pkg.name,
     sessions:  u.pkg.sessions,
-    remaining: u.sessionsRemaining
+    price:     u.pkg.price,
+    remaining: u.sessionsRemaining,
   }));
 
   await prisma.$disconnect();
