@@ -32,7 +32,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     },
     include: { 
       user: { select: { name: true } },
-      therapist: { select: { name: true } },
+      therapist: { 
+        include: {
+          user: { select: { name: true } } // Accedemos al nombre a través de la relación con User
+        }
+      },
       service: { select: { name: true } },
       userPackage: { 
         select: { 
@@ -56,7 +60,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     id: t.id,
     date: t.date.toISOString(),
     userName: t.user.name,
-    therapistName: t.therapist.name,
+    therapistName: t.therapist.user.name, // Accedemos al nombre del terapeuta a través de user
     serviceName: t.service.name,
     amount: t.userPackage?.pkg?.price || 0,
     paymentMethod: t.paymentMethod,
