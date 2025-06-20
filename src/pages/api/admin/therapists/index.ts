@@ -19,19 +19,72 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const { search = "" } = req.query as { search?: string };
     const list = await prisma.therapist.findMany({
       where: {
-        name: { contains: search, mode: "insensitive" },
+        user: {
+          name: {
+            contains: search,
+            mode: "insensitive"
+          }
+        }
       },
-      orderBy: { name: "asc" },
+      include: {
+        user: {
+          select: {
+            name: true
+          }
+        }
+      },
+      orderBy: {
+        user: {
+          name: "asc"
+        }
+      }
     });
-    const ok = res.status(200).json(list);
+    
+    // Transformar los datos para incluir el name directamente en el objeto therapist
+    const transformedList = list.map(therapist => ({
+      ...therapist,
+      name: therapist.user.name
+    }));
+    
+    const ok = res.status(200).json(transformedList);
     await prisma.$disconnect();
     return ok;
   }
 
   if (req.method === "POST") {
     const { name, specialty } = req.body as { name: string; specialty?: string };
-    const ther = await prisma.therapist.create({ data: { name, specialty } });
-    const ok = res.status(200).json(ther);
+    
+    // Primero crear el usuario
+    const user = await prisma.user.create({
+      data: {
+        name,
+        email: `${name.toLowerCase().replace(/\s+/g, '.')}@terapeuta.com`, // email temporal
+        password: 'temp-password', // contraseña temporal
+        role: 'THERAPIST'
+      }
+    });
+    
+    // Luego crear el terapeuta asociado
+    const ther = await prisma.therapist.create({ 
+      data: { 
+        userId: user.id,
+        specialty 
+      },
+      include: {
+        user: {
+          select: {
+            name: true
+          }
+        }
+      }
+    });
+    
+    const transformedTherapist = {
+      ...ther,
+      name: ther.user.name
+    };
+    
+    const ok = res.status(200).json(transformedTherapist);
     await prisma.$disconnect();
     return ok;
   }
