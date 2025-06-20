@@ -15,59 +15,60 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(403).json({ error: "Forbidden" });
   }
 
-  const { start, end } = req.query as { start?: string; end?: string };
-  if (!start || !end) {
+  const { therapistId } = req.query as { therapistId: string };
+
+  if (req.method === "PUT") {
+    const { name, specialty, isActive } = req.body as {
+      name?: string;
+      specialty?: string;
+      isActive?: boolean;
+    };
+    
+    // Actualizar el terapeuta y su usuario relacionado si se proporciona nombre
+    const updateData: any = { specialty, isActive };
+    
+    if (name) {
+      // Primero obtenemos el therapist para saber el userId relacionado
+      const therapist = await prisma.therapist.findUnique({
+        where: { id: therapistId },
+        select: { userId: true }
+      });
+      
+      if (therapist) {
+        // Actualizamos el nombre en el User relacionado
+        await prisma.user.update({
+          where: { id: therapist.userId },
+          data: { name }
+        });
+      }
+    }
+    
+    const ther = await prisma.therapist.update({
+      where: { id: therapistId },
+      data: updateData,
+      include: {
+        user: {
+          select: {
+            name: true
+          }
+        }
+      }
+    });
+    
+    const ok = res.status(200).json(ther);
     await prisma.$disconnect();
-    return res.status(400).json({ error: "Invalid range" });
+    return ok;
   }
 
-  const startDate = new Date(start);
-  const endDate = new Date(end);
-  endDate.setHours(23, 59, 59, 999);
+  if (req.method === "DELETE") {
+    await prisma.therapist.delete({ where: { id: therapistId } });
+    const ok = res.status(200).json({ ok: true });
+    await prisma.$disconnect();
+    return ok;
+  }
 
-  const transactions = await prisma.reservation.findMany({
-    where: {
-      paidAt: { not: null },
-      date: { gte: startDate, lte: endDate },
-    },
-    include: { 
-      user: { select: { name: true } },
-      therapist: { 
-        include: {
-          user: { select: { name: true } } // Accedemos al nombre a través de la relación con User
-        }
-      },
-      service: { select: { name: true } },
-      userPackage: { 
-        select: { 
-          pkg: { select: { price: true } } 
-        } 
-      }
-    },
-    orderBy: { date: "asc" },
-  });
-
-  const summary = {
-    totalStripe: transactions
-      .filter((t) => t.paymentMethod === "stripe")
-      .reduce((sum, r) => sum + (r.userPackage?.pkg?.price || 0), 0),
-    totalEfectivo: transactions
-      .filter((t) => t.paymentMethod === "efectivo")
-      .reduce((sum, r) => sum + (r.userPackage?.pkg?.price || 0), 0),
-  };
-
-  const data = transactions.map((t) => ({
-    id: t.id,
-    date: t.date.toISOString(),
-    userName: t.user.name,
-    therapistName: t.therapist.user.name, // Accedemos al nombre del terapeuta a través de user
-    serviceName: t.service.name,
-    amount: t.userPackage?.pkg?.price || 0,
-    paymentMethod: t.paymentMethod,
-    packageUsed: !!t.userPackageId,
-  }));
-
-  const ok = res.status(200).json({ summary, transactions: data });
+  res.setHeader("Allow", ["PUT", "DELETE"]);
+  const na = res.status(405).end();
   await prisma.$disconnect();
-  return ok;
+  return na;
 }
