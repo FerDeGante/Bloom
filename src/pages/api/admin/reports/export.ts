@@ -1,36 +1,73 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getServerSession } from "next-auth/next";
-import { authOptions } from "../../auth/[...nextauth]";
+import { authOptions } from "@/pages/api/auth/[...nextauth]";
 import prisma from "@/lib/prisma";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const session = await getServerSession(req, res, authOptions);
-  if (!session?.user?.id) return res.status(401).json({ error: "Unauthorized" });
-  const admin = await prisma.user.findUnique({ where: { id: session.user.id } });
-  if (admin?.role !== "ADMIN") return res.status(403).json({ error: "Forbidden" });
+  if (!session?.user?.id) {
+    await prisma.$disconnect();
+    return res.status(401).json({ error: "Unauthorized" });
+  }
+  const user = await prisma.user.findUnique({ where: { id: session.user.id } });
+  if (user?.role !== "ADMIN") {
+    await prisma.$disconnect();
+    return res.status(403).json({ error: "Forbidden" });
+  }
 
-  const { from, to } = req.query as { from?: string; to?: string };
-  if (!from || !to) return res.status(400).json({ error: "Invalid range" });
+  const { start, end } = req.query as { start?: string; end?: string };
+  if (!start || !end) {
+    await prisma.$disconnect();
+    return res.status(400).json({ error: "Invalid range" });
+  }
 
-  const fromDate = new Date(from);
-  const toDate = new Date(to);
-  toDate.setHours(23, 59, 59, 999);
+  const startDate = new Date(start);
+  const endDate = new Date(end);
+  endDate.setHours(23, 59, 59, 999);
 
-  const rows = await prisma.reservation.findMany({
-    where: { date: { gte: fromDate, lte: toDate } },
-    include: { user: true, service: true, therapist: true },
+  const transactions = await prisma.reservation.findMany({
+    where: {
+      paidAt: { not: null },
+      date: { gte: startDate, lte: endDate },
+    },
+    include: { 
+      user: { select: { name: true } },
+      therapist: { 
+        include: {
+          user: { select: { name: true } } // Accedemos al nombre a través de la relación con User
+        }
+      },
+      service: { select: { name: true } },
+      userPackage: { 
+        select: { 
+          pkg: { select: { price: true } } 
+        } 
+      }
+    },
     orderBy: { date: "asc" },
   });
 
-  let csv = "Fecha,Cliente,Servicio,Terapeuta,Monto,Metodo\n";
-  for (const r of rows) {
-    csv += `${r.date.toISOString()},${r.user.name},${r.service.name},${r.therapist.name},0,${r.paymentMethod}\n`;
-  }
+  const summary = {
+    totalStripe: transactions
+      .filter((t) => t.paymentMethod === "stripe")
+      .reduce((sum, r) => sum + (r.userPackage?.pkg?.price || 0), 0),
+    totalEfectivo: transactions
+      .filter((t) => t.paymentMethod === "efectivo")
+      .reduce((sum, r) => sum + (r.userPackage?.pkg?.price || 0), 0),
+  };
 
-  res.setHeader("Content-Type", "text/csv");
-  res.setHeader(
-    "Content-Disposition",
-    `attachment; filename=report-${from}-${to}.csv`
-  );
-  res.status(200).send(csv);
+  const data = transactions.map((t) => ({
+    id: t.id,
+    date: t.date.toISOString(),
+    userName: t.user.name,
+    therapistName: t.therapist.user.name, // Accedemos al nombre del terapeuta a través de user
+    serviceName: t.service.name,
+    amount: t.userPackage?.pkg?.price || 0,
+    paymentMethod: t.paymentMethod,
+    packageUsed: !!t.userPackageId,
+  }));
+
+  const ok = res.status(200).json({ summary, transactions: data });
+  await prisma.$disconnect();
+  return ok;
 }
