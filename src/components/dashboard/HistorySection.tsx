@@ -17,9 +17,9 @@ import { FaEdit, FaTrash, FaCalendarPlus } from "react-icons/fa";
 
 interface HistoryItem {
   id: string;
-  date: string;        // ISO string
-  serviceName: string; // viene de tu API (/api/appointments/history)
-  therapistName: string;
+  date: string; // ISO string
+  serviceName: string | null;
+  therapistName: string | null;
 }
 
 export default function HistorySection() {
@@ -81,10 +81,10 @@ export default function HistorySection() {
     const fmt = (x: Date) => x.toISOString().replace(/[-:]|\.\d{3}/g, "");
     return (
       "https://www.google.com/calendar/render?action=TEMPLATE" +
-      `&text=${encodeURIComponent(item.serviceName)}` +
+      `&text=${encodeURIComponent(item.serviceName ?? "Reserva")}` +
       `&dates=${fmt(start)}/${fmt(end)}` +
-      `&details=${encodeURIComponent(item.serviceName)}` +
-      `&location=${encodeURIComponent(item.serviceName)}`
+      `&details=${encodeURIComponent(item.serviceName ?? "")}` +
+      `&location=${encodeURIComponent(item.serviceName ?? "")}`
     );
   };
 
@@ -119,8 +119,8 @@ export default function HistorySection() {
               )}`;
               return (
                 <tr key={r.id}>
-                  <td>{r.serviceName}</td>
-                  <td>{r.therapistName}</td>
+                  <td>{r.serviceName ?? "—"}</td>
+                  <td>{r.therapistName ?? "—"}</td>
                   <td>{display}</td>
                   <td>
                     <OverlayTrigger

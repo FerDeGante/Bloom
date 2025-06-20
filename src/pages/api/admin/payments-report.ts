@@ -30,7 +30,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       paidAt: { not: null },
       date: { gte: startDate, lte: endDate },
     },
-    include: { user: true, therapist: true },
+    select: {
+      id:            true,
+      date:          true,
+      paymentMethod: true,
+      user:       { select: { name: true } },
+      therapist:  { include: { user: { select: { name: true } } } },
+    },
     orderBy: { date: "asc" },
   });
 
@@ -47,7 +53,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     id: t.id,
     date: t.date.toISOString(),
     userName: t.user.name,
-    therapistName: t.therapist.name,
+    therapistName: t.therapist?.user?.name ?? "—",
     amount: 0,
     paymentMethod: t.paymentMethod,
   }));

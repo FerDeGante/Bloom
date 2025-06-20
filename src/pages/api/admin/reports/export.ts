@@ -18,13 +18,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   const rows = await prisma.reservation.findMany({
     where: { date: { gte: fromDate, lte: toDate } },
-    include: { user: true, service: true, therapist: true },
+    select: {
+      date:          true,
+      paymentMethod: true,
+      user:      { select: { name: true } },
+      service:   { select: { name: true } },
+      therapist: { include: { user: { select: { name: true } } } },
+    },
     orderBy: { date: "asc" },
   });
 
   let csv = "Fecha,Cliente,Servicio,Terapeuta,Monto,Metodo\n";
   for (const r of rows) {
-    csv += `${r.date.toISOString()},${r.user.name},${r.service.name},${r.therapist.name},0,${r.paymentMethod}\n`;
+    csv += `${r.date.toISOString()},${r.user.name},${r.service.name},${r.therapist?.user?.name ?? "—"},0,${r.paymentMethod}\n`;
   }
 
   res.setHeader("Content-Type", "text/csv");
