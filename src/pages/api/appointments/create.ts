@@ -1,8 +1,7 @@
-// src/pages/api/appointments/create.ts
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getServerSession } from "next-auth/next";
-import { authOptions }      from "../auth/[...nextauth]";
-import prisma               from "@/lib/prisma";
+import { authOptions } from "../auth/[...nextauth]";
+import prisma from "@/lib/prisma";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   // 1) Solo soportamos POST
@@ -22,10 +21,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   // 3) Lectura y validación del body
   const { servicio, terapeuta, date, hour } = req.body as {
-    servicio:  string;
+    servicio: string;
     terapeuta: string;
-    date:      string; // "YYYY-MM-DD"
-    hour:      string; // "HH:mm"
+    date: string; // "YYYY-MM-DD"
+    hour: string; // "HH:mm"
   };
 
   if (!servicio || !terapeuta || !date || !hour) {
@@ -35,7 +34,21 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   // 4) Búsqueda de servicio y terapeuta
   const svc = await prisma.service.findUnique({ where: { id: servicio } });
-  const ther = await prisma.therapist.findFirst({ where: { name: terapeuta } });
+  const ther = await prisma.therapist.findFirst({
+    where: {
+      user: {
+        name: terapeuta
+      }
+    },
+    include: {
+      user: {
+        select: {
+          name: true
+        }
+      }
+    }
+  });
+  
   if (!svc || !ther) {
     await prisma.$disconnect();
     return res.status(400).json({ error: "Servicio o terapeuta inválido" });
@@ -91,12 +104,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     await prisma.$transaction([
       prisma.reservation.create({
         data: {
-          userId:        session.user.id,
-          serviceId:     svc.id,
-          therapistId:   ther.id,
-          date:          datetime,
-          userPackageId: userPkg.id,         // <--- Agregado
-          paymentMethod: "stripe",           // o "en sucursal", según tu flujo
+          userId: session.user.id,
+          serviceId: svc.id,
+          therapistId: ther.id,
+          date: datetime,
+          userPackageId: userPkg.id,
+          paymentMethod: "stripe",
         },
       }),
       prisma.userPackage.update({

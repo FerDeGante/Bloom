@@ -1,4 +1,3 @@
-// src/pages/api/stripe/webhook.ts
 import { buffer } from "micro";
 import type { NextApiRequest, NextApiResponse } from "next";
 import Stripe from "stripe";
@@ -32,13 +31,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const sess = event.data.object as Stripe.Checkout.Session;
     const m = sess.metadata || {};
 
-    const userId         = m.userId!;
-    const priceId        = m.priceId!;
-    const serviceId      = m.serviceId!;
-    const serviceName    = m.serviceName!;
-    const dates          = JSON.parse((m.dates as string) || "[]") as string[];
-    const hours          = JSON.parse((m.hours as string) || "[]") as string[];
-    const therapistIds   = JSON.parse((m.therapistIds as string) || "[]") as string[];
+    const userId = m.userId!;
+    const priceId = m.priceId!;
+    const serviceId = m.serviceId!;
+    const serviceName = m.serviceName!;
+    const dates = JSON.parse((m.dates as string) || "[]") as string[];
+    const hours = JSON.parse((m.hours as string) || "[]") as string[];
+    const therapistIds = JSON.parse((m.therapistIds as string) || "[]") as string[];
     const therapistNames = JSON.parse((m.therapistNames as string) || "[]") as string[];
 
     console.log("📥 Webhook metadata received:", {
@@ -59,10 +58,28 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     // 2) Upsert de terapeutas
     for (let i = 0; i < therapistIds.length; i++) {
+      // Primero crear el usuario si no existe
+      const user = await prisma.user.upsert({
+        where: { email: `${therapistIds[i]}@terapeuta.com` },
+        update: { name: therapistNames[i] },
+        create: { 
+          email: `${therapistIds[i]}@terapeuta.com`,
+          name: therapistNames[i],
+          password: 'temp-password',
+          role: 'THERAPIST'
+        },
+      });
+
+      // Luego crear/actualizar el terapeuta
       await prisma.therapist.upsert({
         where: { id: therapistIds[i] },
-        update: { name: therapistNames[i] },
-        create: { id: therapistIds[i], name: therapistNames[i] },
+        update: { userId: user.id },
+        create: { 
+          id: therapistIds[i],
+          userId: user.id,
+          specialty: "General",
+          isActive: true
+        },
       });
     }
 
@@ -99,18 +116,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       console.warn("⚠️ Usuario ya tiene un paquete activo de este tipo. No se duplicará.");
     }
 
-    // 5) Crear reservaciones: cada rec data debe incluir userPackageId
+    // 5) Crear reservaciones
     const recs = dates.map((d, i) => {
       const [h = "0"] = (hours[i] || "0").split(":");
       const dt = new Date(d);
       dt.setHours(parseInt(h, 10), 0, 0, 0);
       return {
         userId,
-        userPackageId: userPkg!.id,   // <-- agregado
+        userPackageId: userPkg!.id,
         serviceId,
         therapistId: therapistIds[i],
         date: dt,
-        paymentMethod: "stripe",      // o el método que uses
+        paymentMethod: "stripe",
       };
     });
 

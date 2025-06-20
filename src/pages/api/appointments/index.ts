@@ -13,15 +13,26 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (req.method === "GET") {
     const reservations = await prisma.reservation.findMany({
       where: { userId: session.user.id },
-      include: { service: true, therapist: true },
+      include: { 
+        service: true, 
+        therapist: {
+          include: {
+            user: {
+              select: {
+                name: true
+              }
+            }
+          }
+        } 
+      },
       orderBy: { date: "desc" },
     });
 
     const mapped = reservations.map((r) => ({
       id: r.id,
       date: r.date.toISOString(),
-      serviceName: r.service.name,        // ✅ Correcto
-      therapistName: r.therapist.name,    // ✅ Correcto
+      serviceName: r.service.name,
+      therapistName: r.therapist.user.name, // Accedemos al nombre a través de user
     }));
 
     const ok = res.status(200).json({ reservations: mapped });
