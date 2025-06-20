@@ -23,10 +23,38 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       specialty?: string;
       isActive?: boolean;
     };
+    
+    // Actualizar el terapeuta y su usuario relacionado si se proporciona nombre
+    const updateData: any = { specialty, isActive };
+    
+    if (name) {
+      // Primero obtenemos el therapist para saber el userId relacionado
+      const therapist = await prisma.therapist.findUnique({
+        where: { id: therapistId },
+        select: { userId: true }
+      });
+      
+      if (therapist) {
+        // Actualizamos el nombre en el User relacionado
+        await prisma.user.update({
+          where: { id: therapist.userId },
+          data: { name }
+        });
+      }
+    }
+    
     const ther = await prisma.therapist.update({
       where: { id: therapistId },
-      data: { name, specialty, isActive },
+      data: updateData,
+      include: {
+        user: {
+          select: {
+            name: true
+          }
+        }
+      }
     });
+    
     const ok = res.status(200).json(ther);
     await prisma.$disconnect();
     return ok;
