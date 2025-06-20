@@ -30,17 +30,26 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       paidAt: { not: null },
       date: { gte: startDate, lte: endDate },
     },
-    include: { user: true, therapist: true },
+    include: { 
+      user: { select: { name: true } },
+      therapist: { select: { name: true } },
+      service: { select: { name: true } },
+      userPackage: { 
+        select: { 
+          pkg: { select: { price: true } } 
+        } 
+      }
+    },
     orderBy: { date: "asc" },
   });
 
   const summary = {
     totalStripe: transactions
       .filter((t) => t.paymentMethod === "stripe")
-      .reduce((sum, r) => sum + (r.serviceId ? 0 : 0), 0),
+      .reduce((sum, r) => sum + (r.userPackage?.pkg?.price || 0), 0),
     totalEfectivo: transactions
       .filter((t) => t.paymentMethod === "efectivo")
-      .reduce((sum, r) => sum + (r.serviceId ? 0 : 0), 0),
+      .reduce((sum, r) => sum + (r.userPackage?.pkg?.price || 0), 0),
   };
 
   const data = transactions.map((t) => ({
@@ -48,8 +57,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     date: t.date.toISOString(),
     userName: t.user.name,
     therapistName: t.therapist.name,
-    amount: 0,
+    serviceName: t.service.name,
+    amount: t.userPackage?.pkg?.price || 0,
     paymentMethod: t.paymentMethod,
+    packageUsed: !!t.userPackageId,
   }));
 
   const ok = res.status(200).json({ summary, transactions: data });
