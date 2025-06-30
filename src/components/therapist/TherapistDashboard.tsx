@@ -1,82 +1,39 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { Table, Spinner } from "react-bootstrap";
+import CalendarSection from "@/components/CalendarSection";
+import ManualReservationSection from "@/components/admin/ManualReservationSection";
 import { useSession } from "next-auth/react";
-
-interface ReservationItem {
-  id: string;
-  date: string;
-  service: { name: string };
-  user: { name: string };
-}
+import SidebarTherapist from "@/components/Sidebar/SidebarTherapist";
 
 export default function TherapistDashboard() {
   const { data: session } = useSession();
-  const [rows, setRows] = useState<ReservationItem[]>([]);
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    if (!session?.user?.id) return;
-    fetch(`/api/therapist/${session.user.id}/reservations`)
-      .then((r) => r.json())
-      .then(setRows)
-      .catch(console.error)
-      .finally(() => setLoading(false));
-  }, [session?.user?.id]);
-
-  const calLink = (r: ReservationItem) => {
-    const start = new Date(r.date);
-    const end = new Date(start.getTime() + 60 * 60 * 1000);
-    const fmt = (d: Date) => d.toISOString().replace(/[-:]|\.\d{3}/g, "");
-    return (
-      "https://www.google.com/calendar/render?action=TEMPLATE" +
-      `&text=${encodeURIComponent(r.service.name)}` +
-      `&dates=${fmt(start)}/${fmt(end)}` +
-      `&details=${encodeURIComponent(r.service.name)}`
-    );
-  };
-
-  if (loading) return <Spinner className="m-5" animation="border" />;
+  // Espera a tener la sesión cargada (evita errores de id undefined)
+  if (!session?.user?.id) {
+    return <div className="text-center my-5">Cargando...</div>;
+  }
 
   return (
-    <Table hover responsive className="dashboard-table">
-      <thead>
-        <tr>
-          <th>Fecha</th>
-          <th>Cliente</th>
-          <th>Servicio</th>
-          <th>Calendario</th>
-        </tr>
-      </thead>
-      <tbody>
-        {rows.map((r) => {
-          const dt = new Date(r.date);
-          const disp = `${dt.toLocaleDateString()} ${dt.toLocaleTimeString([], {
-            hour: "2-digit",
-            minute: "2-digit",
-          })}`;
-          return (
-            <tr key={r.id}>
-              <td>{disp}</td>
-              <td>{r.user.name}</td>
-              <td>{r.service.name}</td>
-              <td>
-                <a href={calLink(r)} target="_blank" rel="noopener noreferrer">
-                  Añadir
-                </a>
-              </td>
-            </tr>
-          );
-        })}
-        {rows.length === 0 && (
-          <tr>
-            <td colSpan={4} className="text-center">
-              — Sin reservaciones —
-            </td>
-          </tr>
-        )}
-      </tbody>
-    </Table>
+    <div className="d-flex" style={{minHeight: "90vh"}}>
+      <SidebarTherapist />
+      <div className="flex-grow-1 px-4 py-3">
+        <div className="mb-4">
+          <CalendarSection
+  apiBaseUrl={`/api/therapist/${session.user.id}/reservations`}
+  canEdit={true}
+  title="Mis Reservaciones para"
+/>
+        </div>
+        {/* Sección de reservación manual, igual que el admin pero usando los endpoints /api/therapist/* */}
+        <div className="mt-4">
+          <ManualReservationSection
+            apiClientsUrl="/api/therapist/clients"
+            apiPackagesUrl="/api/therapist/packages"
+            apiBranchesUrl="/api/admin/branches"
+            apiReservationUrl="/api/admin/reservations"
+          />
+        </div>
+      </div>
+    </div>
   );
 }

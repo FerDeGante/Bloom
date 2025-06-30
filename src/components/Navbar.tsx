@@ -37,7 +37,7 @@ export default function Navbar() {
         <Link href="/" className="navbar-brand d-flex align-items-center gap-2">
           <Image
             src="/images/logo_bloom_white.png"
-            alt="Bloom Fisio"
+            alt="Logo Bloom"
             width={150}
             height={150}
             className="logo-img"

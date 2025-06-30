@@ -1,10 +1,10 @@
 // prisma/seed.js
 require("dotenv").config();
-const seedUsers       = require("./seeders/01_users");
-const seedTherapists  = require("./seeders/02_therapists");
-const seedServices    = require("./seeders/03_services");
-const seedPackages    = require("./seeders/04_packages");
-const seedClients     = require("./seeders/05_clients");
+const seedUsers       = require("./seeders/01_branches");
+const seedTherapists  = require("./seeders/02_users");
+const seedServices    = require("./seeders/03_therapists");
+const seedPackages    = require("./seeders/04_clients");
+const seedClients     = require("./seeders/05_packages");
 
 async function main() {
   console.log("🌱 Iniciando seed...");

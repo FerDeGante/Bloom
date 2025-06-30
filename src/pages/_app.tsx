@@ -6,6 +6,7 @@ import { useRouter } from "next/router";
 import { SessionProvider } from "next-auth/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import "chart.js/auto";
+import "react-datepicker/dist/react-datepicker.css";
 
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";

@@ -8,14 +8,14 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<{ id: string; name: string; sessions: number; price: number }[] | { error: string }>
 ) {
-  // 1) Verificación de sesión y rol ADMIN
+  // 1) Verificación de sesión y rol Therapist
   const session = await getServerSession(req, res, authOptions);
   if (!session?.user?.id) {
     await prisma.$disconnect();
     return res.status(401).json({ error: "Unauthorized" });
   }
-  const admin = await prisma.user.findUnique({ where: { id: session.user.id } });
-  if (admin?.role !== "ADMIN") {
+  const therapist = await prisma.user.findUnique({ where: { id: session.user.id } });
+  if (therapist?.role !== "THERAPIST") {
     await prisma.$disconnect();
     return res.status(403).json({ error: "Forbidden" });
   }

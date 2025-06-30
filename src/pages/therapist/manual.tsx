@@ -3,10 +3,10 @@ import Head from "next/head";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "../api/auth/[...nextauth]";
 import SidebarTherapist from "@/components/Sidebar/SidebarTherapist";
-import CalendarSection from "@/components/CalendarSection";
+import ManualReservationSection from "@/components/admin/ManualReservationSection";
 import { useSession } from "next-auth/react";
 
-export default function TherapistHome() {
+export default function ManualTherapistPage() {
   const { data: session } = useSession();
 
   if (!session?.user?.id) return <div className="text-center my-5">Cargando...</div>;
@@ -14,15 +14,16 @@ export default function TherapistHome() {
   return (
     <>
       <Head>
-        <title>Dashboard Terapeuta • Bloom Fisio</title>
+        <title>Crear reservación manual • Bloom Fisio</title>
       </Head>
       <div className="d-flex" style={{minHeight: "90vh"}}>
         <SidebarTherapist />
         <div className="flex-grow-1 px-4 py-3">
-          <CalendarSection
-            apiBaseUrl={`/api/therapist/${session.user.id}/reservations`}
-            canEdit={true}
-            title="Mis Reservaciones para"
+          <ManualReservationSection
+            apiClientsUrl="/api/therapist/clients"
+            apiPackagesUrl="/api/therapist/packages"
+            apiBranchesUrl="/api/admin/branches"
+            apiReservationUrl="/api/admin/reservations"
           />
         </div>
       </div>

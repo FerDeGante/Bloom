@@ -15,7 +15,7 @@ import {
 import ClientsSection from "./ClientsSection";
 import TherapistsSection from "./TherapistsSection";
 import ManualReservationSection from "./ManualReservationSection";
-import CalendarSection from "./CalendarSection";
+import CalendarSection from "../CalendarSection";
 import StatsSection from "./StatsSection"; // <- import StatsSection
 
 export default function AdminLayout() {
@@ -36,7 +36,11 @@ export default function AdminLayout() {
       case "clients":     return <ClientsSection />;
       case "therapists":  return <TherapistsSection />;
       case "manual":      return <ManualReservationSection />;
-      case "calendar":    return <CalendarSection />;
+      case "calendar":    return <CalendarSection
+  apiBaseUrl="/api/admin/reservations"
+  canEdit={true}
+  title="Reservaciones para"
+/>
       case "reports":     return <StatsSection />;   // <- aquí
       default:            return null;
     }

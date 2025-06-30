@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getServerSession } from "next-auth/next";
-import { authOptions } from "../../auth/[...nextauth]";
+import { authOptions } from "../auth/[...nextauth]";
 import prisma from "@/lib/prisma";
 import bcrypt from "bcrypt";
 
@@ -12,7 +12,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   const user = await prisma.user.findUnique({ where: { id: session.user.id } });
-  if (user?.role !== "ADMIN") {
+  if (user?.role !== "THERAPIST") {
     await prisma.$disconnect();
     return res.status(403).json({ error: "Forbidden" });
   }
