@@ -33,6 +33,7 @@ const terapeutas = [
   "Alitzel Pacheco",
   "Francia",
   "Gisela",
+  "María del Carmen",
 ];
 
 export default function ReservasForm() {

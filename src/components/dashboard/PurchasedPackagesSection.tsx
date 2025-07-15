@@ -9,6 +9,7 @@ import {
   Button,
   Spinner,
   Alert,
+  Badge,
 } from "react-bootstrap";
 import { useRouter } from "next/router";
 import type { UserPackageResponse } from "@/pages/api/dashboard/packages";
@@ -23,26 +24,27 @@ export default function PurchasedPackagesSection() {
       .then((r) => r.json())
       .then((data: UserPackageResponse[]) =>
         setPackages(
-          data.sort(
-            (a, b) =>
-              new Date(a.expiresAt).getTime() -
-              new Date(b.expiresAt).getTime()
-          )
+          data
+            .filter((pkg) => new Date(pkg.expiresAt) > new Date()) // solo vigentes
+            .sort(
+              (a, b) =>
+                new Date(a.expiresAt).getTime() -
+                new Date(b.expiresAt).getTime()
+            )
         )
       )
       .catch(console.error)
       .finally(() => setLoading(false));
   }, []);
 
-  // Al hacer clic, vamos al flujo de agendar 1 sesión
   const handleSchedule = (pkg: UserPackageResponse) => {
     router.push(
       {
         pathname: "/dashboard",
         query: {
           view: "reservar-paquete",
-          pkgKey: pkg.pkgId, // coincide con el prop `pkgKey` de ReservarPaquete
-          sessions: 1, // siempre 1 sesión
+          pkgKey: pkg.pkgId,
+          sessions: 1,
           priceId: pkg.priceId,
         },
       },
@@ -77,30 +79,53 @@ export default function PurchasedPackagesSection() {
     <Container className="py-4">
       <h3 className="mb-4 text-center">Mis paquetes vigentes</h3>
       <Row className="g-4">
-        {packages.map((pkg) => (
-          <Col key={pkg.id} md={4}>
-            <Card>
-              <Card.Body>
-                <Card.Title>{pkg.pkgName}</Card.Title>
-                <Card.Text>
-                  Comprado: {new Date(pkg.createdAt).toLocaleDateString()}
-                </Card.Text>
-                <Card.Text>
-                  Vence: {new Date(pkg.expiresAt).toLocaleDateString()}
-                </Card.Text>
-                <Card.Text>
-                  Sesiones restantes: {pkg.sessionsRemaining}
-                </Card.Text>
-                <Button
-                  className="btn-orange"
-                  onClick={() => handleSchedule(pkg)}
-                >
-                  Agendar sesión
-                </Button>
-              </Card.Body>
-            </Card>
-          </Col>
-        ))}
+        {packages.map((pkg) => {
+          const sesionesRestantes = pkg.sessionsRemaining;
+          const expirado = new Date(pkg.expiresAt) < new Date();
+
+          return (
+            <Col key={pkg.id} md={4}>
+              <Card>
+                <Card.Body>
+                  <Card.Title>
+                    {pkg.pkgName}{" "}
+                    {expirado && (
+                      <Badge bg="danger" className="ms-2">
+                        Vencido
+                      </Badge>
+                    )}
+                  </Card.Title>
+                  <Card.Text>
+                    Comprado: {new Date(pkg.createdAt).toLocaleDateString()}
+                  </Card.Text>
+                  <Card.Text>
+                    Vence: {new Date(pkg.expiresAt).toLocaleDateString()}
+                  </Card.Text>
+                  <Card.Text>
+                    Sesiones restantes:{" "}
+                    <strong>
+                      {sesionesRestantes > 0 ? sesionesRestantes : 0}
+                    </strong>
+                  </Card.Text>
+                  {!expirado && sesionesRestantes > 0 ? (
+                    <Button
+                      className="btn-orange"
+                      onClick={() => handleSchedule(pkg)}
+                    >
+                      Agendar sesión
+                    </Button>
+                  ) : (
+                    <Button className="btn-orange" disabled>
+                      {expirado
+                        ? "Paquete vencido"
+                        : "Sin sesiones disponibles"}
+                    </Button>
+                  )}
+                </Card.Body>
+              </Card>
+            </Col>
+          );
+        })}
       </Row>
     </Container>
   );

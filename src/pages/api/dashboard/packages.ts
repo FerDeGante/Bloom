@@ -33,7 +33,7 @@ export default async function handler(
   // 2) Traemos las compras del usuario
   const ups = await prisma.userPackage.findMany({
     where: { userId: session.user.id },
-    include: { pkg: true },
+    include: { package: true },
     orderBy: { createdAt: "desc" },
   });
 
@@ -46,9 +46,9 @@ export default async function handler(
 
     return {
       id:                u.id,
-      pkgId:             u.pkg.id,
-      pkgName:           u.pkg.name,
-      priceId:           u.pkg.stripePriceId,
+      pkgId:             u.package.id,
+      pkgName:           u.package.name,
+      priceId:           u.package.stripePriceId,
       sessionsRemaining: u.sessionsRemaining,
       expiresAt:         exp.toISOString(),           // 30 días después
       createdAt:         created.toISOString(),

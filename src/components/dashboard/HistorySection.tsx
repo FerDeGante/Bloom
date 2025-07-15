@@ -13,13 +13,12 @@ import {
 } from "react-bootstrap";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
-import { FaEdit, FaTrash, FaCalendarPlus } from "react-icons/fa";
+import { FaEdit, FaCalendarPlus } from "react-icons/fa";
 
 interface HistoryItem {
   id: string;
-  date: string;        // ISO string
-  serviceName: string | null; // viene de tu API (/api/appointments/history)
-  therapistName: string | null;
+  date: string;                // ISO string
+  serviceName: string | null;  // viene de tu API (/api/appointments/history)
 }
 
 export default function HistorySection() {
@@ -69,12 +68,6 @@ export default function HistorySection() {
     setToastMsg("Reservación actualizada");
   };
 
-  const handleDelete = async (id: string) => {
-    await fetch(`/api/appointments/${id}`, { method: "DELETE" });
-    setRows((current) => current.filter((r) => r.id !== id));
-    setToastMsg("Reservación cancelada");
-  };
-
   const calLink = (item: HistoryItem) => {
     const start = new Date(item.date);
     const end = new Date(start.getTime() + 3600 * 1000);
@@ -96,17 +89,15 @@ export default function HistorySection() {
         <thead>
           <tr>
             <th>Servicio</th>
-            <th>Terapeuta</th>
             <th>Fecha y hora</th>
             <th>Editar</th>
             <th>Calendario</th>
-            <th>Cancelar</th>
           </tr>
         </thead>
         <tbody>
           {rows.length === 0 ? (
             <tr>
-              <td colSpan={6} className="text-center">
+              <td colSpan={4} className="text-center">
                 — No hay reservaciones —
               </td>
             </tr>
@@ -120,7 +111,6 @@ export default function HistorySection() {
               return (
                 <tr key={r.id}>
                   <td>{r.serviceName ?? "—"}</td>
-                  <td>{r.therapistName ?? "—"}</td>
                   <td>{display}</td>
                   <td>
                     <OverlayTrigger
@@ -136,11 +126,6 @@ export default function HistorySection() {
                     <a href={calLink(r)} target="_blank" rel="noopener noreferrer">
                       <FaCalendarPlus />
                     </a>
-                  </td>
-                  <td>
-                    <Button variant="link" onClick={() => handleDelete(r.id)}>
-                      <FaTrash />
-                    </Button>
                   </td>
                 </tr>
               );

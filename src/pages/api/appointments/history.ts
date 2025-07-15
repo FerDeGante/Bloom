@@ -1,8 +1,8 @@
 // src/pages/api/appointments/history.ts
 import type { NextApiRequest, NextApiResponse } from "next";
-import { getServerSession }                   from "next-auth/next";
-import { authOptions }                        from "../auth/[...nextauth]";
-import prisma                                 from "@/lib/prisma";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "../auth/[...nextauth]";
+import prisma from "@/lib/prisma";
 
 export interface HistoryItem {
   id: string;
@@ -28,14 +28,19 @@ export default async function handler(
     return res.status(401).json({ error: "Unauthorized" });
   }
 
+  // Trae las reservaciones del usuario con nombre de paquete y terapeuta
   const reservations = await prisma.reservation.findMany({
     where: { userId: session.user.id },
     select: {
-      id:            true,
-      date:          true,
+      id: true,
+      date: true,
       userPackageId: true,
-      service:   { select: { name: true } },
-      therapist: { include: { user: { select: { name: true } } } },
+      package: { select: { name: true } },
+      therapist: { 
+        select: { 
+          user: { select: { name: true } }
+        }
+      },
     },
     orderBy: { date: "desc" },
   });
@@ -43,8 +48,8 @@ export default async function handler(
   const data: HistoryItem[] = reservations.map((r) => ({
     id:            r.id,
     date:          r.date.toISOString(),
-    serviceName:   r.service?.name ?? null,
-    therapistName: r.therapist?.user?.name ?? null,
+    serviceName:   r.package?.name ?? null,
+    therapistName: r.therapist?.user?.name ?? "—",
     userPackageId: r.userPackageId,
   }));
 

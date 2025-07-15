@@ -116,3 +116,15 @@ model Reservation {
   userPackage UserPackage? @relation(fields: [userPackageId], references: [id], onDelete: Cascade)
   branch      Branch       @relation(fields: [branchId], references: [id])
 }
+
+// Reset password
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  email     String
+  token     String
+  expires   DateTime
+  createdAt DateTime @default(now())
+
+  @@index([email])
+}
+ 

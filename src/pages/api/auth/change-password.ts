@@ -1,5 +1,3 @@
-// src/pages/api/auth/change-password.ts
-
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "./[...nextauth]";
@@ -8,47 +6,71 @@ import { hash, compare } from "bcrypt";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== "POST") {
-    // Solo permitimos POST
     return res.status(405).end();
   }
 
-  // Obtiene la sesión del usuario
   const session = await getServerSession(req, res, authOptions);
-  if (!session?.user?.id) {
-    return res.status(401).json({ error: "No autorizado" });
-  }
-
-  // Extrae parámetros del body
-  const { currentPassword, newPassword } = req.body as {
+  const { currentPassword, newPassword, email, token } = req.body as {
     currentPassword?: string;
-    newPassword?: string;
+    newPassword: string;
+    email?: string;
+    token?: string;
   };
 
-  if (!currentPassword || !newPassword) {
-    return res.status(400).json({ error: "Faltan campos" });
+  if (!newPassword) {
+    return res.status(400).json({ error: "Falta nueva contraseña" });
   }
 
-  // Busca el usuario en la base de datos
-  const user = await prisma.user.findUnique({
-    where: { id: session.user.id },
-  });
-  if (!user) {
-    return res.status(404).json({ error: "Usuario no encontrado" });
+  let user;
+
+  if (session?.user?.id) {
+    // Caso 1: Usuario logueado con sesión
+    if (!currentPassword) {
+      return res.status(400).json({ error: "Falta contraseña actual" });
+    }
+
+    user = await prisma.user.findUnique({ where: { id: session.user.id } });
+    if (!user) {
+      return res.status(404).json({ error: "Usuario no encontrado" });
+    }
+
+    const isMatch = await compare(currentPassword, user.password);
+    if (!isMatch) {
+      return res.status(401).json({ error: "Contraseña actual incorrecta" });
+    }
+  } else {
+    // Caso 2: Cambio por recuperación con código enviado al correo
+    if (!email || !token) {
+      return res.status(400).json({ error: "Faltan email o código" });
+    }
+
+    const validToken = await prisma.passwordResetToken.findFirst({
+      where: {
+        email,
+        token,
+        expires: { gte: new Date() },
+      },
+    });
+
+    if (!validToken) {
+      return res.status(400).json({ error: "Código inválido o expirado" });
+    }
+
+    user = await prisma.user.findUnique({ where: { email } });
+    if (!user) {
+      return res.status(404).json({ error: "Usuario no encontrado" });
+    }
+
+    // Elimina el token usado después de validar
+    await prisma.passwordResetToken.deleteMany({ where: { email } });
   }
 
-  // Verifica que la contraseña actual coincida
-  const isMatch = await compare(currentPassword, user.password);
-  if (!isMatch) {
-    return res.status(401).json({ error: "Contraseña actual incorrecta" });
-  }
-
-  // Hashea y guarda la nueva contraseña
+  // Hashea y actualiza la contraseña
   const hashed = await hash(newPassword, 10);
   await prisma.user.update({
     where: { id: user.id },
     data: { password: hashed },
   });
 
-  // Respuesta exitosa
   return res.status(200).json({ message: "Contraseña actualizada correctamente" });
 }

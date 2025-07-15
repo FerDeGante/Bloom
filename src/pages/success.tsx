@@ -1,4 +1,5 @@
 // src/pages/success.tsx
+
 import { GetServerSideProps } from "next";
 import Stripe from "stripe";
 import Link from "next/link";
@@ -15,132 +16,121 @@ interface SuccessProps {
   items: SessionItem[];
 }
 
-export const getServerSideProps: GetServerSideProps<SuccessProps> =
-  async ({ query }) => {
-    const sessionId = query.session_id as string;
-    if (!sessionId) {
-      return {
-        redirect: {
-          destination: "/dashboard?tab=reservar",
-          permanent:   false,
-        },
-      };
-    }
+export const getServerSideProps: GetServerSideProps<SuccessProps> = async ({ query }) => {
+  const sessionId = query.session_id as string;
+  if (!sessionId) {
+    return { redirect: { destination: "/dashboard?tab=reservar", permanent: false } };
+  }
 
-    // 0) Instanciamos Stripe
-    const stripe = new Stripe(process.env.STRIPE_SECRET!, {
-      apiVersion: "2025-04-30.basil",
-    });
+  // 1) Instanciamos Stripe
+  const stripe = new Stripe(process.env.STRIPE_SECRET!, { apiVersion: "2025-04-30.basil" });
 
-    let checkout: Stripe.Checkout.Session;
-    try {
-      checkout = await stripe.checkout.sessions.retrieve(sessionId);
-    } catch {
-      return {
-        redirect: {
-          destination: "/dashboard?tab=reservar",
-          permanent:   false,
-        },
-      };
-    }
+  let checkout: Stripe.Checkout.Session;
+  try {
+    checkout = await stripe.checkout.sessions.retrieve(sessionId);
+  } catch {
+    return { redirect: { destination: "/dashboard?tab=reservar", permanent: false } };
+  }
 
-    const m = checkout.metadata || {};
-    const userId         = m.userId! as string;
-    const serviceId      = m.serviceId! as string;
-    const serviceName    = m.serviceName! as string;
-    const dates          = JSON.parse((m.dates   as string) || "[]") as string[];
-    const hours          = JSON.parse((m.hours   as string) || "[]") as string[];
-    const therapistIds   = JSON.parse((m.therapistIds   as string) || "[]") as string[];
+  const m = checkout.metadata || {};
+  const userId      = m.userId! as string;
+  const priceId     = m.priceId! as string;
+  const serviceName = m.serviceName! as string;
+  const dates       = JSON.parse((m.dates   as string) || "[]") as string[];
+  const hours       = JSON.parse((m.hours   as string) || "[]") as string[];
 
-    // 1) Upsert Service
-    await prisma.service.upsert({
-      where:  { id: serviceId },
-      update: { name: serviceName },
-      create: { id: serviceId, name: serviceName },
-    });
+  // 2) Buscar el paquete usando el priceId
+  const pkg = await prisma.package.findUnique({
+    where: { stripePriceId: priceId },
+  });
+  if (!pkg) {
+    return { redirect: { destination: "/dashboard?tab=reservar", permanent: false } };
+  }
 
-    // —–––––––––––––––––––––––––––––
-    //  (❌) Aquí quitamos el upsert de terapeutas
-    // —–––––––––––––––––––––––––––––
+  // 3) Buscar o crear UserPackage
+  let userPackage = await prisma.userPackage.findFirst({
+    where: { userId, packageId: pkg.id },
+  });
 
-    // 2) Crear o actualizar UserPackage y capturar su ID
-    const priceId = m.priceId! as string;
-    const pkg     = await prisma.package.findUnique({
-      where: { stripePriceId: priceId },
-    });
-    if (!pkg) {
-      return {
-        redirect: {
-          destination: "/dashboard?tab=reservar",
-          permanent:   false,
-        },
-      };
-    }
-
-    // upsert manual de UserPackage
-    let userPackageId: string;
-    const existUP = await prisma.userPackage.findFirst({
-      where: { userId, pkgId: pkg.id },
-    });
-    if (existUP) {
-      userPackageId = existUP.id;
-      await prisma.userPackage.update({
-        where: { id: userPackageId },
-        data:  { sessionsRemaining: pkg.sessions },
-      });
-    } else {
-      const created = await prisma.userPackage.create({
-        data: {
-          userId,
-          pkgId: pkg.id,
-          sessionsRemaining: pkg.sessions,
-        },
-      });
-      userPackageId = created.id;
-    }
-
-    // 3) Crear las reservas
-    const recs = dates.map((d, i) => {
-      const dt = new Date(d);
-      const [h] = (hours[i] || "0").split(":");
-      dt.setHours(+h, 0, 0, 0);
-      return {
+  if (!userPackage) {
+    userPackage = await prisma.userPackage.create({
+      data: {
         userId,
-        serviceId,
-        therapistId: therapistIds[i],
-        date:        dt,
-        userPackageId,
-      };
+        packageId: pkg.id,
+        sessionsRemaining: pkg.sessions,
+        paymentSource: "stripe",
+      },
     });
-    if (recs.length) {
-      await prisma.reservation.createMany({
-        data:           recs,
-        skipDuplicates: true,
-      });
+  } else {
+    // Si ya existía, recarga sesiones
+    await prisma.userPackage.update({
+      where: { id: userPackage.id },
+      data: { sessionsRemaining: pkg.sessions },
+    });
+  }
+
+  // 4) Selecciona la sucursal (branchId)
+  // Si tienes solo una sucursal, selecciona la primera; si tienes un selector, úsalo aquí
+  const branch = await prisma.branch.findFirst();
+  if (!branch) throw new Error("No hay sucursales definidas");
+  const branchId = branch.id;
+
+  // 5) Crea SOLO la cantidad de reservas necesarias (no más)
+  const reservations = [];
+  const n = pkg.sessions;
+
+  for (let i = 0; i < n; i++) {
+    const d = dates[i] ?? dates[0];
+    const h = hours[i] ?? hours[0];
+    const dt = new Date(d);
+    const [hr] = (h || "0").split(":");
+    dt.setHours(+hr, 0, 0, 0);
+
+    reservations.push({
+      userId,
+      packageId: pkg.id,
+      date: dt,
+      userPackageId: userPackage.id,
+      branchId,
+      // therapistId: null, // omite o pon null si tu modelo lo permite
+      paymentMethod: "stripe",
+    });
+  }
+
+  // 6) Evita duplicados: crea SOLO si no existen para ese userPackage/fecha/hora
+  for (const r of reservations) {
+    const exists = await prisma.reservation.findFirst({
+      where: {
+        userId: r.userId,
+        packageId: r.packageId,
+        userPackageId: r.userPackageId,
+        branchId: r.branchId,
+        date: r.date,
+      },
+    });
+    if (!exists) {
+      await prisma.reservation.create({ data: r });
     }
+  }
 
-    // 4) Montar enlaces de Google Calendar
-    const items: SessionItem[] = recs.map((r) => {
-      const start = r.date;
-      const end   = new Date(start.getTime() + 60 * 60 * 1000);
-      const fmt   = (x: Date) =>
-        x.toISOString().replace(/[-:]|\.\d{3}/g, "");
-      return {
-        calLink:
-          "https://www.google.com/calendar/render?action=TEMPLATE" +
-          `&text=${encodeURIComponent(serviceName)}` +
-          `&dates=${fmt(start)}/${fmt(end)}` +
-          `&details=${encodeURIComponent(serviceName)}` +
-          `&location=${encodeURIComponent(serviceName)}`,
-        label: `${start.toLocaleDateString()} • ${start.toLocaleTimeString(
-          [],
-          { hour: "2-digit", minute: "2-digit" }
-        )}`,
-      };
-    });
+  // 7) Monta los enlaces de Google Calendar
+  const items: SessionItem[] = reservations.map((r) => {
+    const start = r.date;
+    const end   = new Date(start.getTime() + 60 * 60 * 1000);
+    const fmt   = (x: Date) => x.toISOString().replace(/[-:]|\.\d{3}/g, "");
+    return {
+      calLink:
+        "https://www.google.com/calendar/render?action=TEMPLATE" +
+        `&text=${encodeURIComponent(serviceName)}` +
+        `&dates=${fmt(start)}/${fmt(end)}` +
+        `&details=${encodeURIComponent(serviceName)}` +
+        `&location=${encodeURIComponent(serviceName)}`,
+      label: `${start.toLocaleDateString()} • ${start.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`,
+    };
+  });
 
-    return { props: { items } };
-  };
+  return { props: { items } };
+};
 
 export default function Success({ items }: SuccessProps) {
   return (

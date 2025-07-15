@@ -12,13 +12,30 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const reservations = await prisma.reservation.findMany({
       where: { userId: session.user.id },
       include: {
-        service: true,
-        therapist: true,
+        package: true, // <-- Corrección aquí
+        therapist: {
+          include: {
+            user: { select: { name: true } }
+          }
+        },
+        branch: true // <-- opcional: solo si necesitas mostrar la sucursal
       },
+      orderBy: { date: "desc" },
     });
-    return res.json(reservations);
+
+    // Si quieres devolver solo campos clave:
+    const mapped = reservations.map(r => ({
+      id: r.id,
+      date: r.date.toISOString(),
+      packageName: r.package?.name ?? null,
+      therapistName: r.therapist?.user?.name ?? null,
+      branchName: r.branch?.name ?? null,
+      // agrega aquí lo que necesites
+    }));
+
+    return res.status(200).json({ reservations: mapped });
   }
 
   res.setHeader("Allow", ["GET"]);
-  res.status(405).end(`Method ${req.method} Not Allowed`);
+  return res.status(405).end(`Method ${req.method} Not Allowed`);
 }
