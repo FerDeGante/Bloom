@@ -197,4 +197,4 @@ ENV/
 *.xls
 *.xlsx
 *.ppt
-*.pptx
+*.pptx.env

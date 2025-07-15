@@ -261,3 +261,91 @@ navbar .container {
   font-size: 0.9rem;
   color: #6c757d;
 }
+
+/* Modal Bloom */
+.bloom-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  background: rgba(41, 41, 60, 0.28);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bloom-modal-card {
+  background: #fff;
+  padding: 2.5rem 2rem 2rem 2rem;
+  border-radius: 18px;
+  box-shadow: 0 8px 32px #0001;
+  width: 100%;
+  max-width: 410px;
+  position: relative;
+  animation: fadeInBloom .2s;
+}
+@keyframes fadeInBloom {
+  from { transform: translateY(40px) scale(0.95); opacity: 0; }
+  to   { transform: none; opacity: 1; }
+}
+.bloom-modal-close {
+  position: absolute;
+  right: 18px;
+  top: 18px;
+  background: none;
+  border: none;
+  font-size: 2.1rem;
+  color: #60bac2;
+  cursor: pointer;
+  line-height: 1;
+  z-index: 1;
+}
+.bloom-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  background: rgba(41, 41, 60, 0.22);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bloom-modal-card {
+  background: #fff;
+  padding: 2.5rem 2rem 2rem 2rem;
+  border-radius: 18px;
+  box-shadow: 0 8px 32px #0001;
+  width: 100%;
+  max-width: 420px;
+  position: relative;
+  animation: fadeInBloom .22s;
+}
+@keyframes fadeInBloom {
+  from { transform: translateY(30px) scale(.96); opacity: 0; }
+  to   { transform: none; opacity: 1; }
+}
+.bloom-modal-close {
+  position: absolute;
+  right: 18px;
+  top: 18px;
+  background: none;
+  border: none;
+  font-size: 2.1rem;
+  color: #60bac2;
+  cursor: pointer;
+  line-height: 1;
+  z-index: 1;
+}
+/* PasswordInput */
+.password-strength-bar {
+  margin-bottom: 0;
+}
+.password-checklist {
+  margin-top: 5px;
+  padding-left: 22px;
+}
+.password-checklist li {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.97rem;
+  margin-bottom: 2px;
+  color: #414143;
+}

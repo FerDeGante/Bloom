@@ -23,22 +23,21 @@ export const authOptions: NextAuthOptions = {
         const user = await prisma.user.findUnique({ where: { email: creds.email } });
         // Comprueba la contraseña
         if (user && await compare(creds.password, user.password)) {
-          return user;
+          const { password, ...userWithoutPass } = user; // <-- ¡AQUÍ EL CAMBIO!
+          return userWithoutPass;
         }
         return null;
       }
     })
   ],
   callbacks: {
-    // Se ejecuta al crear/actualizar el JWT
     async jwt({ token, user }) {
       if (user) {
         token.id   = user.id;
-        token.role = (user as any).role;  // guardamos role: "ADMIN" | "CLIENTE" | "THERAPIST"
+        token.role = (user as any).role;
       }
       return token;
     },
-    // Se ejecuta cuando se devuelve `getSession()`
     async session({ session, token }) {
       if (session.user) {
         session.user.id   = token.id as string;

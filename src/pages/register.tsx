@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import Head from 'next/head';
 import Image from 'next/image';
 import Link from 'next/link';
+import PasswordInput from '@/components/PasswordInput';
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -11,7 +12,7 @@ export default function RegisterPage() {
   const [form, setForm] = useState({
     name: '',
     email: '',
-    phone: '', // Añadido campo "phone"
+    phone: '',
     password: '',
     token: '',
   });
@@ -23,23 +24,26 @@ export default function RegisterPage() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  // Envía código al correo del usuario
+  // Enviar código de registro al email
   const handleSendToken = async () => {
     setError(null);
     setStatus("Enviando código...");
-
     try {
       const res = await fetch('/api/auth/request-token', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: form.email, checkUser: false }),
+        body: JSON.stringify({
+          email: form.email,
+          checkUser: false,
+          purpose: "register",
+        }),
       });
 
       const data = await res.json();
 
       if (res.ok) {
         setStep(2);
-        setStatus("Código enviado. Revisa en tu correo📨.");
+        setStatus("Código enviado al correo 📧. Revisa tu bandeja de entrada y spam.");
       } else {
         setError(data.error || 'Error al enviar el código.');
         setStatus(null);
@@ -50,7 +54,7 @@ export default function RegisterPage() {
     }
   };
 
-  // Maneja creación final del usuario
+  // Crear cuenta con código recibido
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null);
@@ -66,7 +70,8 @@ export default function RegisterPage() {
       const data = await res.json();
 
       if (res.ok) {
-        router.push('/login');
+        setStatus("¡Cuenta creada correctamente! Redirigiendo...");
+        setTimeout(() => router.push('/login'), 1200);
       } else {
         setError(data.error || 'Error inesperado en el registro.');
         setStatus(null);
@@ -102,7 +107,6 @@ export default function RegisterPage() {
           style={{ width: '100%', maxWidth: '400px' }}
         >
           <h2 className="mb-3 text-center">Regístrate</h2>
-
           {error && <div className="alert alert-danger">{error}</div>}
           {status && <div className="alert alert-success">{status}</div>}
 
@@ -121,7 +125,6 @@ export default function RegisterPage() {
                 />
                 <label htmlFor="name">Nombre completo</label>
               </div>
-
               <div className="form-floating mb-3">
                 <input
                   id="email"
@@ -135,7 +138,6 @@ export default function RegisterPage() {
                 />
                 <label htmlFor="email">Correo electrónico</label>
               </div>
-
               <div className="form-floating mb-3">
                 <input
                   id="phone"
@@ -149,13 +151,13 @@ export default function RegisterPage() {
                 />
                 <label htmlFor="phone">Teléfono</label>
               </div>
-
               <button
                 type="button"
                 className="btn btn-orange w-100 py-2"
                 onClick={handleSendToken}
+                disabled={!form.name || !form.email || !form.phone || status === "Enviando código..."}
               >
-                Enviar código al correo
+                {status === "Enviando código..." ? "Enviando..." : "Enviar código al correo"}
               </button>
             </>
           )}
@@ -175,23 +177,23 @@ export default function RegisterPage() {
                 />
                 <label htmlFor="token">Código recibido</label>
               </div>
-
               <div className="form-floating mb-3">
-                <input
+                <PasswordInput
+                  value={form.password}
+                  onChange={e => setForm(f => ({ ...f, password: e.target.value }))}
                   id="password"
                   name="password"
-                  type="password"
-                  className="form-control"
                   placeholder="Contraseña"
-                  value={form.password}
-                  onChange={handleChange}
-                  required
+                  autoFocus
                 />
-                <label htmlFor="password">Contraseña</label>
+                {/* El label flotante de Bootstrap solo se recomienda si usas solo <input> */}
               </div>
-
-              <button type="submit" className="btn btn-orange w-100 py-2">
-                Crear cuenta
+              <button
+                type="submit"
+                className="btn btn-orange w-100 py-2"
+                disabled={!form.token || !form.password || status === "Creando cuenta..."}
+              >
+                {status === "Creando cuenta..." ? "Creando..." : "Crear cuenta"}
               </button>
             </>
           )}
